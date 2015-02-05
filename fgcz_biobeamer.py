@@ -217,6 +217,7 @@ if __name__ == "__main__":
         BB = Robocopy(source_path = "D:/Data2San/", 
             target_path = "\\\\130.60.81.21\\Data2San", 
             log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
+        BB.set_para('simulate', True)
         BB.run()
         
 sys.stdout.write("done. exit 0\n")
