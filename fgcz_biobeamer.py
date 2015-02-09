@@ -28,12 +28,7 @@ class BioBeamer:
 
     the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
-    def __init__(self, 
-        pattern=None, 
-        log_file="C:/Progra~1/BioBeamer/biobeamer.log",
-        source_path="D:/Data2San/",
-        target="\\\\130.60.81.21\\Data2San"):
-
+    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/biobeamer.log", source_path="D:/Data2San/", target="\\\\130.60.81.21\\Data2San"):
         if pattern is None:
             pattern = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
 
@@ -44,7 +39,7 @@ class BioBeamer:
         self.min_size = 100000 # 100 KBytes
         self.source_path = os.path.normpath(source_path)
         self.logging_file = os.path.normpath(log_file)
-        self.robocopy_args="/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy_log.txt"
+        self.robocopy_args = "/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy_log.txt"
 
         # setup logging
         if not os.path.exists(self.logging_file):
@@ -53,7 +48,8 @@ class BioBeamer:
 
         self.logger = logging.getLogger('BioBeamer')
         hdlr = logging.FileHandler(self.logging_file)
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', 
+        formatter = logging.Formatter(
+            '%(asctime)s %(levelname)s %(message)s', 
             datefmt="%Y-%m-%d %H:%M:%S")
         hdlr.setFormatter(formatter)
         self.logger.addHandler(hdlr)
@@ -86,20 +82,24 @@ class BioBeamer:
         see also: 
             https://technet.microsoft.com/en-us/library/cc733145.aspx
         """
-
         target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
         if target_sub_path is None:
             # self.logger.info("func_target_mapping returned 'None'")
             return
 
-        cmd = ["robocopy.exe", self.robocopy_args,
+        cmd = [
+            "robocopy.exe", self.robocopy_args,
             os.path.dirname(file_to_copy), 
             os.path.normpath("{0}/{1}".format(self.target, target_sub_path)),
-            os.path.basename(file_to_copy)]
+            os.path.basename(file_to_copy)
+        ]
 
         self.logger.info("consider: '{0}'".format(file_to_copy))
         self.logger.info("try to run: '{0}'".format(" ".join(cmd)))
-        self.logger.info("getmtime={0}; getsize={1}".format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
+        self.logger.info(
+            "getmtime={0}; getsize={1}".format(
+                time.time() - os.path.getmtime(file_to_copy), 
+                os.path.getsize(file_to_copy)))
 
         if self.simulation_mode is True:
             return True
@@ -130,10 +130,11 @@ class BioBeamer:
         except:
             raise
 
-        for (root, dirs, files) in os.walk(os.path.normpath('.'), 
-            topdown=False, 
-            followlinks=False, 
-            onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
+        for (root, dirs, files) in os.walk(
+                os.path.normpath('.'), 
+                topdown=False, 
+                followlinks=False, 
+                onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
@@ -147,7 +148,7 @@ class BioBeamer:
 
         self.logger.info("done")
 
-def func_target_mapping_TRIPLETOF_1(path):
+def mapping_data_analyst(path):
     """
     input:  'p1000/Data/selevsek_20150119'
     output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
@@ -162,7 +163,7 @@ def func_target_mapping_TRIPLETOF_1(path):
        
     return None
 
-class test_func_target_mapping(unittest.TestCase):
+class TestNameMapping(unittest.TestCase):
     """
     run
         python -m unittest -v fgcz_biobeamer
@@ -173,36 +174,39 @@ class test_func_target_mapping(unittest.TestCase):
 
     def test_tripletoff(self):
         desired_result = os.path.normpath('p1000/Proteomics/TRIPLETOF_1/selevsek_20150119')
-        self.assertTrue(desired_result == func_target_mapping_TRIPLETOF_1('p1000\Data\selevsek_20150119'))
-        self.assertTrue(func_target_mapping_TRIPLETOF_1('p1000\data\selevsek_20150119') is None)
+        self.assertTrue(desired_result == mapping_data_analyst('p1000\Data\selevsek_20150119'))
+        self.assertTrue(mapping_data_analyst('p1000\data\selevsek_20150119') is None)
 
 
 if __name__ == "__main__":
     if str(socket.gethostname()) == 'fgcz-s-021':
         print socket.gethostname()
-        BB = BioBeamer(source_path = "/srv/www/htdocs/Data2San", 
-            target = "/scratch/dump", 
-            log_file = "/scratch/dump/biobeamer.log") 
+        BB = BioBeamer(
+            source_path="/srv/www/htdocs/Data2San", 
+            target="/scratch/dump",
+            log_file="/scratch/dump/biobeamer.log") 
         BB.set_simulate(True)
         BB.run(func_target_mapping=lambda x: "__{0}".format(x))
 
     # TRIPLETOF_1
     elif str(socket.gethostname()) == 'fgcz-i-180':
-        BB = BioBeamer(source_path = "D:/Analyst Data/Projects/", 
-            target = "\\\\130.60.81.21\\Data2San", 
-            log_file = "C:/Progra~1/BioBeamer/biobeamer.log") 
+        BB = BioBeamer(
+            source_path="D:/Analyst Data/Projects/", 
+            target="\\\\130.60.81.21\\Data2San", 
+            log_file="C:/Progra~1/BioBeamer/biobeamer.log") 
         BB.set_simulate(False)
         BB.set_min_time_diff(3*3600)
         BB.set_min_size(500000)        
         BB.set_robocopy_args(robocopy_args="/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy_log.txt")
-        BB.run(func_target_mapping=func_target_mapping_TRIPLETOF_1)
+        BB.run(func_target_mapping=mapping_data_analyst)
 
     # QEXACTIVEHF_1, FUSION_2
     else:
-        BB = BioBeamer(source_path = "D:/Data2San/", 
-            target = "\\\\130.60.81.21\\Data2San", 
-            log_file = "C:/Progra~1/BioBeamer/biobeamer.log") 
+        BB = BioBeamer(
+            source_path="D:/Data2San/", 
+            target="\\\\130.60.81.21\\Data2San", 
+            log_file="C:/Progra~1/BioBeamer/biobeamer.log") 
         BB.run()
 sys.stdout.write("done. exit 0\n")
-time.sleep( 5 )
+time.sleep(5)
 sys.exit(0)
