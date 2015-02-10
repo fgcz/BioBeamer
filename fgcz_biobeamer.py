@@ -155,15 +155,19 @@ class Robocopy(BioBeamer):
             # self.logger.info("func_target_mapping returned 'None'")
             return
 
-        cmd = ["robocopy.exe", self.para['robocopy_args'],
+        cmd = [
+            "robocopy.exe", 
+            self.para['robocopy_args'],
             os.path.dirname(file_to_copy), 
-            os.path.normpath("{0}/{1}".format(self.para['target_path'], target_sub_path)),
-            os.path.basename(file_to_copy)]
+            os.path.normpath("{0}/{1}".format(self.para['target_path'], 
+                target_sub_path)),
+            os.path.basename(file_to_copy)
+        ]
 
         self.exec_cmd(file_to_copy, cmd)
 
 
-def func_target_mapping_TRIPLETOF_1(path):
+def map_data_analyst(path):
     """
     input:  'p1000/Data/selevsek_20150119'
     output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
@@ -178,7 +182,7 @@ def func_target_mapping_TRIPLETOF_1(path):
        
     return None
 
-class test_func_target_mapping(unittest.TestCase):
+class TestTargetMapping(unittest.TestCase):
     """
     run
         python -m unittest -v fgcz_biobeamer
@@ -189,8 +193,8 @@ class test_func_target_mapping(unittest.TestCase):
 
     def test_tripletoff(self):
         desired_result = os.path.normpath('p1000/Proteomics/TRIPLETOF_1/selevsek_20150119')
-        self.assertTrue(desired_result == func_target_mapping_TRIPLETOF_1('p1000\Data\selevsek_20150119'))
-        self.assertTrue(func_target_mapping_TRIPLETOF_1('p1000\data\selevsek_20150119') is None)
+        self.assertTrue(desired_result == map_data_analyst('p1000\Data\selevsek_20150119'))
+        self.assertTrue(map_data_analys('p1000\data\selevsek_20150119') is None)
 
 
 if __name__ == "__main__":
@@ -210,7 +214,7 @@ if __name__ == "__main__":
             log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
-        BB.run(func_target_mapping=func_target_mapping_TRIPLETOF_1)
+        BB.run(func_target_mapping=map_data_analys)
 
     # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
