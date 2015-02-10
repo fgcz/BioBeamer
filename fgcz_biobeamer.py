@@ -32,14 +32,14 @@ class BioBeamer:
         if pattern is None:
             pattern = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
 
-        self.simulation_mode = False
-        self.target = os.path.normpath(target)
-        self.regex = re.compile(pattern)
-        self.min_time_diff = 5400 # 1.5 hour
-        self.min_size = 100000 # 100 KBytes
-        self.source_path = os.path.normpath(source_path)
-        self.logging_file = os.path.normpath(log_file)
-        self.robocopy_args = "/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy_log.txt"
+        self.regex = re.compile(self.para['pattern'])
+
+        self.set_para('simulate', False)
+        self.para['source_path'] = os.path.normpath(source_path)
+        self.para['target_path'] = os.path.normpath(target_path)
+        self.para['min_time_diff'] = 2 * 3600 # 2.0 hours
+        self.para['min_size'] = 100 * 1024 # 100 KBytes
+        self.para['logging_file'] = os.path.normpath(log_file)
 
         # setup logging
         if not os.path.exists(self.logging_file):
@@ -202,10 +202,8 @@ if __name__ == "__main__":
 
     # QEXACTIVEHF_1, FUSION_2
     else:
-        BB = BioBeamer(
-            source_path="D:/Data2San/", 
-            target="\\\\130.60.81.21\\Data2San", 
-            log_file="C:/Progra~1/BioBeamer/biobeamer.log") 
+        BB = Robocopy(source_path = "D:/Data2San/", target_path = "\\\\130.60.81.21\\Data2San", log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
+        BB.set_para('simulate', False)
         BB.run()
 sys.stdout.write("done. exit 0\n")
 time.sleep(5)
