@@ -200,27 +200,21 @@ class TestTargetMapping(unittest.TestCase):
 if __name__ == "__main__":
     if str(socket.gethostname()) == 'fgcz-s-021':
         print socket.gethostname()
-        BB = Robocopy(source_path = "/srv/www/htdocs/Data2San", 
-            target_path = "/scratch/dump", 
-            log_file = "/scratch/dump/fgcz_biobeamer.log") 
+        BB = Robocopy(source_path = "/srv/www/htdocs/Data2San", target_path = "/scratch/dump", log_file = "/scratch/dump/fgcz_biobeamer.log") 
         BB.set_para('pattern', ".+p1000.+QEXACTIVEHF_1.+\.raw")
         BB.set_para('simulate', True)
         BB.run(func_target_mapping=lambda x: "__{0}".format(x))
 
     # TRIPLETOF_1
     elif str(socket.gethostname()) == 'fgcz-i-180':
-        BB = Robocopy(source_path = "D:/Analyst Data/Projects/", 
-            target_path = "K:\\", 
-            log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
+        BB = Robocopy(source_path = "D:/Analyst Data/Projects/", target_path = "K:\\", log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
         BB.run(func_target_mapping=map_data_analys)
 
     # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
-        BB = Robocopy(source_path = "D:/Data2San/", 
-            target_path = "\\\\130.60.81.21\\Data2San", 
-            log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
+        BB = Robocopy(source_path = "D:/Data2San/", target_path = "\\\\130.60.81.21\\Data2San", log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
         BB.set_para('simulate', True)
         BB.run()
         
