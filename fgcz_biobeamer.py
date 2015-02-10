@@ -26,14 +26,10 @@ class BioBeamer(object):
     class for syncinging data from instrument PC to archive
 
     """
-    para=dict()
+    para = dict()
     logger = logging.getLogger('BioBeamer')
 
-    def __init__(self,
-        pattern=None,
-        log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log",
-        source_path="D:/Data2San/",
-        target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
             self.para['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -63,16 +59,20 @@ class BioBeamer(object):
         self.logger.setLevel(logging.INFO)
 
     def print_para(self):
+        """ print class parameter setting """
         for k, v in self.para.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def set_para(self, key, value):
+        """ class parameter setting """
         self.para[key] = value
         if key is 'pattern':
             self.regex = re.compile(self.para['pattern'])
 
     def sync(self, file_to_copy, func_target_mapping):
-        sys.stdout.write("consider: '{0}'\n\t->'{1}'\n".format(file_to_copy,  func_target_mapping(os.path.dirname(file_to_copy))))
+        """ default is printing only """
+        sys.stdout.write("consider: '{0}'\n\t->'{1}'\n" \
+            .format(file_to_copy, func_target_mapping(os.path.dirname(file_to_copy))))
 
     def run(self, func_target_mapping=lambda x: x):
         """
@@ -82,16 +82,14 @@ class BioBeamer(object):
 
         self.print_para()
 
-        self.logger.info("crawl source path = '{0}'".format(self.para['source_path']))
+        self.logger.info("crawl source path = '{0}'" \
+            .format(self.para['source_path']))
         try:
             os.chdir(self.para['source_path'])
         except:
             raise
 
-        for (root, dirs, files) in os.walk(os.path.normpath('.'),
-            topdown=False,
-            followlinks=False,
-            onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
+        for (root, dirs, files) in os.walk(os.path.normpath('.'), topdown=False, followlinks=False, onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
@@ -106,9 +104,11 @@ class BioBeamer(object):
 
 
     def exec_cmd(self, file_to_copy, cmd):
+        """ system call """
         self.logger.info("consider: '{0}'".format(file_to_copy))
         self.logger.info("try to run: '{0}'".format(" ".join(cmd)))
-        self.logger.info("getmtime={0}; getsize={1}".format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
+        self.logger.info("getmtime={0}; getsize={1}". \
+            format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
 
         if self.para['simulate'] is True:
             self.logger.info("simulate is True. aboard.")
@@ -136,6 +136,7 @@ class Robocopy(BioBeamer):
     the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
     def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+        """ just call the super class """
         super(Robocopy, self).__init__(pattern, log_file, source_path, target_path)
         self.set_para('robocopy_args', "/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
 
@@ -161,13 +162,11 @@ class Robocopy(BioBeamer):
             "robocopy.exe",
             self.para['robocopy_args'],
             os.path.dirname(file_to_copy),
-            os.path.normpath("{0}/{1}".format(self.para['target_path'],
-                target_sub_path)),
+            os.path.normpath("{0}/{1}" \
+                .format(self.para['target_path'], target_sub_path)),
             os.path.basename(file_to_copy)
         ]
-
         self.exec_cmd(file_to_copy, cmd)
-
 
 def map_data_analyst(path):
     """
@@ -180,7 +179,8 @@ def map_data_analyst(path):
     match = regex.match(path)
 
     if match:
-        return os.path.normpath("{0}/Proteomics/TRIPLETOF_1/{1}".format(match.group(1), match.group(2)))
+        return os.path.normpath("{0}/Proteomics/TRIPLETOF_1/{1}" \
+            .format(match.group(1), match.group(2)))
 
     return None
 
@@ -196,7 +196,7 @@ class TestTargetMapping(unittest.TestCase):
     def test_tripletoff(self):
         desired_result = os.path.normpath('p1000/Proteomics/TRIPLETOF_1/selevsek_20150119')
         self.assertTrue(desired_result == map_data_analyst('p1000\Data\selevsek_20150119'))
-        self.assertTrue(map_data_analys('p1000\data\selevsek_20150119') is None)
+        self.assertTrue(map_data_analyst('p1000\data\selevsek_20150119') is None)
 
 
 if __name__ == "__main__":
@@ -205,7 +205,8 @@ if __name__ == "__main__":
         BB = Robocopy(
             source_path="/srv/www/htdocs/Data2San",
             target_path="/scratch/dump",
-            log_file="/scratch/dump/fgcz_biobeamer.log")
+            log_file="/scratch/dump/fgcz_biobeamer.log"
+        )
         BB.set_para('pattern', ".+p1000.+QEXACTIVEHF_1.+\.raw")
         BB.set_para('simulate', True)
         BB.run(func_target_mapping=lambda x: "__{0}".format(x))
@@ -214,18 +215,20 @@ if __name__ == "__main__":
     elif str(socket.gethostname()) == 'fgcz-i-180':
         BB = Robocopy(
             source_path="D:/Analyst Data/Projects/",
-            target_path = "K:\\",
-            log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log")
+            target_path="K:\\",
+            log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log"
+        )
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
-        BB.run(func_target_mapping=map_data_analys)
+        BB.run(func_target_mapping=map_data_analyst)
 
     # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
         BB = Robocopy(
             source_path="D:/Data2San/",
             target_path="\\\\130.60.81.21\\Data2San",
-            log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log")
+            log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log"
+        )
         BB.set_para('simulate', False)
         BB.run()
 
