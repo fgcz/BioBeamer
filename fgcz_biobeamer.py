@@ -41,7 +41,7 @@ class BioBeamer(object):
 
         self.regex = re.compile(self.para['pattern'])
 
-        self.set_para('simulation_mode', False)
+        self.set_para('simulate', False)
         self.para['source_path'] = os.path.normpath(source_path)
         self.para['target_path'] = os.path.normpath(target_path)
         self.para['min_time_diff'] = 2 * 3600 # 2.0 hours
@@ -215,9 +215,9 @@ if __name__ == "__main__":
     # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
         BB = Robocopy(source_path = "D:/Data2San/", target_path = "\\\\130.60.81.21\\Data2San", log_file = "C:/Progra~1/BioBeamer/fgcz_biobeamer.log") 
-        BB.set_para('simulate', True)
+        BB.set_para('simulate', False)
         BB.run()
         
 sys.stdout.write("done. exit 0\n")
-time.sleep( 5 )
+time.sleep(5)
 sys.exit(0)
