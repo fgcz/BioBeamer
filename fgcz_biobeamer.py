@@ -212,7 +212,7 @@ if __name__ == "__main__":
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
         BB.run(func_target_mapping=func_target_mapping_TRIPLETOF_1)
 
-    # QEXACTIVEHF_1, FUSION_2
+    # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
         BB = Robocopy(source_path = "D:/Data2San/", 
             target_path = "\\\\130.60.81.21\\Data2San", 
