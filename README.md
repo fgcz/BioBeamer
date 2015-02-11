@@ -12,7 +12,7 @@ the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script whi
 
 
 ## Author
-[Christian Panse](cp@fgcz.ethz.ch)
+[Christian Panse](http://www.fgcz.ch/people/cpanse)
 
 ## See also
 [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
