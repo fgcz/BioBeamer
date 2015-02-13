@@ -16,3 +16,7 @@ the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script whi
 
 ## See also
 [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
+
+
+## TODO
+* add remote logging (https://docs.python.org/2/howto/logging-cookbook.html)
