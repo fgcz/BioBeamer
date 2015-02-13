@@ -205,7 +205,7 @@ class TestTargetMapping(unittest.TestCase):
 if __name__ == "__main__":
     if str(socket.gethostname()) == 'fgcz-s-021':
         print socket.gethostname()
-        BB = Robocopy(
+        BB = BioBeamer(
             source_path="/srv/www/htdocs/Data2San",
             target_path="/scratch/dump",
             log_file="/home/cpanse/__git_clones/BioBeamer/fgcz_biobeamer.log"
