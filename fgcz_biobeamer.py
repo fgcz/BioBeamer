@@ -25,7 +25,6 @@ class BioBeamer(object):
     """
     class for syncinging data from instrument PC to archive
 
-    the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
     para=dict()
     logger = logging.getLogger('BioBeamer')
@@ -133,6 +132,8 @@ class BioBeamer(object):
 class Robocopy(BioBeamer):
     """
     BioBeamer class using robocopy.exe
+    
+    the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
     def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
         super(Robocopy, self).__init__(pattern, log_file, source_path, target_path) 
