@@ -208,6 +208,7 @@ if __name__ == "__main__":
             source_path="D:/Analyst Data/Projects/",
             target_path="K:\\"
         )
+        BB.set_para('min_time_diff', 3600 * 3)
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
         BB.run(func_target_mapping=map_data_analyst)
