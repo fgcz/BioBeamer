@@ -50,15 +50,10 @@ class BioBeamer(object):
                 self.para['logging_file']))
             sys.exit(1)
 
-        hdlr = logging.FileHandler(self.para['logging_file'])
         hdlr_syslog = logging.handlers.SysLogHandler(address=('130.60.81.148', 514))
-
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
-
-        hdlr.setFormatter(formatter)
+        formatter = logging.Formatter('%(name)s %(message)s')
         hdlr_syslog.setFormatter(formatter)
-        
-        self.logger.addHandler(hdlr)
+
         self.logger.addHandler(hdlr_syslog)
         self.logger.setLevel(logging.INFO)
 
@@ -206,10 +201,9 @@ class TestTargetMapping(unittest.TestCase):
 if __name__ == "__main__":
     if str(socket.gethostname()) == 'fgcz-s-021':
         print socket.gethostname()
-        BB = Robocopy(
+        BB = BioBeamer(
             source_path="/srv/www/htdocs/Data2San",
-            target_path="/scratch/dump",
-            log_file="/scratch/dump/fgcz_biobeamer.log"
+            target_path="/scratch/dump"
         )
         BB.set_para('pattern', ".+p1000.+QEXACTIVEHF_1.+\.raw")
         BB.set_para('simulate', True)
