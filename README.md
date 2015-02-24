@@ -11,12 +11,14 @@ just 'run as administrator' justBeamFiles.exe.
 the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
 
 ## Configure Syslog
+
+```syslog
 $template tplremote,"%timegenerated% %HOSTNAME% %fromhost-ip% %syslogtag%%msg:::drop-last-lf%\n"
 $template RemoteHost,"/var/log/remote/%HOSTNAME%_%fromhost-ip%.log"
 
 if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote  
 & ~
-
+```
 
 ## Author
 [Christian Panse](http://www.fgcz.ch/people/cpanse)
