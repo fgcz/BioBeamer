@@ -9,7 +9,7 @@ $Date: 2015-02-05 10:46:15 +0100 (Thu, 05 Feb 2015) $
 Copyright 2015
 Christian Panse <cp@fgcz.ethz.ch>
 Christian Trachsel <christian.trachsel@fgcz.uzh.ch>
-Dirk Lewerentz <durk.lewerentz@uni-greifswald.de>
+Dirk Lewerentz <dirk.lewerentz@uni-greifswald.de>
 """
 
 import os
