@@ -50,14 +50,11 @@ class BioBeamer(object):
                 self.para['logging_file']))
             sys.exit(1)
 
-        hdlr = logging.FileHandler(self.para['logging_file'])
         hdlr_syslog = logging.handlers.SysLogHandler(address=('130.60.81.148', 514))
 
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+        formatter = logging.Formatter('%(name)s %(message)s')
 
-        hdlr.setFormatter(formatter)
         hdlr_syslog.setFormatter(formatter)
-        self.logger.addHandler(hdlr)
         self.logger.addHandler(hdlr_syslog)
         self.logger.setLevel(logging.INFO)
 
