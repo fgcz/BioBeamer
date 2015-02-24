@@ -16,7 +16,7 @@ import time
 import re
 import sys
 import subprocess
-import logging
+import logging, logging.handlers
 import re
 import socket
 import unittest
@@ -51,11 +51,15 @@ class BioBeamer(object):
             sys.exit(1)
 
         hdlr = logging.FileHandler(self.para['logging_file'])
+        hdlr_syslog = logging.handlers.SysLogHandler(address=('130.60.81.148', 514))
 
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
 
         hdlr.setFormatter(formatter)
+        hdlr_syslog.setFormatter(formatter)
+        
         self.logger.addHandler(hdlr)
+        self.logger.addHandler(hdlr_syslog)
         self.logger.setLevel(logging.INFO)
 
     def print_para(self):
