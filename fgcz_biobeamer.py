@@ -29,7 +29,7 @@ class BioBeamer(object):
     para = dict()
     logger = logging.getLogger('BioBeamer')
 
-    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
             self.para['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -41,16 +41,9 @@ class BioBeamer(object):
         self.para['target_path'] = os.path.normpath(target_path)
         self.para['min_time_diff'] = 2 * 3600 # 2.0 hours
         self.para['min_size'] = 100 * 1024 # 100 KBytes
-        self.para['logging_file'] = os.path.normpath(log_file)
 
         # setup logging
-        if not os.path.exists(os.path.dirname(self.para['logging_file'])):
-            sys.stdout.write("'{0}' logging file path of '{1}' does not exist. aboard.".format(
-                os.path.dirname(self.para['logging_file']),
-                self.para['logging_file']))
-            sys.exit(1)
-
-        hdlr_syslog = logging.handlers.SysLogHandler(address=('130.60.81.148', 514))
+        hdlr_syslog = logging.handlers.SysLogHandler(address=(log_host, 514))
         formatter = logging.Formatter('%(name)s %(message)s')
         hdlr_syslog.setFormatter(formatter)
 
@@ -213,8 +206,7 @@ if __name__ == "__main__":
     elif str(socket.gethostname()) == 'fgcz-i-180':
         BB = Robocopy(
             source_path="D:/Analyst Data/Projects/",
-            target_path="K:\\",
-            log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log"
+            target_path="K:\\"
         )
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
@@ -224,8 +216,7 @@ if __name__ == "__main__":
     else:
         BB = Robocopy(
             source_path="D:/Data2San/",
-            target_path="\\\\130.60.81.21\\Data2San",
-            log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log"
+            target_path="\\\\130.60.81.21\\Data2San"
         )
         BB.set_para('simulate', False)
         BB.run()
