@@ -19,7 +19,17 @@ $template RemoteHost,"/var/log/remote/%HOSTNAME%_%fromhost-ip%.log"
 if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote  
 & ~
 ```
-
+## Configure logrotate /etc/logrotate.d/remote
+```conf
+/var/log/remote/*
+{
+        rotate 13
+        monthly
+        missingok
+        notifempty
+        compress
+}
+```
 ## Author
 [Christian Panse](http://www.fgcz.ch/people/cpanse)
 
