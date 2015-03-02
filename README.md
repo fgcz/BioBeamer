@@ -39,3 +39,4 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 
 ## TODO
 * add remote logging (https://docs.python.org/2/howto/logging-cookbook.html)
+* * munin plugin
