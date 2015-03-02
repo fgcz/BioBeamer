@@ -29,6 +29,7 @@ class BioBeamer(object):
     para = dict()
     logger = logging.getLogger('BioBeamer')
 
+    #TODO(CP): log_host is static
     def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
@@ -43,7 +44,8 @@ class BioBeamer(object):
         self.para['min_size'] = 100 * 1024 # 100 KBytes
 
         # setup logging
-        hdlr_syslog = logging.handlers.SysLogHandler(address=(log_host, 514))
+        hdlr_syslog = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
+        
         formatter = logging.Formatter('%(name)s %(message)s')
         hdlr_syslog.setFormatter(formatter)
 
@@ -206,7 +208,7 @@ if __name__ == "__main__":
     elif str(socket.gethostname()) == 'fgcz-i-180':
         BB = Robocopy(
             source_path="D:/Analyst Data/Projects/",
-            target_path="K:\\"
+            target_path="\\\\130.60.81.21\\Data2San"
         )
         BB.set_para('min_time_diff', 3600 * 3)
         BB.set_para('simulate', False)
