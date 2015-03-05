@@ -30,7 +30,7 @@ class BioBeamer(object):
     para = dict()
     logger = logging.getLogger('BioBeamer')
 
-    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\nas-mikro\\hsm_mikrobio\\BFabric"):
 
         if pattern is None:
             self.para['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -136,7 +136,7 @@ class Robocopy(BioBeamer):
 
     the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
-    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\nas-mikro\\hsm_mikrobio\\BFabric"):
         """ just call the super class """
         super(Robocopy, self).__init__(pattern, log_file, source_path, target_path)
         self.set_para('robocopy_args', "/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
@@ -227,7 +227,7 @@ if __name__ == "__main__":
     else:
         BB = Robocopy(
             source_path="D:/Data2San/",
-            target_path="\\\\130.60.81.21\\Data2San",
+            target_path="\\\\nas-mikro\\hsm_mikrobio\\BFabric",
             log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log"
         )
         BB.set_para('simulate', False)
