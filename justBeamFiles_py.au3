@@ -4,14 +4,14 @@
 ; $Id$
 ; $Date$
 
-Local $drive = '\\130.60.81.21\Data2San'
+Local $drive = '\\nas-mikro\hsm_mikrobio\BFabric'
 Local $file = FileOpen("C:\Program Files\BioBeamer\justBeamFiles.log", 1)
 Local $python_cmd = "c:\python27\python.exe ""C:\Program Files\BioBeamer\fgcz_biobeamer.py"""
 
 FileWrite($file, "----------------------------------------------------------- " & @CRLF)
 FileWrite($file, "Started justBeaming at " & _Now() & @CRLF)
 
-Local $resMap = DriveMapAdd ( "", $drive, 0, "FGCZ-NET\BioBeamer", "PASSWORD" )
+Local $resMap = DriveMapAdd ( "", $drive, 0, "uni-greifswald\proteomics", "PASSWORD" )
 
 FileWrite($file, "return code DriveMapAdd = " & $resMap & @CRLF)
 
