@@ -41,6 +41,7 @@ class BioBeamer(object):
         self.para['source_path'] = os.path.normpath(source_path)
         self.para['target_path'] = os.path.normpath(target_path)
         self.para['min_time_diff'] = 2 * 3600 # 2.0 hours
+        self.para['max_time_diff'] = 24 * 3600 * 7 * 4 # 4 weeks
         self.para['min_size'] = 100 * 1024 # 100 KBytes
 
         # setup logging
@@ -89,6 +90,7 @@ class BioBeamer(object):
             files_to_copy = map(lambda f: os.path.join(root, f), files)
             files_to_copy = filter(self.regex.match, files_to_copy)
             files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['min_time_diff'], files_to_copy)
+            files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.para['max_time_diff'], files_to_copy)
             files_to_copy = filter(lambda f: os.path.getsize(f) > self.para['min_size'], files_to_copy)
 
             for file_to_copy in files_to_copy:
@@ -162,7 +164,7 @@ class Robocopy(BioBeamer):
         ]
         self.exec_cmd(file_to_copy, cmd)
 
-def map_data_analyst(path):
+def map_data_analyst_tripletof1(path):
     """
     input:  'p1000/Data/selevsek_20150119'
     output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
@@ -178,6 +180,24 @@ def map_data_analyst(path):
 
     return None
 
+def map_data_analyst_qtrap1(path):
+    """
+    input:  'p1000/Data/selevsek_20150119'
+    output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
+    """
+
+    pattern = ".*(p[0-9]+)\\\\Data\\\\([-0-9a-zA-Z_\.]+)$"
+    regex = re.compile(pattern)
+    match = regex.match(path)
+
+    if match:
+        return os.path.normpath("{0}/Proteomics/QTRAP_1/{1}" \
+            .format(match.group(1), match.group(2)))
+
+    return None
+
+
+
 class TestTargetMapping(unittest.TestCase):
     """
     run
@@ -189,12 +209,13 @@ class TestTargetMapping(unittest.TestCase):
 
     def test_tripletoff(self):
         desired_result = os.path.normpath('p1000/Proteomics/TRIPLETOF_1/selevsek_20150119')
-        self.assertTrue(desired_result == map_data_analyst('p1000\Data\selevsek_20150119'))
-        self.assertTrue(map_data_analyst('p1000\data\selevsek_20150119') is None)
+        self.assertTrue(desired_result == map_data_analyst_tripletof1('p1000\Data\selevsek_20150119'))
+        self.assertTrue(map_data_analyst_tripletof1('p1000\data\selevsek_20150119') is None)
 
 
 if __name__ == "__main__":
-    if str(socket.gethostname()) == 'fgcz-s-021':
+    hostname = str(socket.gethostname()) 
+    if hostname == 'fgcz-s-021':
         print socket.gethostname()
         BB = BioBeamer(
             source_path="/srv/www/htdocs/Data2San",
@@ -205,7 +226,7 @@ if __name__ == "__main__":
         BB.run(func_target_mapping=lambda x: "__{0}".format(x))
 
     # TRIPLETOF_1
-    elif str(socket.gethostname()) == 'fgcz-i-180':
+    elif hostname == 'fgcz-i-180':
         BB = Robocopy(
             source_path="D:/Analyst Data/Projects/",
             target_path="\\\\130.60.81.21\\Data2San"
@@ -213,8 +234,18 @@ if __name__ == "__main__":
         BB.set_para('min_time_diff', 3600 * 3)
         BB.set_para('simulate', False)
         BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
-        BB.run(func_target_mapping=map_data_analyst)
-
+        BB.run(func_target_mapping=map_data_analyst_tripletof1)
+    # QTRAP_1
+    elif hostname == 'fgcz-i-188':
+        print "QTRAP_1"
+        BB = Robocopy(
+            source_path="D:/Analyst Data/Projects/",
+            target_path="\\\\130.60.81.21\\Data2San"
+        )
+        BB.set_para('min_time_diff', 3600 * 3)
+        BB.set_para('simulate', False)
+        BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
+        BB.run(func_target_mapping=map_data_analyst_qtrap1)
     # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
     else:
         BB = Robocopy(
