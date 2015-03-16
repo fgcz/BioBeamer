@@ -233,7 +233,7 @@ if __name__ == "__main__":
         )
         BB.set_para('min_time_diff', 3600 * 3)
         BB.set_para('simulate', False)
-        BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
+        # BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
         BB.run(func_target_mapping=map_data_analyst_tripletof1)
     # QTRAP_1
     elif hostname == 'fgcz-i-188':
