@@ -1,6 +1,6 @@
 # BioBeamer
 
-![BioBeamer UML](/images/classes_No_Name.svg)
+![BioBeamer UML](/images/classes_No_Name.png)
 
 ## Install 
 ```bash
