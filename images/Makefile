@@ -1,2 +1,2 @@
-classes_No_Name.png:
-	pyreverse -o png ../fgcz_biobeamer.py
+classes_No_Name.svg:
+	pyreverse -o svg ../fgcz_biobeamer.py
