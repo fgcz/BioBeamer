@@ -1,10 +1,7 @@
 # BioBeamer
-```
+
 ![BioBeamer UML](/images/classes_No_Name.svg)
 
-url(/images/)
-```
-![](images/classes_No_Name.svg)
 ## Install 
 ```bash
 git clone git@github.com:cpanse/BioBeamer.git
