@@ -221,6 +221,7 @@ if __name__ == "__main__":
             source_path="D:/Data2San/",
             target_path="\\\\130.60.81.21\\Data2San"
         )
+        BB.set_para('min_time_diff', 1800 * 1)
         BB.set_para('simulate', False)
         BB.run()
 
