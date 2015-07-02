@@ -74,7 +74,7 @@ class BioBeamer(object):
             xsd = f.read()
 
         except:
-            print "error: can not fetch xml or xsd information"
+            self.logger.error("error: can not fetch xml or xsd information")
             sys.exit(1)
 
 
@@ -85,12 +85,10 @@ class BioBeamer(object):
         try:
             parser = etree.XMLParser(remove_blank_text=True,
                                      schema = schema)
-
-
             xmlBB = etree.fromstring(xml, parser)
 
         except:
-            print "error: xml can not be parsed"
+            self.logger.error("error: xml can not be parsed")
             sys.exit(1)
 
 
@@ -128,6 +126,7 @@ class BioBeamer(object):
         try:
             os.chdir(self.para['source_path'])
         except:
+            self.logger.error("can't change source path")
             raise
 
         for (root, dirs, files) in os.walk(os.path.normpath('.'), topdown=False, followlinks=False, onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
