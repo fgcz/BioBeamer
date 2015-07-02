@@ -33,7 +33,6 @@ class BioBeamer(object):
     logger = logging.getLogger('BioBeamer')
 
     #TODO(CP): log_host is static
-
     def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
@@ -48,7 +47,7 @@ class BioBeamer(object):
         self.para['max_time_diff'] = 24 * 3600 * 7 * 4 # 4 weeks
         self.para['min_size'] = 100 * 1024 # 100 KBytes
 
-        # setup logging
+        # setup logging                                    
         hdlr_syslog = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
         
         formatter = logging.Formatter('%(name)s %(message)s')
@@ -58,7 +57,7 @@ class BioBeamer(object):
         self.logger.setLevel(logging.INFO)
 
     @classmethod
-    def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
+    def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml', log_host="130.60.81.148"):
         """
 
         :param xsd:
@@ -66,6 +65,16 @@ class BioBeamer(object):
         :return:
         """
 
+        # setup logging                                    
+        hdlr_syslog = logging.handlers.SysLogHandler(address=(log_host, 514))
+        
+        formatter = logging.Formatter('%(name)s %(message)s')
+        hdlr_syslog.setFormatter(formatter)
+
+        self.logger.addHandler(hdlr_syslog)
+        self.logger.setLevel(logging.INFO)
+
+        # read conifig files from url
         try:
             f = urllib.urlopen(xml)
             xml = f.read()
@@ -79,13 +88,11 @@ class BioBeamer(object):
 
 
         hostname = str(socket.gethostname())
-
         schema = etree.XMLSchema(etree.XML(xsd))
 
         try:
             parser = etree.XMLParser(remove_blank_text=True,
                                      schema = schema)
-
 
             xmlBB = etree.fromstring(xml, parser)
 
@@ -93,10 +100,28 @@ class BioBeamer(object):
             print "error: xml can not be parsed"
             sys.exit(1)
 
-
+        # init para dictionary
         for i in xmlBB:
-            map(lambda k: sys.stdout.write("{0}\t=\t{1}\n".format(k, i.attrib[k])),  i.attrib.keys())
-        sys.exit(0)
+            if 'name' in i.attrib.keys():
+                    pass
+            else:
+                continue
+
+            if  i.attrib['name'] != hostname:
+                for k in i.attrib.keys():
+                    if k == 'source_path' or k == 'target_path':
+                        self.para[k] = os.path.normpath(i.attrib[k])
+                    elif k == 'pattern':
+                        self.para[k] = i.attrib[k]
+                        self.regex = re.compile(self.para['pattern'])
+                    elif k == 'simulate':
+                        if i.attrib[k] == "false":
+                            self.para['simulate'] = False
+                        else:
+                            self.para['simulate'] = True
+                    else:
+                        self.para[k] = i.attrib[k]
+                break
 
 
     def print_para(self):
@@ -280,6 +305,9 @@ class TestTargetMapping(unittest.TestCase):
 if __name__ == "__main__":
     #BB = Robocopy.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd', xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
     BB = Robocopy.para_from_url()
+    #BB.print_para()
+    #sys.exit(0)
+
     BB.run()
 
     sys.stdout.write("done. exit 0\n")
