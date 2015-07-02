@@ -9,6 +9,7 @@ $Date: 2015-02-05 10:46:15 +0100 (Thu, 05 Feb 2015) $
 Copyright 2015
 Christian Panse <cp@fgcz.ethz.ch>
 Christian Trachsel <christian.trachsel@fgcz.uzh.ch>
+Witold E. Wolski <wew@fgcz.ethz.ch>
 """
 
 import os
@@ -20,7 +21,8 @@ import re
 import socket
 import unittest
 import filecmp
-
+import urllib
+from lxml import etree
 
 class BioBeamer(object):
     """
@@ -31,6 +33,8 @@ class BioBeamer(object):
     logger = logging.getLogger('BioBeamer')
 
     #TODO(CP): log_host is static
+
+
     def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
@@ -53,6 +57,48 @@ class BioBeamer(object):
 
         self.logger.addHandler(hdlr_syslog)
         self.logger.setLevel(logging.INFO)
+
+    def para_from_url(self, xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
+                      xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd'):
+        """
+
+        :param xsd:
+        :param xml:
+        :return:
+        """
+
+        try:
+            f = urllib.urlopen(xml)
+            xml = f.read()
+
+            f = urllib.urlopen(xsd)
+            xsd = f.read()
+
+        except:
+            print "error: can not fetch xml or xsd information"
+            sys.exit(1)
+
+
+        hostname = str(socket.gethostname())
+
+        schema = etree.XMLSchema(etree.XML(xsd))
+
+        try:
+            parser = etree.XMLParser(remove_blank_text=True,
+                                     schema = schema)
+
+
+            xmlBB = etree.fromstring(xml, parser)
+
+        except:
+            print "error: xml can not be parsed"
+            sys.exit(1)
+
+
+        for i in xmlBB:
+            map(lambda k: sys.stdout.write("{0}\t=\t{1}\n".format(k, i.attrib[k])),  i.attrib.keys())
+        sys.exit(0)
+
 
     def print_para(self):
         """ print class parameter setting """
@@ -233,48 +279,8 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    hostname = str(socket.gethostname())
-    if hostname == 'fgcz-s-021':
-        print(socket.gethostname())
-        BB = BioBeamer(
-            source_path="/srv/www/htdocs/Data2San",
-            target_path="/scratch/dump"
-        )
-        BB.set_para('pattern', ".+p1000.+QEXACTIVEHF_1.+\.raw")
-        BB.set_para('simulate', True)
-        BB.run(func_target_mapping=lambda x: "__{0}".format(x))
-
-    # TRIPLETOF_1
-    elif hostname == 'fgcz-i-180':
-        BB = Robocopy(
-            source_path="D:/Analyst Data/Projects/",
-            target_path="\\\\130.60.81.21\\Data2San"
-        )
-        BB.set_para('min_time_diff', 3600 * 3)
-        BB.set_para('simulate', False)
-        # BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
-        BB.run(func_target_mapping=map_data_analyst_tripletof1)
-    # QTRAP_1
-    elif hostname == 'fgcz-i-188':
-        print("QTRAP_1")
-        BB = Robocopy(
-            source_path="D:/Analyst Data/Projects/",
-            target_path="\\\\130.60.81.21\\Data2San"
-        )
-        BB.set_para('min_time_diff', 3600 * 3)
-        BB.set_para('simulate', False)
-        BB.set_para('robocopy_args', "/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
-        BB.run(func_target_mapping=map_data_analyst_qtrap1)
-    # QEXACTIVEHF_1, FUSION_2, QEXACTIVE_2
-    else:
-        BB = Robocopy(
-            source_path="D:/Data2San/",
-            target_path="\\\\130.60.81.21\\Data2San"
-        )
-        BB.set_para('min_time_diff', 1800 * 1)
-        BB.set_para('simulate', False)
-        BB.run()
-
+    BB = Robocopy.para_from_url()
+    BB.run()
 
 
     sys.stdout.write("done. exit 0\n")
