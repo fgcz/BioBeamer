@@ -175,7 +175,7 @@ class Checker(BioBeamer):
 
     def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
         """ just call the super class """
-        super(Robocopy, self).__init__(pattern, log_file, source_path, target_path)
+        super(Checker, self).__init__(pattern, log_file, source_path, target_path)
 
 
     def sync(self, file_to_copy, func_target_mapping):

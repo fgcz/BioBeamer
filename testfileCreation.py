@@ -13,7 +13,7 @@ class TestFileFilter(unittest.TestCase):
     folder = "/Users/witold/test2"
     outfolder = "/Users/witold/out2"
 
-    def test_tripletoff(self):
+    def tripletoff(self):
         print("hello world")
         time.sleep(5)
         BB = BioBeamer(
@@ -27,7 +27,7 @@ class TestFileFilter(unittest.TestCase):
         BB.run()
 
     def test_beam_and_check(self):
-        self.test_tripletoff()
+        self.tripletoff()
         self.checker()
 
     def checker(self):
@@ -39,7 +39,6 @@ class TestFileFilter(unittest.TestCase):
         )
         checker.set_para('min_time_diff', 10)
         checker.set_para('pattern', ".+\.raw")
-        checker.set_para('simulate', True)
         checker.print_para()
         checker.run()
 
