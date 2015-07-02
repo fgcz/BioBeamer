@@ -34,7 +34,6 @@ class BioBeamer(object):
 
     #TODO(CP): log_host is static
 
-
     def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
@@ -58,8 +57,8 @@ class BioBeamer(object):
         self.logger.addHandler(hdlr_syslog)
         self.logger.setLevel(logging.INFO)
 
-    def para_from_url(self, xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
-                      xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd'):
+    @classmethod
+    def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
         """
 
         :param xsd:
@@ -279,9 +278,9 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    #BB = Robocopy.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd', xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
     BB = Robocopy.para_from_url()
     BB.run()
-
 
     sys.stdout.write("done. exit 0\n")
     time.sleep(5)
