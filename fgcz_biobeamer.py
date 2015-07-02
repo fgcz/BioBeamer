@@ -83,7 +83,7 @@ class BioBeamer(object):
             xsd = f.read()
 
         except:
-            print "error: can not fetch xml or xsd information"
+            self.logger.error("error: can not fetch xml or xsd information")
             sys.exit(1)
 
 
@@ -93,11 +93,14 @@ class BioBeamer(object):
         try:
             parser = etree.XMLParser(remove_blank_text=True,
                                      schema = schema)
+<<<<<<< HEAD
 
+=======
+>>>>>>> dc383858c4ad762ad4d53d58bda8d9145014a818
             xmlBB = etree.fromstring(xml, parser)
 
         except:
-            print "error: xml can not be parsed"
+            self.logger.error("error: xml can not be parsed")
             sys.exit(1)
 
         # init para dictionary
@@ -153,6 +156,7 @@ class BioBeamer(object):
         try:
             os.chdir(self.para['source_path'])
         except:
+            self.logger.error("can't change source path")
             raise
 
         for (root, dirs, files) in os.walk(os.path.normpath('.'), topdown=False, followlinks=False, onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
@@ -305,8 +309,8 @@ class TestTargetMapping(unittest.TestCase):
 if __name__ == "__main__":
     #BB = Robocopy.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd', xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
     BB = Robocopy.para_from_url()
-    #BB.print_para()
-    #sys.exit(0)
+    BB.print_para()
+    sys.exit(0)
 
     BB.run()
 
