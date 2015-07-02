@@ -1,6 +1,7 @@
 import unittest
 import os
 from fgcz_biobeamer import BioBeamer
+from fgcz_biobeamer import Checker
 import time
 
 class TestFileFilter(unittest.TestCase):
@@ -24,6 +25,25 @@ class TestFileFilter(unittest.TestCase):
         BB.set_para('simulate', True)
         BB.print_para()
         BB.run()
+
+    def test_beam_and_check(self):
+        self.test_tripletoff()
+        self.checker()
+
+    def checker(self):
+        print("hello world")
+        time.sleep(5)
+        checker = Checker(
+            source_path = self.folder,
+            target_path = self.folder
+        )
+        checker.set_para('min_time_diff', 10)
+        checker.set_para('pattern', ".+\.raw")
+        checker.set_para('simulate', True)
+        checker.print_para()
+        checker.run()
+
+
 
     def fileList(self):
         res = [["p1000/Proteomics/FUSION_1/pgehrig_20150526_TiO2_NH3_Pyr/20150526_10_fetuin_40fmol.raw", 240522870, 1432711212],
