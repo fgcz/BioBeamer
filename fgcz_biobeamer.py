@@ -13,13 +13,14 @@ Christian Trachsel <christian.trachsel@fgcz.uzh.ch>
 
 import os
 import time
-import re
 import sys
 import subprocess
 import logging, logging.handlers
 import re
 import socket
 import unittest
+import filecmp
+
 
 class BioBeamer(object):
     """
@@ -125,6 +126,24 @@ class BioBeamer(object):
             raise
 
 
+class Checker(BioBeamer):
+
+    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+        """ just call the super class """
+        super(Robocopy, self).__init__(pattern, log_file, source_path, target_path)
+
+
+    def sync(self, file_to_copy, func_target_mapping):
+        target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
+        if target_sub_path is None:
+            # self.logger.info("func_target_mapping returned 'None'")
+            return
+
+        if filecmp.cmp(file_to_copy, target_sub_path):
+            os.remove(file_to_copy)
+
+
+
 class Robocopy(BioBeamer):
     """
     BioBeamer class using robocopy.exe
@@ -193,7 +212,6 @@ def map_data_analyst_qtrap1(path):
     if match:
         return os.path.normpath("{0}/Proteomics/QTRAP_1/{1}" \
             .format(match.group(1), match.group(2)))
-
     return None
 
 
@@ -213,10 +231,11 @@ class TestTargetMapping(unittest.TestCase):
         self.assertTrue(map_data_analyst_tripletof1('p1000\data\selevsek_20150119') is None)
 
 
+
 if __name__ == "__main__":
-    hostname = str(socket.gethostname()) 
+    hostname = str(socket.gethostname())
     if hostname == 'fgcz-s-021':
-        print socket.gethostname()
+        print(socket.gethostname())
         BB = BioBeamer(
             source_path="/srv/www/htdocs/Data2San",
             target_path="/scratch/dump"
@@ -237,7 +256,7 @@ if __name__ == "__main__":
         BB.run(func_target_mapping=map_data_analyst_tripletof1)
     # QTRAP_1
     elif hostname == 'fgcz-i-188':
-        print "QTRAP_1"
+        print("QTRAP_1")
         BB = Robocopy(
             source_path="D:/Analyst Data/Projects/",
             target_path="\\\\130.60.81.21\\Data2San"
@@ -256,6 +275,9 @@ if __name__ == "__main__":
         BB.set_para('simulate', False)
         BB.run()
 
-sys.stdout.write("done. exit 0\n")
-time.sleep(5)
-sys.exit(0)
+
+
+    sys.stdout.write("done. exit 0\n")
+    time.sleep(5)
+    sys.exit(0)
+
