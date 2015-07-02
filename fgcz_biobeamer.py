@@ -64,6 +64,9 @@ class BioBeamer(object):
         if key is 'pattern':
             self.regex = re.compile(self.para['pattern'])
 
+    def set_para(self, new_para = {}):
+        pass
+
     def sync(self, file_to_copy, func_target_mapping):
         """ default is printing only """
         sys.stdout.write("consider: '{0}'\n\t->'{1}'\n" \
