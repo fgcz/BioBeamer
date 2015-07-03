@@ -36,6 +36,11 @@ class BioBeamerParser(object):
         :param xml:
         :return:
         """
+        syslog_handler = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
+        formatter = logging.Formatter('%(name)s %(message)s')
+        syslog_handler.setFormatter(formatter)
+        self.logger.addHandler(syslog_handler)
+        self.logger.setLevel(logging.INFO)
 
         self.parameters = {}
         # read config files from url
@@ -235,14 +240,19 @@ class Checker(BioBeamer):
 
         target_file = os.path.normpath("{0}/{1}".format(self.parameters['target_path'], func_target_mapping(file_to_copy)))
 
+        try:
+            f = open('files_to_be_deleted.bat', 'w')
+        except:
+            raise
+
         if os.path.isfile(target_file):
             if filecmp.cmp(file_to_copy, target_file):
                 # os.remove(file_to_copy)
-                print("rm -fv {0}".format(file_to_copy))
+                f.write("delete {0}\n".format(file_to_copy))
             else:
-                print("# file '{0}' is different".format(file_to_copy))
+                f.write("rem file '{0}' is different\n".format(file_to_copy))
         else:
-            print("ERROR: file '{0}' missing".format(target_file))
+            f.write("rem ERROR: file '{0}' missing\n".format(target_file))
 
 
 class Robocopy(BioBeamer):
