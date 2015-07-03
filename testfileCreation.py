@@ -4,6 +4,7 @@ from fgcz_biobeamer import BioBeamer
 from fgcz_biobeamer import Checker
 import time
 
+
 class TestFileFilter(unittest.TestCase):
     """
     run
@@ -13,36 +14,34 @@ class TestFileFilter(unittest.TestCase):
     folder = "/Users/witold/test2"
     outfolder = "/Users/witold/out2"
 
-    def tripletoff(self):
+    def triple_tof(self):
         print("hello world")
         time.sleep(5)
-        BB = BioBeamer(
-            source_path = self.folder,
-            target_path = self.outfolder
+        bio_beamer = BioBeamer(
+            source_path=self.folder,
+            target_path=self.outfolder
         )
-        BB.set_para('min_time_diff', 10)
-        BB.set_para('pattern', ".+\.raw")
-        BB.set_para('simulate', True)
-        BB.print_para()
-        BB.run()
+        bio_beamer.set_para('min_time_diff', 10)
+        bio_beamer.set_para('pattern', ".+\.raw")
+        bio_beamer.set_para('simulate', True)
+        bio_beamer.print_para()
+        bio_beamer.run()
 
     def test_beam_and_check(self):
-        self.tripletoff()
+        self.triple_tof()
         self.checker()
 
     def checker(self):
         print("hello world")
         time.sleep(5)
         checker = Checker(
-            source_path = self.folder,
-            target_path = self.folder
+            source_path=self.folder,
+            target_path=self.folder
         )
         checker.set_para('min_time_diff', 10)
         checker.set_para('pattern', ".+\.raw")
         checker.print_para()
         checker.run()
-
-
 
     def fileList(self):
         res = [["p1000/Proteomics/FUSION_1/pgehrig_20150526_TiO2_NH3_Pyr/20150526_10_fetuin_40fmol.raw", 240522870, 1432711212],
@@ -86,7 +85,7 @@ class TestFileFilter(unittest.TestCase):
 
         f = open(file, "wb")
         f.seek(file_size/100 - 1)
-        f.write("\0")
+        f.write('\0')
         f.close()
         print(os.stat(file).st_size)
 
@@ -101,4 +100,3 @@ class TestFileFilter(unittest.TestCase):
         for file in files:
             file_name = "{0}/{1}".format(self.folder, file[0])
             os.remove(file_name)
-
