@@ -345,11 +345,12 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    #bio_beamer = BioBeamer()
-    #bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
-    #                 xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
-    #bio_beamer.run()
-
+    print  str(socket.gethostname())
+    bio_beamer = Robocopy()
+    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
+                     xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
+    bio_beamer.run()
+    time.sleep(5)
     BBChecker = Checker()
     BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
                             xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
