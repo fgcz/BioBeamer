@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<BioBeamerHosts xmlns="http://www.w3schools.com"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="
-            http://fgcz-data.uzh.ch/BioBeamer/
-            http://fgcz-data.uzh.ch/BioBeamer/BioBeamer.xsd">
+<BioBeamerHosts xmlns="http://www.w3.org"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://fgcz-data.uzh.ch/BioBeamer BioBeamer.xsd">
+
 
 <!-- 
 <host name="fgcz-i-180" min_size="102400" min_time="10800" max_time="2419200" simulate="False" func_target_mapping="map_data_analyst_tripletof1" robocopy_args="/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log"  pattern=".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"></host> 
