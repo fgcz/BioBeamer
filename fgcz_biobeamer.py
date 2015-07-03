@@ -30,14 +30,14 @@ from lxml import etree
 class BioBeamerParser(object):
     logger = logging.getLogger('BioBeamerParser')
 
-    def __init__(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
+    def __init__(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml', hostname="fgcz-i-202"):
         """
         :param xsd:
         :param xml:
         :return:
         """
 
-        self.para = {}
+        self.parameters = {}
         # read config files from url
         try:
             f = urllib.urlopen(xml)
@@ -50,7 +50,6 @@ class BioBeamerParser(object):
             self.logger.error("can not fetch xml or xsd information")
             raise
 
-        hostname = str(socket.gethostname())
         schema = etree.XMLSchema(etree.XML(xsd))
 
         try:
@@ -72,24 +71,24 @@ class BioBeamerParser(object):
             if i.attrib['name'] == hostname:
                 for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
-                        self.para[k] = os.path.normpath(i.attrib[k])
+                        self.parameters[k] = os.path.normpath(i.attrib[k])
                     elif k == 'pattern':
-                        self.para[k] = i.attrib[k]
+                        self.parameters[k] = i.attrib[k]
                         try:
-                            self.regex = re.compile(self.para['pattern'])
+                            self.regex = re.compile(self.parameters['pattern'])
                         except:
                             self.logger.error("re.compile pattern failed.")
                             raise
                     elif k == 'simulate':
                         if i.attrib[k] == "false":
-                            self.para['simulate'] = False
+                            self.parameters['simulate'] = False
                         else:
-                            self.para['simulate'] = True
+                            self.parameters['simulate'] = True
                     else:
                         try:
-                            self.para[k] = int(i.attrib[k])
+                            self.parameters[k] = int(i.attrib[k])
                         except ValueError:
-                            self.para[k] = i.attrib[k]
+                            self.parameters[k] = i.attrib[k]
                 found_host_config = True
 
         if found_host_config is False:
@@ -101,35 +100,35 @@ class BioBeamer(object):
     """
     class for syncing data from instrument PC to archive
     """
-    para = dict()
+    parameters = dict()
     logger = logging.getLogger('BioBeamer')
 
+    results = []
     # TODO(CP): log_host is static
     # TODO(CP): log_host_address can not be passed through logging.handlers.SysLogHandler
     def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
-            self.para['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
+            self.parameters['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
 
-        self.regex = re.compile(self.para['pattern'])
+        self.regex = re.compile(self.parameters['pattern'])
 
         self.set_para('simulate', False)
-        self.para['source_path'] = os.path.normpath(source_path)
-        self.para['target_path'] = os.path.normpath(target_path)
-        self.para['min_time_diff'] = 2 * 3600  # 2.0 hours
-        self.para['max_time_diff'] = 24 * 3600 * 7 * 4  # 4 weeks
-        self.para['min_size'] = 100 * 1024  # 100 KBytes
+        self.parameters['source_path'] = os.path.normpath(source_path)
+        self.parameters['target_path'] = os.path.normpath(target_path)
+        self.parameters['min_time_diff'] = 2 * 3600  # 2.0 hours
+        self.parameters['max_time_diff'] = 24 * 3600 * 7 * 4  # 4 weeks
+        self.parameters['min_size'] = 100 * 1024  # 100 KBytes
 
         # setup logging                                    
-        hdlr_syslog = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
+        syslog_handler = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
         
         formatter = logging.Formatter('%(name)s %(message)s')
-        hdlr_syslog.setFormatter(formatter)
+        syslog_handler.setFormatter(formatter)
 
-        self.logger.addHandler(hdlr_syslog)
+        self.logger.addHandler(syslog_handler)
         self.logger.setLevel(logging.INFO)
 
-    # @classmethod
     def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
 
         """
@@ -137,32 +136,34 @@ class BioBeamer(object):
         :param xml:
         :return:
         """
-        bio_beamer_parser = BioBeamerParser(xsd, xml)
-        self.para = bio_beamer_parser.para
+        hostname = str(socket.gethostname())
+        bio_beamer_parser = BioBeamerParser(xsd, xml, hostname)
+        self.parameters = bio_beamer_parser.parameters
 
     def print_para(self):
         """ print class parameter setting """
-        for k, v in self.para.items():
+        for k, v in self.parameters.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def set_para(self, key, value):
         """ class parameter setting """
-        self.para[key] = value
+        self.parameters[key] = value
         if key is 'pattern':
-            self.regex = re.compile(self.para['pattern'])
+            self.regex = re.compile(self.parameters['pattern'])
 
     def sync(self, file_to_copy, func_target_mapping):
         """ default is printing only """
-        source_file = os.path.normpath("{0}/{1}".format(self.para['source_path'], func_target_mapping(file_to_copy)))
-        target_file = os.path.normpath("{0}/{1}".format(self.para['target_path'], func_target_mapping(file_to_copy)))
+        source_file = os.path.normpath("{0}/{1}".format(self.parameters['source_path'], func_target_mapping(file_to_copy)))
+        target_file = os.path.normpath("{0}/{1}".format(self.parameters['target_path'], func_target_mapping(file_to_copy)))
 
         sys.stdout.write("consider: '{0}'\n\t->'{1}'\n".format(source_file, target_file))
+        self.results.append(file_to_copy)
 
     def filter(self, files_to_copy):
         files_to_copy = filter(self.regex.match, files_to_copy)
-        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['min_time_diff'], files_to_copy)
-        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.para['max_time_diff'], files_to_copy)
-        files_to_copy = filter(lambda f: os.path.getsize(f) > self.para['min_size'], files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
         return files_to_copy
 
     def run(self, func_target_mapping=lambda x: x):
@@ -173,9 +174,9 @@ class BioBeamer(object):
 
         self.print_para()
 
-        self.logger.info("crawl source path = '{0}'".format(self.para['source_path']))
+        self.logger.info("crawl source path = '{0}'".format(self.parameters['source_path']))
         try:
-            os.chdir(self.para['source_path'])
+            os.chdir(self.parameters['source_path'])
         except:
             self.logger.error("can't change source path")
             raise
@@ -200,13 +201,13 @@ class BioBeamer(object):
         self.logger.info("getmtime={0}; getsize={1}"
                          .format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
 
-        if self.para['simulate'] is True:
+        if self.parameters['simulate'] is True:
             self.logger.info("simulate is True. aboard.")
             return
 
         try:
             # todo(cp): check if this is really necessary
-            os.chdir(self.para['source_path'])
+            os.chdir(self.parameters['source_path'])
             robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
             self.logger.info("robocopy return code: '{0}'".format(return_code))
@@ -226,13 +227,13 @@ class Checker(BioBeamer):
 
     def filter(self, files_to_copy):
         files_to_copy = filter(self.regex.match, files_to_copy)
-        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['max_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['max_time_diff'], files_to_copy)
         return files_to_copy
 
     def sync(self, file_to_copy, func_target_mapping=lambda x: x):
         # target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
 
-        target_file = os.path.normpath("{0}/{1}".format(self.para['target_path'], func_target_mapping(file_to_copy)))
+        target_file = os.path.normpath("{0}/{1}".format(self.parameters['target_path'], func_target_mapping(file_to_copy)))
 
         if os.path.isfile(target_file):
             if filecmp.cmp(file_to_copy, target_file):
@@ -275,9 +276,9 @@ class Robocopy(BioBeamer):
 
         cmd = [
             "robocopy.exe",
-            self.para['robocopy_args'],
+            self.parameters['robocopy_args'],
             os.path.dirname(file_to_copy),
-            os.path.normpath("{0}/{1}".format(self.para['target_path'], target_sub_path)),
+            os.path.normpath("{0}/{1}".format(self.parameters['target_path'], target_sub_path)),
             os.path.basename(file_to_copy)
         ]
         self.exec_cmd(file_to_copy, cmd)

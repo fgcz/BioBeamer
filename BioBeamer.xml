@@ -35,4 +35,17 @@
     target_path="/srv/www/htdocs/">
 </host>
 
+<!-- used for testing the parser -->
+<host name="test-configuration"
+    min_size="1024"
+    min_time_diff="10800"
+    max_time_diff="2419200"
+    simulate='true'
+    func_target_mapping=""
+    robocopy_args=""
+    pattern="^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$"
+    source_path="/srv/www/htdocs/Data2San/"
+    target_path="/srv/www/htdocs/">
+</host>
+
 </BioBeamerHosts>
