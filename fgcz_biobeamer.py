@@ -26,6 +26,10 @@ import filecmp
 import urllib
 from lxml import etree
 
+def signal_handler(signal, frame):
+    logger.error("sys exit 1; signal={0}; frame={1}.".format(signal, frame))
+    sys.exit(1)
+
 class BioBeamer(object):
     """
     class for syncinging data from instrument PC to archive
@@ -35,7 +39,8 @@ class BioBeamer(object):
     logger = logging.getLogger('BioBeamer')
 
     #TODO(CP): log_host is static
-    def __init__(self, pattern=None, log_host="130.60.81.148", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    #TODO(CP): log_host_address can not be passed through logging.handlers.SysLogHandler
+    def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
             self.para['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -50,7 +55,7 @@ class BioBeamer(object):
         self.para['min_size'] = 100 * 1024 # 100 KBytes
 
         # setup logging                                    
-        hdlr_syslog = logging.handlers.SysLogHandler(address=(log_host, 514))
+        hdlr_syslog = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
         
         formatter = logging.Formatter('%(name)s %(message)s')
         hdlr_syslog.setFormatter(formatter)
@@ -117,7 +122,10 @@ class BioBeamer(object):
                         else:
                             self.para['simulate'] = True
                     else:
-                        self.para[k] = i.attrib[k]
+                        try:
+                            self.para[k] = int(i.attrib[k])
+                        except:
+                            self.para[k] = i.attrib[k]
                 foundHostConfig = True
 
         if foundHostConfig is False:
@@ -137,8 +145,18 @@ class BioBeamer(object):
 
     def sync(self, file_to_copy, func_target_mapping):
         """ default is printing only """
+        source_file = os.path.normpath("{0}/{1}".format(self.para['source_path'], func_target_mapping(file_to_copy)))
+        target_file = os.path.normpath("{0}/{1}".format(self.para['target_path'], func_target_mapping(file_to_copy)))
+
         sys.stdout.write("consider: '{0}'\n\t->'{1}'\n" \
-            .format(file_to_copy, func_target_mapping(os.path.dirname(file_to_copy))))
+            .format(source_file, target_file))
+
+    def filter(self, files_to_copy):
+        files_to_copy = filter(self.regex.match, files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['min_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.para['max_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: os.path.getsize(f) > self.para['min_size'], files_to_copy)
+        return(files_to_copy)
 
     def run(self, func_target_mapping=lambda x: x):
         """
@@ -160,10 +178,7 @@ class BioBeamer(object):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
-            files_to_copy = filter(self.regex.match, files_to_copy)
-            files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['min_time_diff'], files_to_copy)
-            files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.para['max_time_diff'], files_to_copy)
-            files_to_copy = filter(lambda f: os.path.getsize(f) > self.para['min_size'], files_to_copy)
+            files_to_copy = self.filter(files_to_copy)
 
             for file_to_copy in files_to_copy:
                 self.sync(file_to_copy, func_target_mapping)
@@ -198,20 +213,28 @@ class BioBeamer(object):
 
 
 class Checker(BioBeamer):
-
-    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
         """ just call the super class """
-        super(Checker, self).__init__(pattern, log_file, source_path, target_path)
+        super(Checker, self).__init__(pattern, source_path, target_path)
 
+    def filter(self, files_to_copy):
+        files_to_copy = filter(self.regex.match, files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.para['max_time_diff'], files_to_copy)
+        return(files_to_copy)
 
-    def sync(self, file_to_copy, func_target_mapping):
-        target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
-        if target_sub_path is None:
-            # self.logger.info("func_target_mapping returned 'None'")
-            return
+    def sync(self, file_to_copy, func_target_mapping=lambda x: x):
+        # target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
 
-        if filecmp.cmp(file_to_copy, target_sub_path):
-            os.remove(file_to_copy)
+        target_file = os.path.normpath("{0}/{1}".format(self.para['target_path'], func_target_mapping(file_to_copy)))
+
+        if os.path.isfile(target_file):
+            if filecmp.cmp(file_to_copy, target_file):
+                # os.remove(file_to_copy)
+                print "rm -fv {0}".format(file_to_copy)
+            else:
+                print "# file '{0}' is different".format(file_to_copy)
+        else:
+            print "ERROR: file '{0}' missing".format(target_file)
 
 
 
@@ -221,9 +244,9 @@ class Robocopy(BioBeamer):
 
     the sync is done by using MS robocopy.exe or on UNIX by using rsync
     """
-    def __init__(self, pattern=None, log_file="C:/Progra~1/BioBeamer/fgcz_biobeamer.log", source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
+    def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
         """ just call the super class """
-        super(Robocopy, self).__init__(pattern, log_file, source_path, target_path)
+        super(Robocopy, self).__init__(pattern, source_path, target_path)
         self.set_para('robocopy_args', "/E /Z /MOV /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log")
 
     def sync(self, file_to_copy, func_target_mapping):
@@ -304,13 +327,13 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    BB = Robocopy()
-    #BB.para_from_url()
+    BB = BioBeamer()
     BB.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd', xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
-    BB.print_para()
-    sys.exit(0)
-
     BB.run()
+
+    BBChecker = Checker()
+    BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd', xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
+    BBChecker.run()
 
     sys.stdout.write("done. exit 0\n")
     time.sleep(5)
