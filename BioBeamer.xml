@@ -1,51 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <BioBeamerHosts>
-
-<!-- xmlns="http://fgcz-data.uzh.ch/BioBeamer"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://fgcz-data.uzh.ch/BioBeamer BioBeamer.xsd"> -->
-
-
 <!-- 
 <host name="fgcz-i-180" min_size="102400" min_time="10800" max_time="2419200" simulate="False" func_target_mapping="map_data_analyst_tripletof1" robocopy_args="/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log"  pattern=".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"></host> 
 <host name="fgcz-s-021" min_size="1000000" min_time="720000" max_time="1720000" simulate="True" func_target_mapping="" robocopy_args=""  pattern=".+p1000.+QEXACTIVEHF_1.+\.raw"></host>
 -->
-
 <host name="fgcz-i-202" 
     min_size="102400" 
-    min_time_diff="10800" 
+    min_time_diff="1800" 
     max_time_diff="2419200" 
-    simulate='false'
+    simulate='false' 
     func_target_mapping="" 
-    robocopy_args="/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log" 
-    pattern=".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$" 
+    robocopy_args="/E /Z /NP /R:0 /LOG+:C:\\Progra~1\\BioBeamer\\robocopy4.log" 
+    pattern=".+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$" 
     source_path="D:/Data2San/" 
-    target_path="\\\\130.60.81.21\\Data2San">
+    target_path="\\130.60.81.21\\Data2San">
 </host>
 
-<host name="fgcz-s-021"
+<host name="fgcz-s-021" 
     min_size="1024" 
-    min_time_diff="10800"
+    min_time_diff="10800" 
     max_time_diff="2419200" 
     simulate='true' 
     func_target_mapping="" 
     robocopy_args="" 
     pattern="^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$" 
     source_path="/srv/www/htdocs/Data2San/" 
-    target_path="/srv/www/htdocs/">
-</host>
-
-<!-- used for testing the parser -->
-<host name="test-configuration"
-    min_size="1024"
-    min_time_diff="10800"
-    max_time_diff="2419200"
-    simulate='true'
-    func_target_mapping=""
-    robocopy_args=""
-    pattern="^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$"
-    source_path="/srv/www/htdocs/Data2San/"
     target_path="/srv/www/htdocs/">
 </host>
 
