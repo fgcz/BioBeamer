@@ -330,10 +330,10 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    BB = BioBeamer()
-    BB.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
+    bio_beamer = BioBeamer()
+    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
                      xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
-    BB.run()
+    bio_beamer.run()
 
     BBChecker = Checker()
     BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',

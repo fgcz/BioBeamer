@@ -30,16 +30,38 @@ class TestFileFilter(unittest.TestCase):
             source_path=self.folder,
             target_path=self.out_folder
         )
+        bio_beamer.set_para('min_size', 1)
         bio_beamer.set_para('min_time_diff', 1)
         bio_beamer.set_para('max_time_diff', 3700)
         bio_beamer.set_para('pattern', ".+\.raw")
         bio_beamer.set_para('simulate', True)
         bio_beamer.print_para()
         bio_beamer.run()
-        assert bio_beamer.results == []
+        assert len(bio_beamer.results) == 25
 
-    #def test_beam_and_check(self):
-    #    self.triple_tof()
+        bio_beamer.results = []
+        bio_beamer.set_para('pattern', ".+\.wiff")
+        bio_beamer.run()
+        assert len(bio_beamer.results) == 5
+
+        bio_beamer.results = []
+        bio_beamer.set_para('min_size', 500)
+        bio_beamer.set_para('pattern', ".+")
+        bio_beamer.run()
+        assert len(bio_beamer.results) == 30
+
+        bio_beamer.results = []
+        bio_beamer.set_para('min_size', 1500)
+        bio_beamer.set_para('pattern', ".+")
+        bio_beamer.run()
+        assert len(bio_beamer.results) == 20
+
+        bio_beamer.results = []
+        bio_beamer.set_para('min_size', 1)
+        bio_beamer.set_para('min_time_diff', 1000)
+        bio_beamer.set_para('pattern', ".+")
+        bio_beamer.run()
+        assert len(bio_beamer.results) == 20
 
     def checker(self):
         print("hello world")
@@ -64,19 +86,19 @@ class TestFileFilter(unittest.TestCase):
         ["p987/Proteomics/FUSION_2/ruhrig_20150513_Large_FASP_Tissues/20150513_06_fetuin_1.raw", self.BIG_SIZE, self.MEDIUM_TIME],
         ["p1352/Proteomics/QEXACTIVEHF_1/verabilan_20150529_PRM_SCX_chN/20150529_03_fetuin.raw", self.BIG_SIZE, self.SMALL_TIME],
         ["p1118/Proteomics/TRIPLETOF_1/gtang_20150520/20150520_9_SWATH_klk5tc_18hctrl_2.wiff", self.BIG_SIZE, self.BIG_TIME],
-        ["p1118/Proteomics/TRIPLETOF_1/tobiasko_20150406/20150406_5_PCT_liver_pool_4to6.wiff", self.BIG_SIZE, self.MEDIUM_TIME],
+        ["p1118/Proteomics/TRIPLETOF_1/tobiasko_20150406/20150406_5_PCT_liver_pool_4to6.wiff", self.MEDIUM_SIZE, self.MEDIUM_TIME],
         ["p1147/Proteomics/VELOS_1/chiawei_20150529/20150529_11_LCW_clean.raw", self.MEDIUM_SIZE, self.SMALL_TIME],
         ["p1132/Proteomics/FUSION_1/cfortes_20150604_Bovine_Set3_Chloe/20150604_08_Bov_1_13.raw", self.MEDIUM_SIZE, self.BIG_TIME],
         ["p1377/Proteomics/FUSION_1/gfasce_20150603_DeltaP600_lpqh/20150603_07_fetuin.raw", self.MEDIUM_SIZE, self.MEDIUM_TIME],
         ["p1431/Proteomics/TRIPLETOF_1/selevsek_20150601/20150601_010_nodil_1.wiff", self.MEDIUM_SIZE, self.SMALL_TIME],
         ["p1401/Proteomics/VELOS_1/ihmor_20150603_BigTwo_LabelEff/20150603_BigTwo_LabelEff06_Lys81T89.raw", self.MEDIUM_SIZE, self.BIG_TIME],
         ["p1557/Proteomics/QEXACTIVE_2/schori_20150603_EM3736_BPCre_Vhl_R91W_NRL/20150603_11_EM3736_15v_1to5.raw", self.MEDIUM_SIZE, self.MEDIUM_TIME],
-        ["p1579/Proteomics/QTRAP_1/poljakk_20150604/20150604_002_fetuin.wiff", self.MEDIUM_SIZE, self.MEDIUM_TIME],
+        ["p1579/Proteomics/QTRAP_1/poljakk_20150604/20150604_002_fetuin.wiff", self.MEDIUM_SIZE, self.SMALL_TIME],
         ["p1797/Proteomics/QEXACTIVE_2/fsabino_20150429_patients_A07_A04_07/20150429_08a_fetuin.raw", self.MEDIUM_SIZE, self.BIG_TIME],
         ["p1813/Proteomics/FUSION_2/ccantu_20150603_Bcl9HD1/20150603_03_WT_Colon_aBcl9.raw", self.MEDIUM_SIZE, self.MEDIUM_TIME],
-        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150430/20150602_16b_fetuin.raw", self.MEDIUM_SIZE, self.SMALL_TIME],
-        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150601/20150601_13_330_DIA_2h.raw", self.MEDIUM_SIZE, self.BIG_TIME],
-        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150601/20150605_37_fetuin_10fmol.raw", self.MEDIUM_SIZE, self.MEDIUM_TIME],
+        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150430/20150602_16b_fetuin.raw", self.SMALL_SIZE, self.SMALL_TIME],
+        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150601/20150601_13_330_DIA_2h.raw", self.SMALL_SIZE, self.BIG_TIME],
+        ["p1876/Proteomics/QEXACTIVEHF_1/paulboersema_20150601/20150605_37_fetuin_10fmol.raw", self.SMALL_SIZE, self.MEDIUM_TIME],
         ["p1839/Proteomics/QEXACTIVE_2/cfortes_20150520_OID_1512_LFQ/20150520_41_fetuin400amol_II.raw", self.SMALL_SIZE, self.SMALL_TIME],
         ["p1839/Proteomics/QEXACTIVE_2/cfortes_20150520_OID_1512_LFQ/20150520_59_CVE049.raw", self.SMALL_SIZE, self.BIG_TIME],
         ["p1839/Proteomics/QEXACTIVE_2/cfortes_20150520_OID_1512_LFQ/20150520_79_fetuin400amol.raw", self.SMALL_SIZE, self.MEDIUM_TIME],
@@ -108,8 +130,8 @@ class TestFileFilter(unittest.TestCase):
         for file in files:
             self.createFileOfGivenSize(self.folder, file[0], file[1], current_time - file[2])
 
-    # def tearDown(self):
-    #     files = self.fileList()
-    #     for file in files:
-    #         file_name = "{0}/{1}".format(self.folder)
-    #         os.remove(file_name)
+    def tearDown(self):
+        files = self.fileList()
+        for file in files:
+            file_name = "{0}/{1}".format(self.folder,file)
+            os.remove(file_name)
