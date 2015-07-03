@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<BioBeamerHosts xmlns="http://www.w3.org"
+<BioBeamerHosts>
+
+<!-- xmlns="http://fgcz-data.uzh.ch/BioBeamer"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://fgcz-data.uzh.ch/BioBeamer BioBeamer.xsd">
+xsi:schemaLocation="http://fgcz-data.uzh.ch/BioBeamer BioBeamer.xsd"> -->
 
 
 <!-- 
