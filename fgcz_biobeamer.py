@@ -26,6 +26,7 @@ import filecmp
 import urllib
 from lxml import etree
 
+import tempfile
 
 class BioBeamerParser(object):
     logger = logging.getLogger('BioBeamerParser')
@@ -230,18 +231,22 @@ class Checker(BioBeamer):
         """ just call the super class """
         super(Checker, self).__init__(pattern, source_path, target_path)
 
+        self.temp_file=os.path.normpath("{0}/files_to_be_deleted.bat".format(tempfile.gettempdir()))
+        if os.path.isfile(self.temp_file):
+            os.remove(self.temp_file)
+        print "write file status information to '{0}'.".format(self.temp_file)
+
     def filter(self, files_to_copy):
         files_to_copy = filter(self.regex.match, files_to_copy)
         files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['max_time_diff'], files_to_copy)
         return files_to_copy
 
     def sync(self, file_to_copy, func_target_mapping=lambda x: x):
-        # target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
 
         target_file = os.path.normpath("{0}/{1}".format(self.parameters['target_path'], func_target_mapping(file_to_copy)))
 
         try:
-            f = open('files_to_be_deleted.bat', 'w')
+            f = open(self.temp_file, 'w+')
         except:
             raise
 
@@ -340,10 +345,10 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    bio_beamer = BioBeamer()
-    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
-                     xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
-    bio_beamer.run()
+    #bio_beamer = BioBeamer()
+    #bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
+    #                 xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
+    #bio_beamer.run()
 
     BBChecker = Checker()
     BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
