@@ -28,20 +28,23 @@ from lxml import etree
 
 import tempfile
 
+def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
+
+    logger = logging.getLogger(name)
+    syslog_handler = logging.handlers.SysLogHandler(address=address)
+    formatter = logging.Formatter('%(name)s %(message)s')
+    syslog_handler.setFormatter(formatter)
+    logger.addHandler(syslog_handler)
+    logger.setLevel(logging.INFO)
+    return logger
+
+
+
+
 class BioBeamerParser(object):
-    logger = logging.getLogger('BioBeamerParser')
+    logger = create_logger()
 
     def __init__(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml', hostname="fgcz-i-202"):
-        """
-        :param xsd:
-        :param xml:
-        :return:
-        """
-        syslog_handler = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
-        formatter = logging.Formatter('%(name)s %(message)s')
-        syslog_handler.setFormatter(formatter)
-        self.logger.addHandler(syslog_handler)
-        self.logger.setLevel(logging.INFO)
 
         self.parameters = {}
         # read config files from url
@@ -107,11 +110,10 @@ class BioBeamer(object):
     class for syncing data from instrument PC to archive
     """
     parameters = dict()
-    logger = logging.getLogger('BioBeamer')
+    logger = create_logger()
 
     results = []
-    # TODO(CP): log_host is static
-    # TODO(CP): log_host_address can not be passed through logging.handlers.SysLogHandler
+
     def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
 
         if pattern is None:
@@ -125,15 +127,6 @@ class BioBeamer(object):
         self.parameters['min_time_diff'] = 2 * 3600  # 2.0 hours
         self.parameters['max_time_diff'] = 24 * 3600 * 7 * 4  # 4 weeks
         self.parameters['min_size'] = 100 * 1024  # 100 KBytes
-
-        # setup logging                                    
-        syslog_handler = logging.handlers.SysLogHandler(address=("130.60.81.148", 514))
-        
-        formatter = logging.Formatter('%(name)s %(message)s')
-        syslog_handler.setFormatter(formatter)
-
-        self.logger.addHandler(syslog_handler)
-        self.logger.setLevel(logging.INFO)
 
     def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
 
@@ -345,6 +338,7 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
+
     print  str(socket.gethostname())
     bio_beamer = Robocopy()
     bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',

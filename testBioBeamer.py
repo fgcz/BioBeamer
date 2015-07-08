@@ -1,3 +1,15 @@
+"""
+$HeadURL: http://fgcz-svn.unizh.ch/repos/fgcz/stable/proteomics/BioBeamer/fgcz_biobeamer.py $
+$Id: fgcz_biobeamer.py 7229 2015-02-05 09:46:15Z cpanse $
+$Date: 2015-02-05 10:46:15 +0100 (Thu, 05 Feb 2015) $
+
+Copyright 2015
+Christian Panse <cp@fgcz.ethz.ch>
+Christian Trachsel <christian.trachsel@fgcz.uzh.ch>
+Witold E. Wolski <wew@fgcz.ethz.ch>
+
+"""
+
 import unittest
 import os
 from fgcz_biobeamer import BioBeamer
