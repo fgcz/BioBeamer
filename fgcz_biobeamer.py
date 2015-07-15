@@ -6,11 +6,11 @@ $HeadURL: http://fgcz-svn.unizh.ch/repos/fgcz/stable/proteomics/BioBeamer/fgcz_b
 $Id: fgcz_biobeamer.py 7229 2015-02-05 09:46:15Z cpanse $
 $Date: 2015-02-05 10:46:15 +0100 (Thu, 05 Feb 2015) $
 
-Copyright 2015
+Copyright 2004-2015
+
 Christian Panse <cp@fgcz.ethz.ch>
 Christian Trachsel <christian.trachsel@fgcz.uzh.ch>
 Witold E. Wolski <wew@fgcz.ethz.ch>
-
 """
 
 import os
@@ -37,8 +37,6 @@ def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
     logger.addHandler(syslog_handler)
     logger.setLevel(logging.INFO)
     return logger
-
-
 
 
 class BioBeamerParser(object):
@@ -109,8 +107,12 @@ class BioBeamer(object):
     """
     class for syncing data from instrument PC to archive
     """
-    parameters = dict()
-    logger = create_logger()
+
+    parameters = {'simulate': False,
+                  'min_time_diff']: 2 * 3600,
+                  'max_time_diff']: 24 * 3600 * 7 * 4 ,
+                  'min_size']: 100 * 1024 }
+
 
     results = []
 
@@ -120,16 +122,11 @@ class BioBeamer(object):
             self.parameters['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
 
         self.regex = re.compile(self.parameters['pattern'])
-
-        self.set_para('simulate', False)
         self.parameters['source_path'] = os.path.normpath(source_path)
         self.parameters['target_path'] = os.path.normpath(target_path)
-        self.parameters['min_time_diff'] = 2 * 3600  # 2.0 hours
-        self.parameters['max_time_diff'] = 24 * 3600 * 7 * 4  # 4 weeks
-        self.parameters['min_size'] = 100 * 1024  # 100 KBytes
+
 
     def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
-
         """
         :param xsd:
         :param xml:
@@ -227,7 +224,7 @@ class Checker(BioBeamer):
         self.temp_file=os.path.normpath("{0}/files_to_be_deleted.bat".format(tempfile.gettempdir()))
         if os.path.isfile(self.temp_file):
             os.remove(self.temp_file)
-        print "write file status information to '{0}'.".format(self.temp_file)
+        self.logger.info("write file status information to '{0}'.".format(self.temp_file))
 
     def filter(self, files_to_copy):
         files_to_copy = filter(self.regex.match, files_to_copy)
@@ -245,6 +242,7 @@ class Checker(BioBeamer):
 
         if os.path.isfile(target_file):
             if filecmp.cmp(file_to_copy, target_file):
+                # TODO(cp): if delete works just uncomment it
                 # os.remove(file_to_copy)
                 f.write("delete {0}\n".format(file_to_copy))
             else:
@@ -341,13 +339,13 @@ if __name__ == "__main__":
 
     print  str(socket.gethostname())
     bio_beamer = Robocopy()
-    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
-                     xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
+    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd',
+                     xml='http://fgcz-s-021.uzh.ch/config/BioBeamer.xml')
     bio_beamer.run()
     time.sleep(5)
     BBChecker = Checker()
-    BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xsd',
-                            xml='http://fgcz-s-021.uzh.ch/BioBeamer/BioBeamer.xml')
+    BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd',
+                            xml='http://fgcz-s-021.uzh.ch/config/BioBeamer.xml')
     BBChecker.run()
 
     sys.stdout.write("done. exit 0\n")
