@@ -36,13 +36,14 @@ def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
     syslog_handler.setFormatter(formatter)
     logger.addHandler(syslog_handler)
     logger.setLevel(logging.INFO)
+    print "ALIVE"
     return logger
 
 
 class BioBeamerParser(object):
-    logger = create_logger()
-
+    
     def __init__(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml', hostname="fgcz-i-202"):
+        self.logger = create_logger()
 
         self.parameters = {}
         # read config files from url
@@ -117,7 +118,7 @@ class BioBeamer(object):
     results = []
 
     def __init__(self, pattern=None, source_path="D:/Data2San/", target_path="\\\\130.60.81.21\\Data2San"):
-
+        self.logger = create_logger()
         if pattern is None:
             self.parameters['pattern'] = ".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"
 
@@ -135,6 +136,8 @@ class BioBeamer(object):
         hostname = str(socket.gethostname())
         bio_beamer_parser = BioBeamerParser(xsd, xml, hostname)
         self.parameters = bio_beamer_parser.parameters
+        # TODO(wew,cp) is this really smart
+        self.regex = bio_beamer_parser.regex
 
     def print_para(self):
         """ print class parameter setting """
@@ -144,6 +147,7 @@ class BioBeamer(object):
     def set_para(self, key, value):
         """ class parameter setting """
         self.parameters[key] = value
+
         if key is 'pattern':
             self.regex = re.compile(self.parameters['pattern'])
 
@@ -157,6 +161,7 @@ class BioBeamer(object):
 
     def filter(self, files_to_copy):
         files_to_copy = filter(self.regex.match, files_to_copy)
+        #print files_to_copy
         files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'], files_to_copy)
         files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'], files_to_copy)
         files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
@@ -183,6 +188,7 @@ class BioBeamer(object):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
+            
             files_to_copy = self.filter(files_to_copy)
 
             for file_to_copy in files_to_copy:
