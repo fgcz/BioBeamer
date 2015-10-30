@@ -109,9 +109,9 @@ class BioBeamer(object):
     """
 
     parameters = {'simulate': False,
-                  'min_time_diff']: 2 * 3600,
-                  'max_time_diff']: 24 * 3600 * 7 * 4 ,
-                  'min_size']: 100 * 1024 }
+                  'min_time_diff': 2 * 3600,
+                  'max_time_diff': 24 * 3600 * 7 * 4 ,
+                  'min_size': 100 * 1024 }
 
 
     results = []
