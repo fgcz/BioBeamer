@@ -28,21 +28,26 @@ from lxml import etree
 
 import tempfile
 
-def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
 
+def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
     logger = logging.getLogger(name)
-    syslog_handler = logging.handlers.SysLogHandler(address=address)
-    formatter = logging.Formatter('%(name)s %(message)s')
-    syslog_handler.setFormatter(formatter)
-    logger.addHandler(syslog_handler)
-    logger.setLevel(logging.INFO)
-    print "ALIVE"
+    if not logger.handlers:
+        syslog_handler = logging.handlers.SysLogHandler(address=address)
+        formatter = logging.Formatter('%(name)s %(message)s')
+        syslog_handler.setFormatter(formatter)
+        logger.addHandler(syslog_handler)
+        logger.setLevel(logging.INFO)
     return logger
 
 
 class BioBeamerParser(object):
-    
-    def __init__(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml', hostname="fgcz-i-202"):
+    def __init__(self, xsd, xml, hostname="fgcz-i-202"):
+        """
+        :param xsd: BioBeamer.xsd
+        :param xml: BioBeamer.xml
+        :return:
+        """
+
         self.logger = create_logger()
 
         self.parameters = {}
@@ -103,7 +108,6 @@ class BioBeamerParser(object):
             self.logger.error("no host configuration could be found in '{0}'.".format(xml))
             sys.exit(1)
 
-
 class BioBeamer(object):
     """
     class for syncing data from instrument PC to archive
@@ -127,10 +131,10 @@ class BioBeamer(object):
         self.parameters['target_path'] = os.path.normpath(target_path)
 
 
-    def para_from_url(self, xsd='BioBeamer.xsd', xml='BioBeamer.xml'):
+    def para_from_url(self, xsd, xml):
         """
-        :param xsd:
-        :param xml:
+        :param xsd: BioBeamer.xsd
+        :param xml: BioBeamer.xml
         :return:
         """
         hostname = str(socket.gethostname())
@@ -342,16 +346,19 @@ class TestTargetMapping(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
-    print  str(socket.gethostname())
+    print "test"
+    print str(socket.gethostname())
     bio_beamer = Robocopy()
-    bio_beamer.para_from_url(xsd='http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd',
-                     xml='http://fgcz-s-021.uzh.ch/config/BioBeamer.xml')
+    biobeamer_xsd = 'http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd'
+    biobeamer_xml = 'http://fgcz-s-021.uzh.ch/config/BioBeamer.xml'
+
+    bio_beamer.para_from_url(xsd=biobeamer_xsd,
+                     xml=biobeamer_xml)
     bio_beamer.run()
     time.sleep(5)
     BBChecker = Checker()
-    BBChecker.para_from_url(xsd='http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd',
-                            xml='http://fgcz-s-021.uzh.ch/config/BioBeamer.xml')
+    BBChecker.para_from_url(xsd=biobeamer_xsd,
+                            xml=biobeamer_xml)
     BBChecker.run()
 
     sys.stdout.write("done. exit 0\n")
