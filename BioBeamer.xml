@@ -1,18 +1,138 @@
+<?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
 <BioBeamerHosts>
 <!-- 
-<host name="fgcz-i-180" min_size="102400" min_time="10800" max_time="2419200" simulate="False" func_target_mapping="map_data_analyst_tripletof1" robocopy_args="/E /Z /NP /LOG+:C:\\Progra~1\\BioBeamer\\robocopy.log"  pattern=".+[-0-9a-zA-Z_\/\.\\\]+\.(raw|RAW|wiff|wiff\.scan)$"></host> 
-<host name="fgcz-s-021" min_size="1000000" min_time="720000" max_time="1720000" simulate="True" func_target_mapping="" robocopy_args=""  pattern=".+p1000.+QEXACTIVEHF_1.+\.raw"></host>
+# $HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/config/BioBeamer.xml $
+# $Id: BioBeamer.xml 7909 2015-12-09 15:52:11Z cpanse $
+# $Date: 2015-12-09 16:52:11 +0100 (Wed, 09 Dec 2015) $
+# $Author: cpanse $
 -->
-<host name="fgcz-i-202" 
+<host name="FGCZ-i-180" 
+    instrument="TRIPLETOF_1"
+    min_size="1024" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /MOV /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
+    pattern=".+" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>93</applicationID>
+    </b-fabric>
+</host>
+
+<host name="FGCZ-I-182" 
+    instrument="T100_1"
+    min_size="1024" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /NP /R:0 /LOG+:C:\\Progra~1\\BioBeamer\\robocopy3.log" 
+    pattern=".+T100_1.+[-0-9a-zA-Z_\/\.\\]+\.(blr|bme|txt)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>18</applicationID>
+    </b-fabric>
+</host>
+
+<host name="fgcz-i-188" 
+    instrument="QTRAP_1"
     min_size="102400" 
     min_time_diff="1800" 
     max_time_diff="2419200" 
     simulate='false' 
     func_target_mapping="" 
-    robocopy_args="/E /Z /NP /R:0 /LOG+:C:\\Progra~1\\BioBeamer\\robocopy4.log" 
+    robocopy_args="/E /Z /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
     pattern=".+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$" 
     source_path="D:/Data2San/" 
     target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>92</applicationID>
+    </b-fabric>
+</host>
+
+<host name="fgcz-i-197" 
+    instrument="FUSION_2"
+    min_size="102400" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /MOV /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
+    pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>176</applicationID>
+    </b-fabric>
+</host>
+
+
+<host name="fgcz-i-202" 
+    instrument="QEXATCTIVE_2"
+    min_size="102400" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /NP /MOV /R:0 /LOG+:C:\\Progra~1\\BioBeamer\\robocopy5.log" 
+    pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>161</applicationID>
+    </b-fabric>
+</host>
+
+<host name="fgcz-i-216" 
+    instrument="QEXATCTIVEHF_1"
+    min_size="102400" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /MOV /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
+    pattern=".+QEXACTIVEHF_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>177</applicationID>
+    </b-fabric>
+</host>
+
+<host name="fgcz-i-219" 
+    instrument="TSQ_2"
+    min_size="800" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
+    pattern=".+(Proteomics|Metabolomics)\\TSQ_2\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>43</applicationID>
+    </b-fabric>
+</host>
+
+<host name="fgcz-i-?" 
+    instrument="QEXATCTIVEHF_2"
+    min_size="102400" 
+    min_time_diff="1800" 
+    max_time_diff="2419200" 
+    simulate='false' 
+    func_target_mapping="" 
+    robocopy_args="/E /Z /MOV /NP /LOG+:C:\Progra~1\BioBeamer\robocopy.log"
+    pattern=".+QEXACTIVEHF_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$" 
+    source_path="D:/Data2San/" 
+    target_path="\\130.60.81.21\\Data2San">
+    <b-fabric>
+    	<applicationID>197</applicationID>
+    </b-fabric>
 </host>
 
 <host name="fgcz-s-021" 
