@@ -1,8 +1,8 @@
 # Collecting instrument data using BioBeamer
 
-
-
 ## Install 
+* ensure you have python 2.7.* 
+* ```pip install lxml==3.4.2``` or newer
 ```bash
 git clone git@github.com:fgcz/BioBeamer.git
 ```
