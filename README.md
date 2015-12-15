@@ -1,4 +1,4 @@
-# BioBeamer
+# Collecting instrument data using BioBeamer
 
 ![BioBeamer UML](/images/classes_No_Name.png)
 
@@ -8,10 +8,18 @@ git clone git@github.com:cpanse/BioBeamer.git
 ```
 
 ## Run
+
+### @ FGCZ
 just 'run as administrator' justBeamFiles.exe.
 
 the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
-
+
+### otherwise
+
+```cmd
+python BioBeamer.py
+```
+
 ## Configure Syslog '/etc/rsyslog.conf' 
 
 ```syslog
@@ -21,7 +29,8 @@ $template RemoteHost,"/var/log/remote/%HOSTNAME%_%fromhost-ip%.log"
 if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote  
 & ~
 ```
-## Configure logrotate '/etc/logrotate.d/remote'
+
+### Configure logrotate '/etc/logrotate.d/remote'
 ```conf
 /var/log/remote/*
 {
@@ -32,13 +41,16 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
         compress
 }
 ```
+
 ## Author
-[Christian Panse](http://www.fgcz.ch/people/cpanse)
+[Christian Panse](http://www.fgcz.ch/the-center/people/panse.html)
 
 ## See also
 [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
 
-
 ## TODO
-* add remote logging (https://docs.python.org/2/howto/logging-cookbook.html)
 * munin plugin
+
+## SOP deploy @ new location
+* change syslog host
+* change configuration url
