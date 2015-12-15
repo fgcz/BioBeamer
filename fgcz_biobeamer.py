@@ -29,6 +29,8 @@ from lxml import etree
 import tempfile
 
 
+configuration_url = "http://fgcz-s-021.uzh.ch/config/"
+
 def create_logger(name="BioBeamer", address=("130.60.81.148", 514)):
     logger = logging.getLogger(name)
     if not logger.handlers:
@@ -349,13 +351,16 @@ if __name__ == "__main__":
     print "test"
     print str(socket.gethostname())
     bio_beamer = Robocopy()
-    biobeamer_xsd = 'http://fgcz-s-021.uzh.ch/config/BioBeamer.xsd'
-    biobeamer_xml = 'http://fgcz-s-021.uzh.ch/config/BioBeamer.xml'
+    biobeamer_xsd = "{0}./BioBeamer.xsd".format(configuration_url)
+    biobeamer_xml = "{0}./BioBeamer.xml".format(configuration_url)
 
     bio_beamer.para_from_url(xsd=biobeamer_xsd,
                      xml=biobeamer_xml)
+                     
     bio_beamer.run()
+    
     time.sleep(5)
+    
     BBChecker = Checker()
     BBChecker.para_from_url(xsd=biobeamer_xsd,
                             xml=biobeamer_xml)
