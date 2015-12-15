@@ -72,7 +72,8 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 ### @ FGCZ
 just 'run as administrator' justBeamFiles.exe.
 
-the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
+justBeamFiles.exe is an [autoitscript](https://www.autoitscript.com/site/autoit/).
+In our case the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
 
 ### otherwise
 * ensure that SAN is mounted 
