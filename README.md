@@ -29,6 +29,16 @@ git clone git@github.com:fgcz/BioBeamer.git
         <applicationID>93</applicationID>
     </b-fabric>
 </host>
+</BioBeamerHosts>
+```
+
+the xml can be validated using
+```bash
+xmllint --noout --schema BioBeamer.xsd BioBeamer.xml
+```
+or 
+```bash
+xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 ```
 
 ### Deploy @ new location
