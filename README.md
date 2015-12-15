@@ -1,6 +1,6 @@
 # Collecting instrument data using BioBeamer
 
-![BioBeamer UML](/images/classes_No_Name.png)
+
 
 ## Install 
 ```bash
@@ -76,6 +76,8 @@ the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script whi
 python BioBeamer.py
 ```
 
+## BioBeamer class
+![BioBeamer UML](/images/classes_No_Name.png)
 
 
 ## Author
