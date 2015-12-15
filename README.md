@@ -4,7 +4,7 @@
 
 ## Install 
 ```bash
-git clone git@github.com:cpanse/BioBeamer.git
+git clone git@github.com:fgcz/BioBeamer.git
 ```
 
 ## Configure 
