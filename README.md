@@ -73,12 +73,13 @@ python BioBeamer.py
 ## BioBeamer class
 ![BioBeamer UML](/images/classes_No_Name.png)
 
+
 ## Author
 [Christian Panse](http://www.fgcz.ch/the-center/people/panse.html)
 
 ## See also
-[fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
-
+* [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
+* [FGCZ configuration](http://fgcz-data.uzh.ch/config/BioBeamer.xml)
 ## TODO
 * munin plugin
 
