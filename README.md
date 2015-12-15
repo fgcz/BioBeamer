@@ -14,12 +14,6 @@ git clone git@github.com:cpanse/BioBeamer.git
 ```xml
 <?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
 <BioBeamerHosts>
-<!-- 
-# $HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/config/BioBeamer.xml $
-# $Id: BioBeamer.xml 7914 2015-12-15 07:19:02Z cpanse $
-# $Date: 2015-12-15 08:19:02 +0100 (Tue, 15 Dec 2015) $
-# $Author: cpanse $
--->
 <host name="fgcz-i-180" 
     instrument="TRIPLETOF_1"
     min_size="1024" 
