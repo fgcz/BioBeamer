@@ -351,8 +351,8 @@ if __name__ == "__main__":
     print "test"
     print str(socket.gethostname())
     bio_beamer = Robocopy()
-    biobeamer_xsd = "{0}./BioBeamer.xsd".format(configuration_url)
-    biobeamer_xml = "{0}./BioBeamer.xml".format(configuration_url)
+    biobeamer_xsd = "{0}/BioBeamer.xsd".format(configuration_url)
+    biobeamer_xml = "{0}/BioBeamer.xml".format(configuration_url)
 
     bio_beamer.para_from_url(xsd=biobeamer_xsd,
                      xml=biobeamer_xml)
