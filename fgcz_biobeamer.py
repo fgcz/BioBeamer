@@ -184,6 +184,20 @@ class BioBeamer(object):
         files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
         return files_to_copy
 
+    def bb_filter(self, (k,f)):
+        if len(f) == 0:
+            return False
+
+        files_to_copy = filter(self.regex.match, f)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'], files_to_copy)
+        files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
+
+        if len(files_to_copy) < len(f):
+            return False
+
+        return True
+
     def run(self, func_target_mapping=lambda x: x):
         """
             main methode: does crawling, filtering, and starting the robocopy
@@ -205,8 +219,16 @@ class BioBeamer(object):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
+            basename_dict = dict()
+            for f in files_to_copy:
+                file_basename = f.split(".")[0]
+                if not file_basename in basename_dict:
+                    basename_dict[file_basename] = []
+                basename_dict[file_basename].append(f)
+
+            files_to_copy = map(lambda x: x[1], filter(self.bb_filter, basename_dict.iteritems()))
             
-            files_to_copy = self.filter(files_to_copy)
+            #files_to_copy = self.filter(files_to_copy)
 
             for file_to_copy in files_to_copy:
                 self.sync(file_to_copy, func_target_mapping)
