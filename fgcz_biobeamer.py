@@ -176,15 +176,11 @@ class BioBeamer(object):
         sys.stdout.write("consider: '{0}'\n\t->'{1}'\n".format(source_file, target_file))
         self.results.append(file_to_copy)
 
-    def filter(self, files_to_copy):
-        files_to_copy = filter(self.regex.match, files_to_copy)
-        #print files_to_copy
-        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'], files_to_copy)
-        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'], files_to_copy)
-        files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
-        return files_to_copy
-
     def bb_filter(self, (k,f)):
+        """
+        expecting a dictionary where the basename is the key
+        returns True iff all files (values) fullfill the filter criteria
+        """
         if len(f) == 0:
             return False
 
@@ -219,19 +215,24 @@ class BioBeamer(object):
 
             # BioBeamer filters
             files_to_copy = map(lambda f: os.path.join(root, f), files)
-            basename_dict = dict()
+            basename_dict = {}
+
+            """
+            here we have a dictionary containing all files having the same basename
+            """
             for f in files_to_copy:
+                # TODO(cp): check if this always works as basename
                 file_basename = f.split(".")[0]
                 if not file_basename in basename_dict:
                     basename_dict[file_basename] = []
                 basename_dict[file_basename].append(f)
-
-            files_to_copy = map(lambda x: x[1], filter(self.bb_filter, basename_dict.iteritems()))
             
-            #files_to_copy = self.filter(files_to_copy)
+            # TODO(cp): use a reduce step for concat the lists
+            files_to_copy =  map(lambda x: x[1], filter(self.bb_filter, basename_dict.iteritems())) 
 
+            # TODO(cp): remove the for loop
             for file_to_copy in files_to_copy:
-                self.sync(file_to_copy, func_target_mapping)
+                map (lambda f: self.sync(f, func_target_mapping), file_to_copy)
 
         self.logger.info("done")
 
@@ -247,7 +248,7 @@ class BioBeamer(object):
             return
 
         try:
-            # todo(cp): check if this is really necessary
+            # TODO(cp): check if this is really necessary
             os.chdir(self.parameters['source_path'])
             robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
@@ -320,6 +321,7 @@ class Robocopy(BioBeamer):
         see also:
             https://technet.microsoft.com/en-us/library/cc733145.aspx
         """
+        print file_to_copy
         target_sub_path = func_target_mapping(os.path.dirname(file_to_copy))
         if target_sub_path is None:
             # self.logger.info("func_target_mapping returned 'None'")
