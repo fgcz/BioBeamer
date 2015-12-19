@@ -176,18 +176,18 @@ class BioBeamer(object):
         sys.stdout.write("consider: '{0}'\n\t->'{1}'\n".format(source_file, target_file))
         self.results.append(file_to_copy)
 
-    def bb_filter(self, (k,f)):
+    def bb_filter(self, f):
         """
         expecting a dictionary where the basename is the key
         returns True iff all files (values) fullfill the filter criteria
         """
-        if len(f) == 0:
-            return False
+
 
         files_to_copy = filter(self.regex.match, f)
         files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'], files_to_copy)
         files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'], files_to_copy)
         files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
+
 
         if len(files_to_copy) < len(f):
             return False
@@ -220,15 +220,25 @@ class BioBeamer(object):
             """
             here we have a dictionary containing all files having the same basename
             """
+
+            basename_regex = re.compile(r"^(.+?)(\.[a-zA-Z0-9]+){1,2}$")
+
             for f in files_to_copy:
                 # TODO(cp): check if this always works as basename
-                file_basename = f.split(".")[0]
-                if not file_basename in basename_dict:
-                    basename_dict[file_basename] = []
-                basename_dict[file_basename].append(f)
+
+                result = basename_regex.match(f)
+
+                if result:
+                    file_basename = result.group(1)
+                    if not file_basename in basename_dict:
+                        basename_dict[file_basename] = []
+
+                    basename_dict[file_basename].append(f)
+
             
             # TODO(cp): use a reduce step for concat the lists
-            files_to_copy =  map(lambda x: x[1], filter(self.bb_filter, basename_dict.iteritems())) 
+            # basename_dict.values() is a list of list data structure
+            files_to_copy = filter(self.bb_filter, basename_dict.values())
 
             # TODO(cp): remove the for loop
             for file_to_copy in files_to_copy:
@@ -245,6 +255,8 @@ class BioBeamer(object):
 
         if self.parameters['simulate'] is True:
             self.logger.info("simulate is True. aboard.")
+            print "getmtime = {0};\ngetsize = {1} diff={2}".format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy), 
+                os.path.getsize(file_to_copy) - self.parameters['min_size'] )
             return
 
         try:
