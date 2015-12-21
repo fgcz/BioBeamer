@@ -2,9 +2,9 @@
 # -*- coding: latin1 -*-
 
 """
-$HeadURL: http://fgcz-svn.unizh.ch/repos/fgcz/stable/proteomics/BioBeamer/fgcz_biobeamer.py $
-$Id: fgcz_biobeamer.py 7229 2015-02-05 09:46:15Z cpanse $
-$Date: 2015-02-05 10:46:15 +0100 (Thu, 05 Feb 2015) $
+$HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/BioBeamer/fgcz_biobeamer.py $
+$Id: fgcz_biobeamer.py 7915 2015-12-21 08:16:17Z cpanse $
+$Date: 2015-12-21 09:16:17 +0100 (Mon, 21 Dec 2015) $
 
 Copyright 2006-2015 Functional Genomics Center Zurich
 
