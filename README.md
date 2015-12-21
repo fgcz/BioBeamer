@@ -84,7 +84,7 @@ python BioBeamer.py
 
 
 ## Author
-[Christian Panse](http://www.fgcz.ch/the-center/people/panse.html)
+[Christian Panse](http://www.fgcz.ch/the-center/people/panse.html) :rocket:
 
 ## See also
 * [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
@@ -92,4 +92,4 @@ python BioBeamer.py
 
 ## TODO
 * munin plugin
-
+
