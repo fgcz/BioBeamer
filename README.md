@@ -1,5 +1,8 @@
 # Collecting instrument data using BioBeamer
 
+[![Project Stats](https://www.openhub.net/p/BioBeamer/widgets/project_thin_badge.gif)](https://www.openhub.net/p/BioBeamer)
+
+
 ## Install 
 * ensure you have python 2.7.* 
 * ```pip install lxml==3.4.2``` or newer
