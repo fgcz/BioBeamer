@@ -5,7 +5,7 @@
 
 ## Install 
 * ensure you have python 2.7.* 
-* ```pip install lxml==3.4.2``` or newer
+* ```pip install PyFGCZ``` 
 * ```git clone git@github.com:fgcz/BioBeamer.git```
 
 ## Configure 
