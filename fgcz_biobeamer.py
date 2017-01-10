@@ -21,7 +21,7 @@ Author / Maintainer: Christian Panse <cp@fgcz.ethz.ch>, Witold E. Wolski <wew@fg
 
 """
 # pip install PyFGCZ
-from fgcz import biobeamer
+import biobeamer
 import sys
 import socket
 import time
@@ -30,7 +30,7 @@ configuration_url = "http://fgcz-s-021.uzh.ch/config/"
 
 if __name__ == "__main__":
     
-    print "hostname is {0}.".format(socket.gethostname())
+    print( "hostname is {0}.".format(socket.gethostname()))
     bio_beamer = biobeamer.Robocopy()
     biobeamer_xsd = "{0}/BioBeamer.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer.xml".format(configuration_url)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     time.sleep(5)
     
-    BBChecker = Checker()
+    BBChecker = biobeamer.Checker()
     BBChecker.para_from_url(xsd=biobeamer_xsd,
                             xml=biobeamer_xml)
     BBChecker.run()
