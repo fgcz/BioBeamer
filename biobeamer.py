@@ -37,7 +37,6 @@ import filecmp
 import urllib
 from lxml import etree
 
-import tempfile
 
 
 def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("130.60.81.148", 514)):
@@ -129,10 +128,12 @@ class BioBeamerParser(object):
             sys.exit(1)
 
 
+
 def get_basename_dict(files_to_copy):
     basename_dict = {}
     """
     here we have a dictionary containing all files having the same basename
+    This is needed if the instrument aquires 2 files updating only 1 and we should not move the 1st.
     """
     basename_regex = re.compile(r"^(.+?)(\.[a-zA-Z0-9]+){1,2}$")
     for f in files_to_copy:
@@ -246,10 +247,8 @@ class BioBeamer(object):
             files_to_copy = map(lambda f: os.path.join(root, f), files)
 
             basename_dict = get_basename_dict(files_to_copy)
-
-            # TODO(cp): use a reduce step for concat the lists
-            # basename_dict.values() is a list of list data structure
             basename_values = basename_dict.values()
+            # not clear what happens here because this is list!!!
             files_to_copy = filter(self.bb_filter, basename_values)
 
             # TODO(cp): remove the for loop
