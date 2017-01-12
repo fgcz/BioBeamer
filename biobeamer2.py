@@ -268,26 +268,25 @@ def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
     return filemap
 
 
-
-
 def compare_files(source_result_mapping):
     copied = {}
     not_copied = {}
     for file_to_copy, target_file in source_result_mapping.iteritems():
         tmp = os.path.exists(target_file)
         if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
-                copied[file_to_copy] = target_file
+            copied[file_to_copy] = target_file
         else:
             not_copied[file_to_copy] = target_file
-    return({"copied" : copied, "not_copied" : not_copied})
+    return ({"copied": copied, "not_copied": not_copied})
 
 
 def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=True):
     for file_to_copy in source_result_mapping.keys():
 
         time_diff = time.time() - os.path.getmtime(file_to_copy)
-        if  time_diff > max_time_diff:
-            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy), time_diff, max_time_diff)
+        if time_diff > max_time_diff:
+            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy), time_diff,
+                        max_time_diff)
             if not simulate:
                 os.remove(file_to_copy)
 
@@ -310,7 +309,7 @@ def robocopy(bbparser, logger):
     copied = compare_files(source_result_mapping)
 
     robocopy_exec_map(copied["not_copied"], parameters["robocopy_args"], logger, simulate=False)
-    remove_old_copied(copied["copied"], parameters["max_time_diff"]/2, logger, simulate=True)
+    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate=True)
 
 
 def test_mapping_function(logger):

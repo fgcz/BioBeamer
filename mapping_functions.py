@@ -21,7 +21,6 @@ def map_data_analyst_tripletof_1(path, logger):
     return None
 
 
-
 def map_data_analyst_qtrap_1(path, logger):
     """
     input:  'p1000/Data/selevsek_20150119'
