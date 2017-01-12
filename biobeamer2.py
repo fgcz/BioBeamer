@@ -1,4 +1,5 @@
 # This should go into the robocopy because otherwise it might conflict with the Checker class.
+import filecmp
 import time
 import os
 
@@ -15,7 +16,7 @@ import socket
 import mapping_functions
 
 
-def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("130.60.81.148", 514), make_syslog = False):
+def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("130.60.81.148", 514), make_syslog=False):
     logger = logging.getLogger(name)
     if not logger.handlers:
 
@@ -34,7 +35,6 @@ def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("13
     return logger
 
 
-
 class BioBeamerParser(object):
     """
     class for syncing data from instrument PC to archive
@@ -43,8 +43,8 @@ class BioBeamerParser(object):
                   'min_time_diff': 2 * 3600,
                   'max_time_diff': 24 * 3600 * 7 * 4,
                   'min_size': 100 * 1024,
-                  'source_path' : "D:/Data2San/",
-                  'target_path' : "\\\\130.60.81.21\\Data2San"}
+                  'source_path': "D:/Data2San/",
+                  'target_path': "\\\\130.60.81.21\\Data2San"}
 
     results = []
 
@@ -55,7 +55,7 @@ class BioBeamerParser(object):
         :return:
         """
         self.logger = logger
-        #self.parameters = {}
+        # self.parameters = {}
 
         xml_url = xml
         # read config files from url
@@ -117,8 +117,6 @@ class BioBeamerParser(object):
             self.logger.error(msg)
             sys.exit(1)
 
-
-
     def print_para(self):
         """ print class parameter setting """
         for k, v in self.parameters.items():
@@ -129,6 +127,7 @@ class BioBeamerParser(object):
         self.parameters[key] = value
         if key is 'pattern':
             self.regex = re.compile(self.parameters['pattern'])
+
 
 def get_all_files(source_path, logger):
     '''
@@ -146,6 +145,7 @@ def get_all_files(source_path, logger):
 
     return all_files
 
+
 def robocopy_get_basename_dict(files_to_copy):
     basename_dict = {}
     """
@@ -161,7 +161,8 @@ def robocopy_get_basename_dict(files_to_copy):
             if not file_basename in basename_dict:
                 basename_dict[file_basename] = []
             basename_dict[file_basename].append(f)
-    return(basename_dict)
+    return (basename_dict)
+
 
 def robocopy_filter_sublist(f, regex, parameters):
     """
@@ -179,10 +180,11 @@ def robocopy_filter_sublist(f, regex, parameters):
         return False
     return True
 
+
 def robocopy_filter(files_to_copy, regex, parameters):
     basename_dict = robocopy_get_basename_dict(files_to_copy)
     files = basename_dict.values()
-    files = filter(lambda fl : robocopy_filter_sublist(fl , regex=regex, parameters=parameters), files )
+    files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters), files)
     files = [item for sublist in files for item in sublist]
     return files
 
@@ -196,10 +198,10 @@ def log_files_stat(files_to_copy, logger):
     for file_to_copy in files_to_copy:
         logger.info("consider: '{0}'".format(file_to_copy))
         logger.info("getmtime={0}; getsize={1}"
-                         .format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
+                    .format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
 
 
-def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate = False):
+def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate=False):
     """
     wrapper function to
     compose robocopy.exe command line and call it out of python
@@ -216,16 +218,15 @@ def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate = F
         "robocopy.exe",
         robocopy_args,
         os.path.dirname(file_to_copy),
-        os.path.normpath(target_path),
+        os.path.dirname(target_path),
         os.path.basename(file_to_copy)
     ]
 
-    logger.info("try to run: '{0}'".format(" ".join(cmd)))
-
-    if not(simulate):
+    if not (simulate):
+        logger.info("Running Command: [{0}]".format(" ".join(cmd)))
         try:
             # TODO(cp): check if this is really necessary
-            #os.chdir(self.parameters['source_path'])
+            # os.chdir(self.parameters['source_path'])
             robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
             logger.info("robocopy return code: '{0}'".format(return_code))
@@ -236,6 +237,15 @@ def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate = F
         except:
             logger.error("robocopy exception raised.")
             raise
+
+    else:
+        logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
+
+
+def robocopy_exec_map(source_results, robocopy_args, logger, simulate=False):
+    for source, destination in source_results.iteritems():
+        robocopy_exec(source, destination, robocopy_args=robocopy_args, logger=logger, simulate=simulate)
+
 
 def make_destination_files(files_to_copy, source_path, target_path):
     '''
@@ -252,44 +262,82 @@ def make_destination_files(files_to_copy, source_path, target_path):
     return res
 
 
-def rename_destination(filemap , mapping_function = lambda x : x):
+def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
     for key, value in filemap.iteritems():
-        filemap[key] = mapping_function(value)
+        filemap[key] = mapping_function(value, logger)
     return filemap
 
 
-configuration_url = "http://fgcz-s-021.uzh.ch/config/"
 
-tmp = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw'
-tmp2 = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff'
 
-if __name__ == "__main__":
-    tmp_ = mapping_functions.map_data_analyst_qtrap_1(tmp)
-    tmp2_ = mapping_functions.map_data_analyst_qtrap_1(tmp2)
+def compare_files(source_result_mapping):
+    copied = {}
+    not_copied = {}
+    for file_to_copy, target_file in source_result_mapping.iteritems():
+        tmp = os.path.exists(target_file)
+        if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
+                copied[file_to_copy] = target_file
+        else:
+            not_copied[file_to_copy] = target_file
+    return({"copied" : copied, "not_copied" : not_copied})
 
-    host = socket.gethostname()
-    host = "fgcz-i-188"
 
-    print("hostname is {0}.".format(socket.gethostname()))
-    biobeamer_xsd = "{0}/BioBeamer.xsd".format(configuration_url)
-    biobeamer_xml = "{0}/BioBeamer.xml".format(configuration_url)
-    logger = create_logger()
+def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=True):
+    for file_to_copy in source_result_mapping.keys():
 
-    bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger)
+        time_diff = time.time() - os.path.getmtime(file_to_copy)
+        if  time_diff > max_time_diff:
+            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy), time_diff, max_time_diff)
+            if not simulate:
+                os.remove(file_to_copy)
 
+
+def robocopy(bbparser, logger):
     parameters = bbparser.parameters
     regex = bbparser.regex
-
     files2copy = get_all_files(parameters["source_path"], logger=logger)
-    filesRR = robocopy_filter(files2copy,regex,parameters)
+    filesRR = robocopy_filter(files2copy, regex, parameters)
     log_files_stat(filesRR, logger=logger)
-    tmp = make_destination_files(filesRR, parameters["source_path"],parameters["target_path"])
+    source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]
     if mapping_function_name != "":
-        methodToCall = getattr(mapping_functions, mapping_function_name)
-        res = rename_destination(tmp, mapping_function = methodToCall)
+        logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
+        method_to_call = getattr(mapping_functions, mapping_function_name)
+        source_result_mapping = rename_destination(source_result_mapping, logger, mapping_function=method_to_call)
 
-    print(len(files2copy))
+    # check if files are already copied and if so remove them from source_result_mapping
+    copied = compare_files(source_result_mapping)
+
+    robocopy_exec_map(copied["not_copied"], parameters["robocopy_args"], logger, simulate=False)
+    remove_old_copied(copied["copied"], parameters["max_time_diff"]/2, logger, simulate=True)
 
 
+def test_mapping_function(logger):
+    '''
+    Test mapping
+    :return: nil
+    '''
+    tmp = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw'
+    tmp2 = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff'
+    tmp_ = mapping_functions.map_data_analyst_qtrap_1(tmp, logger)
+    if tmp_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm.raw':
+        print("mapping failed")
+    tmp2_ = mapping_functions.map_data_analyst_qtrap_1(tmp2, logger)
+    if tmp2_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm2.wiff':
+        print("mapping failed")
+
+
+if __name__ == "__main__":
+    logger = create_logger()
+    test_mapping_function(logger)
+    host = socket.gethostname()
+    # host = "fgcz-i-188"
+
+    logger.info("hostname is {0}.".format(host))
+    configuration_url = "http://fgcz-s-021.uzh.ch/config/"
+    biobeamer_xsd = "{0}/BioBeamer.xsd".format(configuration_url)
+    biobeamer_xml = "{0}/BioBeamer.xml".format(configuration_url)
+
+    bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger)
+    robocopy(bbparser, logger)
