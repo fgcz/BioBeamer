@@ -4,7 +4,7 @@
 ; $Id: justBeamFiles_py.au3 7195 2015-01-29 14:31:37Z cpanse $
 ; $Date: 2015-01-29 15:31:37 +0100 (Thu, 29 Jan 2015) $
 
-Local $drive = '\\130.60.81.21\\Data2San'
+Local $drive = '\\fgcz-ms.fgcz-net.unizh.ch\\Data2San'
 Local $file = FileOpen("C:\Program Files\BioBeamer\justBeamFiles.log", 1)
 Local $python_cmd = "c:\python27\python.exe ""C:\Program Files\BioBeamer\fgcz_biobeamer.py"""
 
