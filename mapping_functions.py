@@ -17,7 +17,6 @@ def map_data_analyst_tripletof_1(path, logger):
     else:
         logger.error('Could not apply mapping function. Raising exception')
         raise ValueError('Could not apply mapping function')
-
     return None
 
 
@@ -35,5 +34,4 @@ def map_data_analyst_qtrap_1(path, logger):
     else:
         logger.error('Could not apply mapping function. Raising exception')
         raise ValueError('Could not apply mapping function')
-
     return None

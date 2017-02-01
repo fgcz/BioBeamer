@@ -13,6 +13,7 @@
 ### BioBeamer xml configuration file
 
 ```xml
+
 <?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
 <BioBeamerHosts>
 <host name="fgcz-i-180" 
@@ -31,6 +32,7 @@
     </b-fabric>
 </host>
 </BioBeamerHosts>
+
 ```
 
 the xml can be validated using

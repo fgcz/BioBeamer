@@ -256,7 +256,7 @@
           instrument="TOFTOFTOF_1"
           min_size="8"
           min_time_diff="2"
-          max_time_diff="2419"
+          max_time_diff="122419"
           simulate='false'
           func_target_mapping=""
           robocopy_mov="false"

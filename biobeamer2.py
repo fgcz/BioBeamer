@@ -13,6 +13,7 @@ import re
 import sys
 import socket
 import mapping_functions
+import sys
 
 from mapNetworks import Drive
 
@@ -207,9 +208,7 @@ def log_files_stat(files_to_copy, logger):
     :return: nil
     '''
     for file_to_copy in files_to_copy:
-        logger.info("consider: '{0}'".format(file_to_copy))
-        logger.info("getmtime={0}; getsize={1}"
-                    .format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
+        logger.info("consider: '{0}' getmtime={1}; getsize={1}".format(file_to_copy,time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
 
 
 def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate=False):
@@ -258,9 +257,9 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
 
-def robocopy_exec_map(source_results, robocopy_args, logger, simulate=False):
+def robocopy_exec_map(source_results, mov, logger, logfile, simulate=False):
     for source, destination in source_results.iteritems():
-        robocopy_exec(source, destination, robocopy_args=robocopy_args, logger=logger, simulate=simulate)
+        robocopy_exec(source, destination, logger=logger, mov=mov, logfile = logfile,  simulate=simulate)
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
@@ -345,7 +344,7 @@ def robocopy(bbparser, logger):
     # check if files are already copied and if so remove them from source_result_mapping
     copied = compare_files(source_result_mapping)
 
-    robocopy_exec_map(copied["not_copied"], parameters["robocopy_args"], logger, simulate=False)
+    robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log", simulate=False)
     # it might be that there are not enough files since strict robocopy filtering is applied.
     remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate=True)
 
@@ -368,13 +367,19 @@ def test_mapping_function(logger):
 if __name__ == "__main__":
     configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
 
-    configuration_url = "file:///c:/fgcz"
+    configuration_url = "file:///c:/FGCZ/BioBeamer"
+    password = "IWJpbzA3YmVhbWVyIQ=="
+
+    if len(sys.argv) == 3:
+        configuration_url = sys.argv[1]
+        password = sys.argv[2]
+
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
 
     host = socket.gethostname()
-    host = "fgcz-i-188"
+    #host = "fgcz-i-188"
 
     logger = MyLog()
     logger.add_file()
@@ -382,11 +387,15 @@ if __name__ == "__main__":
     bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
     logger.add_syshandler(address=(bbparser.parameters["syshandler_adress"], bbparser.parameters["syshandler_port"]))
 
-    drive = Drive(logger, password="IWJpbzA3YmVhbWVyIQ==", networkPath=bbparser.parameters['target_path'])
+    drive = 0
+    if re.match("^\\\\", bbparser.parameters['target_path']):
+        drive = Drive(logger.logger, password=password, networkPath=bbparser.parameters['target_path'])
+        if not drive.mapDrive() == 0:
+            logger.logger.error("Can't map network drive {}".format(bbparser.parameters['target_path']))
+            exit(0)
 
-    if drive.mapDrive() == 0:
-        logger.info("hostname is {0}.".format(host))
-        robocopy(bbparser, logger.logger)
+    logger.logger.info("hostname is {0}.".format(host))
+    robocopy(bbparser, logger.logger)
+
+    if not drive == 0:
         drive.unmapDrive()
-    else:
-        logger.error("Can't map network drive {}".format(bbparser.parameters['target_path']))
