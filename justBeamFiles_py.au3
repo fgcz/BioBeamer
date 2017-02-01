@@ -7,6 +7,7 @@
 ; Local $drive = '\\130.60.81.21\Data2San'
 Local $drive = '\\fgcz-ms.fgcz-net.unizh.ch\Data2San'
 Local $file = FileOpen("C:\FGCZ\BioBeamer\justBeamFiles.log", 1)
+
 Local $python_cmd = "c:\python27\python.exe ""C:\Program Files\BioBeamer\fgcz_biobeamer.py"""
 
 FileWrite($file, "----------------------------------------------------------- " & @CRLF)
