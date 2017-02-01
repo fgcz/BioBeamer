@@ -1,10 +1,8 @@
 import os
 import base64
-# from win32all import win32wnet
-
+import subprocess
 
 class Drive:
-
     def __init__(self,logger, networkPath="\\\\fgcz-ms.fgcz-net.unizh.ch\\Data2San",
                  user="FGCZ-NET\BioBeamer",
                  password="cGFzc3dvcmQ=" ):
@@ -14,17 +12,27 @@ class Drive:
         self._logger = logger
 
     def mapDrive(self):
-        tmp = "net use {networkPath} {password} /user:{user}".format(
+        winCMD = "net use {networkPath} {password} /user:{user}".format(
             networkPath=self._networkPath,
             password=self._password, user=self._user)
-        self._logger.info(tmp)
-        os.system(tmp)
+
+        p = subprocess.Popen(winCMD, stdout=subprocess.PIPE, stderr= subprocess.PIPE, shell=True)
+        out, err = p.communicate()
+        if not err == "":
+            self._logger.error(winCMD)
+            self._logger.error(err.replace("\r\n"," "))
+        return p.returncode
 
 
     def unmapDrive(self):
-        tmp = "net use {networkPath} /delete".format(
+        winCMD = "net use {networkPath} /delete".format(
             networkPath=self._networkPath)
-        self._logger.info(tmp)
-        os.system(tmp)
+        self._logger.info(winCMD)
+        p = subprocess.Popen(winCMD, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, err = p.communicate()
+        if not err == "":
+            self._logger.error(winCMD)
+            self._logger.error(err)
+        return p.returncode
 
 
