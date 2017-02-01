@@ -5,7 +5,6 @@ import os
 
 import logging
 import logging.handlers
-
 import urllib
 
 import subprocess
@@ -15,24 +14,30 @@ import sys
 import socket
 import mapping_functions
 
+from mapNetworks import Drive
 
-def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("130.60.81.148", 514), make_syslog=False):
-    logger = logging.getLogger(name)
-    if not logger.handlers:
 
-        formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+class MyLog:
+    def __init__(self, name="BioBeamer"):
+        self.logger = logging.getLogger(name)
+        self.formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+        self.is_syshandler = False
+        self.is_filehandler = False
 
-        file_handler = logging.FileHandler(filename)
-        file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(formatter)
-        if make_syslog:
+    def add_file(self, filename="./log/biobeamer.log", level=logging.INFO):
+        if not self.is_syshandler:
+            file_handler = logging.FileHandler(filename)
+            file_handler.setLevel(level)
+            file_handler.setFormatter(self.formatter)
+            self.logger.addHandler(file_handler)
+            self.logger.setLevel(logging.INFO)
+
+    def add_syshandler(self, address=("130.60.81.148", 514), level=logging.INFO):
+        if not self.is_filehandler:
             syslog_handler = logging.handlers.SysLogHandler(address=address)
-            syslog_handler.setFormatter(formatter)
-            logger.addHandler(syslog_handler)
-
-        logger.addHandler(file_handler)
-        logger.setLevel(logging.INFO)
-    return logger
+            syslog_handler.setLevel(level)
+            syslog_handler.setFormatter(self.formatter)
+            self.logger.addHandler(syslog_handler)
 
 
 class BioBeamerParser(object):
@@ -101,9 +106,15 @@ class BioBeamerParser(object):
                             raise
                     elif k == 'simulate':
                         if i.attrib[k] == "false":
-                            self.parameters['simulate'] = False
+                            self.parameters[k] = False
                         else:
-                            self.parameters['simulate'] = True
+                            self.parameters[k] = True
+                    elif k == 'robocopy_mov':
+                        if i.attrib[k] == "false":
+                            self.parameters[k] = False
+                        else:
+                            self.parameters[k] = True
+
                     else:
                         try:
                             self.parameters[k] = int(i.attrib[k])
@@ -138,7 +149,7 @@ def get_all_files(source_path, logger):
     all_files = []
     for (root, dirs, files) in os.walk(source_path,
                                        topdown=False, followlinks=False,
-                                       onerror=lambda e: logger.info("Error: {0}\n".format(e))):
+                                       onerror=lambda e: logger.error("os.walk: {0}\n".format(e))):
         # BioBeamer filters
         files_to_copy = map(lambda f: os.path.join(root, f), files)
         all_files += files_to_copy
@@ -181,7 +192,7 @@ def robocopy_filter_sublist(f, regex, parameters):
     return True
 
 
-def robocopy_filter(files_to_copy, regex, parameters):
+def filter_input_filelist(files_to_copy, regex, parameters):
     basename_dict = robocopy_get_basename_dict(files_to_copy)
     files = basename_dict.values()
     files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters), files)
@@ -201,7 +212,7 @@ def log_files_stat(files_to_copy, logger):
                     .format(time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
 
 
-def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate=False):
+def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate=False):
     """
     wrapper function to
     compose robocopy.exe command line and call it out of python
@@ -214,6 +225,11 @@ def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate=Fal
     see also:
         https://technet.microsoft.com/en-us/library/cc733145.aspx
     """
+    if not mov:
+        robocopy_args = "/E /Z /NP /R:0 /LOG+:{log}".format(log=logfile)
+    else:
+        robocopy_args = "/E /Z /NP /R:0 /MOV /LOG+:{log}".format(log=logfile)
+
     cmd = [
         "robocopy.exe",
         robocopy_args,
@@ -263,12 +279,23 @@ def make_destination_files(files_to_copy, source_path, target_path):
 
 
 def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
+    '''
+    uses mapping function to rename file
+    :param filemap:
+    :param logger:
+    :param mapping_function:
+    :return:
+    '''
     for key, value in filemap.iteritems():
         filemap[key] = mapping_function(value, logger)
     return filemap
 
 
 def compare_files(source_result_mapping):
+    '''
+    :param source_result_mapping:
+    :return: map with fields "copied" and "not_copied"
+    '''
     copied = {}
     not_copied = {}
     for file_to_copy, target_file in source_result_mapping.iteritems():
@@ -281,6 +308,14 @@ def compare_files(source_result_mapping):
 
 
 def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=True):
+    '''
+    removes old files which have been already copied
+    :param source_result_mapping:
+    :param max_time_diff:
+    :param logger:
+    :param simulate:
+    :return:
+    '''
     for file_to_copy in source_result_mapping.keys():
 
         time_diff = time.time() - os.path.getmtime(file_to_copy)
@@ -295,11 +330,13 @@ def robocopy(bbparser, logger):
     parameters = bbparser.parameters
     regex = bbparser.regex
     files2copy = get_all_files(parameters["source_path"], logger=logger)
-    filesRR = robocopy_filter(files2copy, regex, parameters)
+
+    filesRR = filter_input_filelist(files2copy, regex, parameters)
     log_files_stat(filesRR, logger=logger)
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]
+
     if mapping_function_name != "":
         logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
         method_to_call = getattr(mapping_functions, mapping_function_name)
@@ -309,6 +346,7 @@ def robocopy(bbparser, logger):
     copied = compare_files(source_result_mapping)
 
     robocopy_exec_map(copied["not_copied"], parameters["robocopy_args"], logger, simulate=False)
+    # it might be that there are not enough files since strict robocopy filtering is applied.
     remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate=True)
 
 
@@ -328,15 +366,27 @@ def test_mapping_function(logger):
 
 
 if __name__ == "__main__":
-    logger = create_logger()
-    test_mapping_function(logger)
+    configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
+
+    configuration_url = "file:///c:/fgcz"
+
+    biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
+    biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
+
     host = socket.gethostname()
-    # host = "fgcz-i-188"
+    host = "fgcz-i-188"
 
-    logger.info("hostname is {0}.".format(host))
-    configuration_url = "http://fgcz-s-021.uzh.ch/config/"
-    biobeamer_xsd = "{0}/BioBeamer.xsd".format(configuration_url)
-    biobeamer_xml = "{0}/BioBeamer.xml".format(configuration_url)
+    logger = MyLog()
+    logger.add_file()
 
-    bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger)
-    robocopy(bbparser, logger)
+    bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
+    logger.add_syshandler(address=(bbparser.parameters["syshandler_adress"], bbparser.parameters["syshandler_port"]))
+
+    drive = Drive(logger, password="IWJpbzA3YmVhbWVyIQ==", networkPath=bbparser.parameters['target_path'])
+
+    if drive.mapDrive() == 0:
+        logger.info("hostname is {0}.".format(host))
+        robocopy(bbparser, logger.logger)
+        drive.unmapDrive()
+    else:
+        logger.error("Can't map network drive {}".format(bbparser.parameters['target_path']))
