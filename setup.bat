@@ -1,0 +1,1 @@
+git clone -b biobeamer2 https://github.com/fgcz/BioBeamer
