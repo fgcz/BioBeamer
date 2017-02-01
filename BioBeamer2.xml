@@ -1,0 +1,273 @@
+<?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
+<BioBeamerHosts>
+
+    <!--
+    # $HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/config/BioBeamer.xml $
+    # $Id: BioBeamer.xml 8124 2017-01-30 10:06:15Z cpanse $
+    # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
+    # $Author: cpanse $
+    -->
+
+    <host name="fgcz-092"
+          instrument="ULTRAFLEXTREME_1"
+          min_size="24"
+          min_time_diff="3600"
+          max_time_diff="24192000"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>204</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="FGCZ-I-182"
+          instrument="T100_1"
+          min_size="1024"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+T100_1.+[-0-9a-zA-Z_\/\.\\]+\.(blr|bme|txt|zip)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>18</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-188"
+          instrument="QTRAP_1"
+          min_size="8"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping="map_data_analyst_qtrap_1"
+          robocopy_mov="false"
+          pattern=".+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$"
+          source_path="D:/Analyst Data/Projects/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>92</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="FGCZ-I-184"
+          instrument="FUSION_1"
+          min_size="1024000"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+FUSION_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>162</applicationID>
+        </b-fabric>
+    </host>
+
+
+    <host name="FGCZ-I-197"
+          instrument="FUSION_2"
+          min_size="1024000"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>176</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-qex1"
+          instrument="QEXATCTIVE_1"
+          min_size="1024000"
+          min_time_diff="0"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>160</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-202"
+          instrument="QEXATCTIVE_2"
+          min_size="1024000"
+          min_time_diff="2400"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>161</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-216"
+          instrument="QEXACTIVEHF_1"
+          min_size="1024000"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVEHF_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>177</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="FGCZ-I-186"
+          instrument="QEXACTIVEHF_2"
+          min_size="1024000"
+          min_time_diff="3600"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>197</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-180"
+          instrument="QEXACTIVEHF_3"
+          min_size="1024000"
+          min_time_diff="3600"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Proteomics\\QEXACTIVEHF_3\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>207</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-219"
+          instrument="QUANTIVA_1"
+          min_size="800"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+(Proteomics|Metabolomics)\\TSQ_2\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>214</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-i-189"
+          instrument="IMSTOF_1"
+          min_size="102400"
+          min_time_diff="10"
+          max_time_diff="2419200"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Metabolomics\\IMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.h5$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>203</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="fgcz-s-021"
+          min_size="32059391"
+          min_time_diff="1800"
+          max_time_diff="2419200"
+          simulate='true'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+p1000/Proteomics/(VELOS_1|TRIPLETOF_1)/[-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$"
+          source_path="/srv/www/htdocs/Data2San/"
+          target_path="/srv/www/htdocs/"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+    </host>
+
+    <host name="wolski-fgcz"
+          instrument="TOFTOFTOF_1"
+          min_size="8"
+          min_time_diff="2"
+          max_time_diff="2419"
+          simulate='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$"
+          source_path="D:/Data2San/"
+          target_path="D:/Data2SanDestination/"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>43</applicationID>
+        </b-fabric>
+    </host>
+</BioBeamerHosts>
