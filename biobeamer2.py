@@ -10,7 +10,6 @@ import urllib
 import subprocess
 from lxml import etree
 import re
-import sys
 import socket
 import mapping_functions
 import sys
@@ -232,16 +231,15 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
     cmd = [
         "robocopy.exe",
         robocopy_args,
-        os.path.dirname(file_to_copy),
-        os.path.dirname(target_path),
-        os.path.basename(file_to_copy)
+        '"{}"'.format(os.path.dirname(file_to_copy)),
+        '"{}"'.format(os.path.dirname(target_path)),
+        '"{}"'.format(os.path.basename(file_to_copy))
     ]
 
     if not (simulate):
         logger.info("Running Command: [{0}]".format(" ".join(cmd)))
         try:
             # TODO(cp): check if this is really necessary
-            # os.chdir(self.parameters['source_path'])
             robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
             logger.info("robocopy return code: '{0}'".format(return_code))
@@ -306,7 +304,7 @@ def compare_files(source_result_mapping):
     return ({"copied": copied, "not_copied": not_copied})
 
 
-def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=True):
+def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="files2delete/files2delete.bat"):
     '''
     removes old files which have been already copied
     :param source_result_mapping:
@@ -323,6 +321,9 @@ def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=Tru
                         max_time_diff)
             if not simulate:
                 os.remove(file_to_copy)
+            else:
+                with open(simulate, "wa") as myfile:
+                    myfile.write("rm {0}".format(file_to_copy))
 
 
 def robocopy(bbparser, logger):
@@ -346,40 +347,21 @@ def robocopy(bbparser, logger):
 
     robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log", simulate=False)
     # it might be that there are not enough files since strict robocopy filtering is applied.
-    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate=True)
-
-
-def test_mapping_function(logger):
-    '''
-    Test mapping
-    :return: nil
-    '''
-    tmp = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw'
-    tmp2 = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff'
-    tmp_ = mapping_functions.map_data_analyst_qtrap_1(tmp, logger)
-    if tmp_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm.raw':
-        print("mapping failed")
-    tmp2_ = mapping_functions.map_data_analyst_qtrap_1(tmp2, logger)
-    if tmp2_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm2.wiff':
-        print("mapping failed")
-
+    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate="files2delete/files2delete.bat")
 
 if __name__ == "__main__":
     configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
 
     configuration_url = "file:///c:/FGCZ/BioBeamer"
     password = "IWJpbzA3YmVhbWVyIQ=="
-
     if len(sys.argv) == 3:
         configuration_url = sys.argv[1]
         password = sys.argv[2]
-
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
 
     host = socket.gethostname()
-    #host = "fgcz-i-188"
 
     logger = MyLog()
     logger.add_file()
