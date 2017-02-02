@@ -332,6 +332,8 @@ def robocopy(bbparser, logger):
     files2copy = get_all_files(parameters["source_path"], logger=logger)
 
     filesRR = filter_input_filelist(files2copy, regex, parameters)
+    if len(filesRR) == 0:
+        return
     log_files_stat(filesRR, logger=logger)
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
