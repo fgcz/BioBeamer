@@ -353,10 +353,10 @@ if __name__ == "__main__":
     configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
 
     configuration_url = "file:///c:/FGCZ/BioBeamer"
-    password = "IWJpbzA3YmVhbWVyIQ=="
     if len(sys.argv) == 3:
         configuration_url = sys.argv[1]
         password = sys.argv[2]
+
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
