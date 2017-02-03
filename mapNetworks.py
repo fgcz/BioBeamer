@@ -19,6 +19,7 @@ class Drive:
 
         p = subprocess.Popen(winCMD, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
+        self._logger.info(out)
         if not err == "":
             self._logger.error(winCMD)
             self._logger.error(err.replace("\r\n", " "))

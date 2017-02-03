@@ -317,13 +317,13 @@ def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="fi
 
         time_diff = time.time() - os.path.getmtime(file_to_copy)
         if time_diff > max_time_diff:
-            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy), time_diff,
-                        max_time_diff)
+            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
+                        max_time_diff))
             if not simulate:
                 os.remove(file_to_copy)
             else:
-                with open(simulate, "wa") as myfile:
-                    myfile.write("rm {0}".format(file_to_copy))
+                with open(simulate, "a") as myfile:
+                    myfile.write("rm {0}\n".format(file_to_copy))
 
 
 def robocopy(bbparser, logger):
