@@ -207,7 +207,9 @@ def log_files_stat(files_to_copy, logger):
     :return: nil
     '''
     for file_to_copy in files_to_copy:
-        logger.info("consider: '{0}' getmtime={1}; getsize={1}".format(file_to_copy,time.time() - os.path.getmtime(file_to_copy), os.path.getsize(file_to_copy)))
+        logger.info("consider: '{0}' getmtime={1}; getsize={1}".format(file_to_copy,
+                                                                       time.time() - os.path.getmtime(file_to_copy),
+                                                                       os.path.getsize(file_to_copy)))
 
 
 def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate=False):
@@ -257,7 +259,7 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
 
 def robocopy_exec_map(source_results, mov, logger, logfile, simulate=False):
     for source, destination in source_results.iteritems():
-        robocopy_exec(source, destination, logger=logger, mov=mov, logfile = logfile,  simulate=simulate)
+        robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile, simulate=simulate)
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
@@ -313,17 +315,24 @@ def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="fi
     :param simulate:
     :return:
     '''
+    if simulate:
+        myfile = open(simulate, "w")
+    else:
+        myfile = False
+
     for file_to_copy in source_result_mapping.keys():
 
         time_diff = time.time() - os.path.getmtime(file_to_copy)
         if time_diff > max_time_diff:
             logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
-                        max_time_diff))
-            if not simulate:
+                                                                                      max_time_diff))
+            if not myfile:
                 os.remove(file_to_copy)
             else:
-                with open(simulate, "a") as myfile:
-                    myfile.write("rm {0}\n".format(file_to_copy))
+                myfile.write("rm {0}\n".format(file_to_copy))
+
+    if myfile:
+        myfile.close()
 
 
 def robocopy(bbparser, logger):
@@ -347,9 +356,11 @@ def robocopy(bbparser, logger):
     # check if files are already copied and if so remove them from source_result_mapping
     copied = compare_files(source_result_mapping)
 
-    robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log", simulate=False)
+    robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log",
+                      simulate=False)
     # it might be that there are not enough files since strict robocopy filtering is applied.
-    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate="files2delete/files2delete.bat")
+    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate="")
+
 
 if __name__ == "__main__":
     configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
@@ -358,7 +369,6 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         configuration_url = sys.argv[1]
         password = sys.argv[2]
-
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
