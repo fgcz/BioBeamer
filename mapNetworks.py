@@ -17,12 +17,17 @@ class Drive:
             networkPath=self._networkPath,
             password=self._password, user=self._user)
 
+        self._logger.info("Attempt: net use {networkPath} <password> /user:{user}.".format(networkPath=self._networkPath,
+                                                                                           user=self._user))
+
         p = subprocess.Popen(winCMD, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
-        self._logger.info(out)
+        self._logger.info(out.replace("\r\n", " "))
         if not err == "":
             self._logger.error(winCMD)
             self._logger.error(err.replace("\r\n", " "))
+        else:
+            self._logger.info("Network drive {} for user {} mapped without error code.".format(self._networkPath,self._user))
         return p.returncode
 
     def unmapDrive(self):
