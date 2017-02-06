@@ -13,7 +13,8 @@
           min_size="24"
           min_time_diff="3600"
           max_time_diff="24192000"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+$"
@@ -32,7 +33,8 @@
           min_size="1024"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+T100_1.+[-0-9a-zA-Z_\/\.\\]+\.(blr|bme|txt|zip)$"
@@ -51,7 +53,8 @@
           min_size="8"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping="map_data_analyst_qtrap_1"
           robocopy_mov="false"
           pattern=".+p[0-9]{4,4}[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -70,7 +73,8 @@
           min_size="1024000"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+FUSION_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -90,7 +94,8 @@
           min_size="1024000"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -109,7 +114,8 @@
           min_size="1024000"
           min_time_diff="0"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -128,7 +134,8 @@
           min_size="1024000"
           min_time_diff="2400"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -147,7 +154,8 @@
           min_size="1024000"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+QEXACTIVEHF_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -166,7 +174,8 @@
           min_size="1024000"
           min_time_diff="3600"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
@@ -185,7 +194,8 @@
           min_size="1024000"
           min_time_diff="3600"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+Proteomics\\QEXACTIVEHF_3\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
@@ -204,7 +214,8 @@
           min_size="800"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+(Proteomics|Metabolomics)\\TSQ_2\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -223,7 +234,8 @@
           min_size="102400"
           min_time_diff="10"
           max_time_diff="2419200"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+Metabolomics\\IMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.h5$"
@@ -241,7 +253,8 @@
           min_size="32059391"
           min_time_diff="1800"
           max_time_diff="2419200"
-          simulate='true'
+          simulate_copy='true'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+p1000/Proteomics/(VELOS_1|TRIPLETOF_1)/[-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$"
@@ -257,7 +270,8 @@
           min_size="8"
           min_time_diff="2"
           max_time_diff="122419"
-          simulate='false'
+          simulate_copy='false'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$"
