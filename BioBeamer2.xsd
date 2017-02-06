@@ -22,6 +22,7 @@
             <xs:attribute type="xs:int" name="min_size" use="optional"/>
             <xs:attribute type="xs:short" name="min_time_diff" use="optional"/>
             <xs:attribute type="xs:int" name="max_time_diff" use="optional"/>
+            <xs:attribute type="xs:int" name="max_time_delete" use="optional"/>
             <xs:attribute type="xs:string" name="simulate_copy" use="optional"/>
             <xs:attribute type="xs:string" name="simulate_delete" use="optional"/>
             <xs:attribute type="xs:string" name="func_target_mapping" use="optional"/>

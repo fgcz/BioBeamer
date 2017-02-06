@@ -48,6 +48,7 @@ class BioBeamerParser(object):
                   'simulate_delete': True,
                   'min_time_diff': 2 * 3600,
                   'max_time_diff': 24 * 3600 * 7 * 4,
+                  'max_time_delete': 24 * 3600 * 7 * 2,
                   'min_size': 100 * 1024,
                   'source_path': "D:/Data2San/",
                   'target_path': "\\\\130.60.81.21\\Data2San"}
@@ -376,7 +377,7 @@ def robocopy(bio_beamer_parser, logger):
                       simulate=parameters['simulate_copy'])
     # it might be that there are not enough files since strict robocopy filtering is applied.
     simulate = 'files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
-    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger,
+    remove_old_copied(copied["copied"], parameters["max_time_delete"], logger,
                       simulate=simulate)
 
 
