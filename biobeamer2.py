@@ -276,7 +276,7 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
 
 def robocopy_exec_map(source_results, mov, logger, logfile, simulate=False):
     for source, destination in source_results.iteritems():
-        robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile, simulate=simulate)
+        robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile, simulate_copy=simulate)
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
