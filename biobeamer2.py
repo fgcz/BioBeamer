@@ -44,7 +44,8 @@ class BioBeamerParser(object):
     """
     class for syncing data from instrument PC to archive
     """
-    parameters = {'simulate': False,
+    parameters = {'simulate_copy': False,
+                  'simulate_delete': True,
                   'min_time_diff': 2 * 3600,
                   'max_time_diff': 24 * 3600 * 7 * 4,
                   'min_size': 100 * 1024,
@@ -104,7 +105,12 @@ class BioBeamerParser(object):
                         except:
                             self.logger.error("re.compile pattern failed.")
                             raise
-                    elif k == 'simulate':
+                    elif k == 'simulate_copy':
+                        if i.attrib[k] == "false":
+                            self.parameters[k] = False
+                        else:
+                            self.parameters[k] = True
+                    elif k == 'simulate_delete':
                         if i.attrib[k] == "false":
                             self.parameters[k] = False
                         else:
@@ -130,8 +136,14 @@ class BioBeamerParser(object):
 
     def print_para(self):
         """ print class parameter setting """
-        for k, v in self.parameters.items():
+        for k, v in self.parameters.iteritems():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
+
+    def log_para(self):
+        self.logger.info("\nLogging bio beamer paramters:")
+        for k, v in self.parameters.iteritems():
+            self.logger.info("{0}\t=\t{1}".format(k, v))
+        self.logger.info("\n")
 
     def set_para(self, key, value):
         """ class parameter setting """
@@ -200,19 +212,25 @@ def filter_input_filelist(files_to_copy, regex, parameters):
     return files
 
 
-def log_files_stat(files_to_copy, logger):
+def log_files_stat(files_to_copy, parameters, logger):
     '''
     :param files_to_copy: list with files to copy
     :param logger: a logger
     :return: nil
     '''
     for file_to_copy in files_to_copy:
-        logger.info("consider: '{0}' getmtime={1}; getsize={1}".format(file_to_copy,
-                                                                       time.time() - os.path.getmtime(file_to_copy),
-                                                                       os.path.getsize(file_to_copy)))
+        logger.info(
+            "consider: '{name}' filetime={time}; filesize={size}, maxitime={maxtime}, mintime={mintime}, minsize={minsize}".format(
+                name=file_to_copy,
+                time=time.time() - os.path.getmtime(file_to_copy),
+                size=os.path.getsize(file_to_copy),
+                mintime=parameters['min_time_diff'],
+                maxtime=parameters['max_time_diff'],
+                minsize=parameters['min_size'])
+        )
 
 
-def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate=False):
+def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate_copy=False):
     """
     wrapper function to
     compose robocopy.exe command line and call it out of python
@@ -238,7 +256,7 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
         '"{}"'.format(os.path.basename(file_to_copy))
     ]
 
-    if not (simulate):
+    if not simulate_copy:
         logger.info("Running Command: [{0}]".format(" ".join(cmd)))
         try:
             # TODO(cp): check if this is really necessary
@@ -252,7 +270,6 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
         except:
             logger.error("robocopy exception raised.")
             raise
-
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
@@ -335,19 +352,18 @@ def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="fi
         myfile.close()
 
 
-def robocopy(bbparser, logger):
-    parameters = bbparser.parameters
-    regex = bbparser.regex
+def robocopy(bio_beamer_parser, logger):
+    parameters = bio_beamer_parser.parameters
+    regex = bio_beamer_parser.regex
     files2copy = get_all_files(parameters["source_path"], logger=logger)
 
     filesRR = filter_input_filelist(files2copy, regex, parameters)
     if len(filesRR) == 0:
         return
-    log_files_stat(filesRR, logger=logger)
+    log_files_stat(filesRR, parameters, logger=logger)
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]
-
     if mapping_function_name != "":
         logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
         method_to_call = getattr(mapping_functions, mapping_function_name)
@@ -357,9 +373,11 @@ def robocopy(bbparser, logger):
     copied = compare_files(source_result_mapping)
 
     robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log",
-                      simulate=False)
+                      simulate=parameters['simulate_copy'])
     # it might be that there are not enough files since strict robocopy filtering is applied.
-    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger, simulate="")
+    simulate = 'files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
+    remove_old_copied(copied["copied"], parameters["max_time_diff"] / 2, logger,
+                      simulate=simulate)
 
 
 if __name__ == "__main__":
@@ -374,22 +392,26 @@ if __name__ == "__main__":
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
 
     host = socket.gethostname()
-
     logger = MyLog()
     logger.add_file()
 
-    bbparser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
-    logger.add_syshandler(address=(bbparser.parameters["syshandler_adress"], bbparser.parameters["syshandler_port"]))
+    logger.logger.info("\n\n\nStarting new Biobeamer!")
+    logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
+
+    bio_beamer_parser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
+    logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
+                                   bio_beamer_parser.parameters["syshandler_port"]))
+    logger.logger.info("Starting Remote Logging from host {}".format(host))
+    bio_beamer_parser.log_para()
 
     drive = 0
-    if re.match("^\\\\", bbparser.parameters['target_path']):
-        drive = Drive(logger.logger, password=password, networkPath=bbparser.parameters['target_path'])
+    if re.match("^\\\\", bio_beamer_parser.parameters['target_path']):
+        drive = Drive(logger.logger, password=password, networkPath=bio_beamer_parser.parameters['target_path'])
         if not drive.mapDrive() == 0:
-            logger.logger.error("Can't map network drive {}".format(bbparser.parameters['target_path']))
+            logger.logger.error("Can't map network drive {}".format(bio_beamer_parser.parameters['target_path']))
             exit(0)
 
-    logger.logger.info("hostname is {0}.".format(host))
-    robocopy(bbparser, logger.logger)
+    robocopy(bio_beamer_parser, logger.logger)
 
     if not drive == 0:
         drive.unmapDrive()
