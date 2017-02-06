@@ -140,10 +140,10 @@ class BioBeamerParser(object):
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def log_para(self):
-        self.logger.info("\nLogging bio beamer paramters:")
+        self.logger.info("Logging bio beamer paramters:")
         for k, v in self.parameters.iteritems():
             self.logger.info("{0}\t=\t{1}".format(k, v))
-        self.logger.info("\n")
+        self.logger.info("END PARAMETERS\n")
 
     def set_para(self, key, value):
         """ class parameter setting """
