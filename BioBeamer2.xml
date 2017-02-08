@@ -72,7 +72,7 @@
     <host name="FGCZ-I-184"
           instrument="FUSION_1"
           min_size="1024000"
-          min_time_diff="1800"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -93,7 +93,7 @@
     <host name="FGCZ-I-197"
           instrument="FUSION_2"
           min_size="1024000"
-          min_time_diff="1800"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -109,11 +109,30 @@
             <applicationID>176</applicationID>
         </b-fabric>
     </host>
+    <host name="fgcz-i-194"
+          instrument="VELOS_1"
+          min_size="1024000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+VELOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>90</applicationID>
+        </b-fabric>
+    </host>
 
     <host name="fgcz-qex1"
           instrument="QEXATCTIVE_1"
           min_size="1024000"
-          min_time_diff="0"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -133,7 +152,7 @@
     <host name="fgcz-i-202"
           instrument="QEXATCTIVE_2"
           min_size="1024000"
-          min_time_diff="2400"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -153,7 +172,7 @@
     <host name="fgcz-i-216"
           instrument="QEXACTIVEHF_1"
           min_size="1024000"
-          min_time_diff="1800"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -173,7 +192,7 @@
     <host name="FGCZ-I-186"
           instrument="QEXACTIVEHF_2"
           min_size="1024000"
-          min_time_diff="3600"
+          min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
