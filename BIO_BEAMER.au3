@@ -8,6 +8,10 @@
 
 Local $python_cmd = "c:\fgcz\biobeamer\biobeamer.bat"
 
+Local $file = FileOpen("C:\fgcz\BioBeamer\justBeamFiles.log", 1)
+FileWrite($file, "----------------------------------------------------------- " & @CRLF)
+
+
 ; display a msg box
 SplashTextOn("BioBeamer", "BioBeamer", 500, 50, -1, -1, 2, "", 24)
 sleep(3000)
@@ -16,4 +20,7 @@ sleep(3000)
 
 Local $resRun = RunWait($python_cmd)
 
+FileWrite($file, "return code = " & $resRun & @CRLF)
+FileWrite($file, "----------------------------------------------------------- " & @CRLF)
+FileClose($file)
 
