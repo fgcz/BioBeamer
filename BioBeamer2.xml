@@ -155,7 +155,7 @@
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
-          simulate_delete='true'
+          simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
