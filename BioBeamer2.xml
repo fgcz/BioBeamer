@@ -209,26 +209,6 @@
         </b-fabric>
     </host>
 
-    <host name="fgcz-i-180"
-          instrument="QEXACTIVEHF_3"
-          min_size="1024000"
-          min_time_diff="3600"
-          max_time_diff="2419200"
-          simulate_copy='false'
-          simulate_delete='true'
-          func_target_mapping=""
-          robocopy_mov="false"
-          pattern=".+Proteomics\\QEXACTIVEHF_3\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
-          source_path="D:/Data2San/"
-          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
-          syshandler_adress="130.60.81.148"
-          syshandler_port="514"
-    >
-        <b-fabric>
-            <applicationID>207</applicationID>
-        </b-fabric>
-    </host>
-
     <host name="fgcz-i-219"
           instrument="QUANTIVA_1"
           min_size="800"
