@@ -154,6 +154,7 @@
           min_size="1024000"
           min_time_diff="2"
           max_time_diff="2419200"
+		  max_time_delete="604800"
           simulate_copy='false'
           simulate_delete='false'
           func_target_mapping=""
