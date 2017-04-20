@@ -176,16 +176,14 @@ def robocopy_get_basename_dict(files_to_copy):
     here we have a dictionary containing all files having the same basename
     This is needed if the instrument aquires 2 files updating only 1 and we should not move the 1st.
     """
-    basename_regex = re.compile(r"^(.+?)(\.[a-zA-Z0-9]+){1,2}$")
+
     for f in files_to_copy:
-        # TODO(cp): check if this always works as basename
-        result = basename_regex.match(f)
-        if result:
-            file_basename = result.group(1)
-            if not file_basename in basename_dict:
-                basename_dict[file_basename] = []
-            basename_dict[file_basename].append(f)
-    return (basename_dict)
+        file_basename = os.path.splitext(f)
+        file_basename = file_basename[0]
+        if not file_basename in basename_dict:
+            basename_dict[file_basename] = []
+        basename_dict[file_basename].append(f)
+    return basename_dict
 
 
 def robocopy_filter_sublist(f, regex, parameters):
@@ -193,6 +191,8 @@ def robocopy_filter_sublist(f, regex, parameters):
     expecting a dictionary where the basename is the key
     returns True iff all files (values) fullfill the filter criteria
     """
+    if "Daddio" in f:
+        print (f)
     files_to_copy = filter(regex.match, f)
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > parameters['min_time_diff'],
                            files_to_copy)
@@ -221,7 +221,7 @@ def log_files_stat(files_to_copy, parameters, logger):
     '''
     for file_to_copy in files_to_copy:
         logger.info(
-            "consider: '{name}' filetime={time}; filesize={size}, maxitime={maxtime}, mintime={mintime}, minsize={minsize}".format(
+            "consider: '{name}' filetime={time}; filesize={size}, maxtime={maxtime}, mintime={mintime}, minsize={minsize}".format(
                 name=file_to_copy,
                 time=time.time() - os.path.getmtime(file_to_copy),
                 size=os.path.getsize(file_to_copy),
