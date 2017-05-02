@@ -148,6 +148,25 @@
             <applicationID>160</applicationID>
         </b-fabric>
     </host>
+    <host name="FGCZ-I-208"
+          instrument="QEXATCTIVE_3"
+          min_size="1024000"
+          min_time_diff="2"
+          max_time_diff="222419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>163</applicationID>
+        </b-fabric>
+    </host>
 
     <host name="fgcz-i-202"
           instrument="QEXATCTIVE_2"
