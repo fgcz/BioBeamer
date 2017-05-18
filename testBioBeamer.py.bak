@@ -12,8 +12,8 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 
 import unittest
 import os
-from .fgcz_biobeamer import BioBeamer
-from .fgcz_biobeamer import Checker
+from fgcz_biobeamer import BioBeamer
+from fgcz_biobeamer import Checker
 import time
 import tempfile
 
@@ -132,11 +132,11 @@ class TestFileFilter(unittest.TestCase):
         f.write('\0')
         f.close()
         os.utime(file, (modification_time, modification_time))
-        print((os.stat(file).st_size))
+        print(os.stat(file).st_size)
 
     def setUp(self):
         files = self.fileList()
-        print(("len files {0}".format(len(files))))
+        print("len files {0}".format(len(files)))
         current_time = time.time()
 
         for file in files:
