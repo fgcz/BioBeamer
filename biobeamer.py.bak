@@ -34,7 +34,7 @@ import re
 import socket
 import unittest
 import filecmp
-import urllib.request, urllib.parse, urllib.error
+import urllib
 from lxml import etree
 
 
@@ -70,10 +70,10 @@ class BioBeamerParser(object):
         xml_url = xml
         # read config files from url
         try:
-            f = urllib.request.urlopen(xml)
+            f = urllib.urlopen(xml)
             xml = f.read()
 
-            f = urllib.request.urlopen(xsd)
+            f = urllib.urlopen(xsd)
             xsd = f.read()
 
         except:
@@ -93,13 +93,13 @@ class BioBeamerParser(object):
         found_host_config = False
         # init para dictionary
         for i in xml_bio_beamer:
-            if i.tag == 'host' and 'name' in list(i.attrib.keys()):
+            if i.tag == 'host' and 'name' in i.attrib.keys():
                 pass
             else:
                 continue
 
             if i.attrib['name'] == hostname:
-                for k in list(i.attrib.keys()):
+                for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
                         self.parameters[k] = os.path.normpath(i.attrib[k])
                     elif k == 'pattern':
@@ -182,7 +182,7 @@ class BioBeamer(object):
 
     def print_para(self):
         """ print class parameter setting """
-        for k, v in list(self.parameters.items()):
+        for k, v in self.parameters.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def set_para(self, key, value):
@@ -210,10 +210,12 @@ class BioBeamer(object):
         expecting a dictionary where the basename is the key
         returns True iff all files (values) fullfill the filter criteria
         """
-        files_to_copy = list(filter(self.regex.match, f))
-        files_to_copy = [f for f in files_to_copy if time.time() - os.path.getmtime(f) > self.parameters['min_time_diff']]
-        files_to_copy = [f for f in files_to_copy if time.time() - os.path.getmtime(f) < self.parameters['max_time_diff']]
-        files_to_copy = [f for f in files_to_copy if os.path.getsize(f) > self.parameters['min_size']]
+        files_to_copy = filter(self.regex.match, f)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > self.parameters['min_time_diff'],
+                               files_to_copy)
+        files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < self.parameters['max_time_diff'],
+                               files_to_copy)
+        files_to_copy = filter(lambda f: os.path.getsize(f) > self.parameters['min_size'], files_to_copy)
 
         if len(files_to_copy) < len(f):
             return False
@@ -242,16 +244,16 @@ class BioBeamer(object):
                                            onerror=lambda e: sys.stdout.write("Error: {0}\n".format(e))):
 
             # BioBeamer filters
-            files_to_copy = [os.path.join(root, f) for f in files]
+            files_to_copy = map(lambda f: os.path.join(root, f), files)
 
             basename_dict = get_basename_dict(files_to_copy)
-            basename_values = list(basename_dict.values())
+            basename_values = basename_dict.values()
             # not clear what happens here because this is list!!!
-            files_to_copy = list(filter(self.bb_filter, basename_values))
+            files_to_copy = filter(self.bb_filter, basename_values)
 
             # TODO(cp): remove the for loop
             for file_to_copy in files_to_copy:
-                list(map(lambda f: self.sync(f, func_target_mapping), file_to_copy))
+                map(lambda f: self.sync(f, func_target_mapping), file_to_copy)
 
         self.logger.info("done")
 
@@ -264,10 +266,10 @@ class BioBeamer(object):
 
         if self.parameters['simulate'] is True:
             self.logger.info("simulate is True. aboard.")
-            print(("getmtime = {0};\ngetsize = {1} diff={2}".format(time.time() - os.path.getmtime(file_to_copy),
+            print("getmtime = {0};\ngetsize = {1} diff={2}".format(time.time() - os.path.getmtime(file_to_copy),
                                                                    os.path.getsize(file_to_copy),
                                                                    os.path.getsize(file_to_copy) - self.parameters[
-                                                                       'min_size'])))
+                                                                       'min_size']))
             return
 
         try:

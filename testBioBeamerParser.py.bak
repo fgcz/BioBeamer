@@ -11,7 +11,7 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 """
 
 import unittest
-from .fgcz_biobeamer import BioBeamerParser
+from fgcz_biobeamer import BioBeamerParser
 
 
 class TestBioBeamerParser(unittest.TestCase):

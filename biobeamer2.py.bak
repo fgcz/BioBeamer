@@ -6,14 +6,14 @@ import os
 import logging
 import logging.handlers
 
-import urllib.request, urllib.parse, urllib.error
+import urllib
 
 import subprocess
 from lxml import etree
 import re
 import sys
 import socket
-from . import mapping_functions
+import mapping_functions
 
 
 def create_logger(name="BioBeamer", filename="./log/biobeamer.log", address=("130.60.81.148", 514), make_syslog=False):
@@ -60,10 +60,10 @@ class BioBeamerParser(object):
         xml_url = xml
         # read config files from url
         try:
-            f = urllib.request.urlopen(xml)
+            f = urllib.urlopen(xml)
             xml = f.read()
 
-            f = urllib.request.urlopen(xsd)
+            f = urllib.urlopen(xsd)
             xsd = f.read()
 
         except:
@@ -83,13 +83,13 @@ class BioBeamerParser(object):
         found_host_config = False
         # init para dictionary
         for i in xml_bio_beamer:
-            if i.tag == 'host' and 'name' in list(i.attrib.keys()):
+            if i.tag == 'host' and 'name' in i.attrib.keys():
                 pass
             else:
                 continue
 
             if i.attrib['name'] == hostname:
-                for k in list(i.attrib.keys()):
+                for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
                         self.parameters[k] = os.path.normpath(i.attrib[k])
                     elif k == 'pattern':
@@ -119,7 +119,7 @@ class BioBeamerParser(object):
 
     def print_para(self):
         """ print class parameter setting """
-        for k, v in list(self.parameters.items()):
+        for k, v in self.parameters.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def set_para(self, key, value):
@@ -140,7 +140,7 @@ def get_all_files(source_path, logger):
                                        topdown=False, followlinks=False,
                                        onerror=lambda e: logger.info("Error: {0}\n".format(e))):
         # BioBeamer filters
-        files_to_copy = [os.path.join(root, f) for f in files]
+        files_to_copy = map(lambda f: os.path.join(root, f), files)
         all_files += files_to_copy
 
     return all_files
@@ -169,10 +169,12 @@ def robocopy_filter_sublist(f, regex, parameters):
     expecting a dictionary where the basename is the key
     returns True iff all files (values) fullfill the filter criteria
     """
-    files_to_copy = list(filter(regex.match, f))
-    files_to_copy = [f for f in files_to_copy if time.time() - os.path.getmtime(f) > parameters['min_time_diff']]
-    files_to_copy = [f for f in files_to_copy if time.time() - os.path.getmtime(f) < parameters['max_time_diff']]
-    files_to_copy = [f for f in files_to_copy if os.path.getsize(f) > parameters['min_size']]
+    files_to_copy = filter(regex.match, f)
+    files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > parameters['min_time_diff'],
+                           files_to_copy)
+    files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < parameters['max_time_diff'],
+                           files_to_copy)
+    files_to_copy = filter(lambda f: os.path.getsize(f) > parameters['min_size'], files_to_copy)
 
     if len(files_to_copy) < len(f):
         return False
@@ -181,8 +183,8 @@ def robocopy_filter_sublist(f, regex, parameters):
 
 def robocopy_filter(files_to_copy, regex, parameters):
     basename_dict = robocopy_get_basename_dict(files_to_copy)
-    files = list(basename_dict.values())
-    files = [fl for fl in files if robocopy_filter_sublist(fl, regex=regex, parameters=parameters)]
+    files = basename_dict.values()
+    files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters), files)
     files = [item for sublist in files for item in sublist]
     return files
 
@@ -241,7 +243,7 @@ def robocopy_exec(file_to_copy, target_path, robocopy_args, logger, simulate=Fal
 
 
 def robocopy_exec_map(source_results, robocopy_args, logger, simulate=False):
-    for source, destination in source_results.items():
+    for source, destination in source_results.iteritems():
         robocopy_exec(source, destination, robocopy_args=robocopy_args, logger=logger, simulate=simulate)
 
 
@@ -261,7 +263,7 @@ def make_destination_files(files_to_copy, source_path, target_path):
 
 
 def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
-    for key, value in filemap.items():
+    for key, value in filemap.iteritems():
         filemap[key] = mapping_function(value, logger)
     return filemap
 
@@ -269,7 +271,7 @@ def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
 def compare_files(source_result_mapping):
     copied = {}
     not_copied = {}
-    for file_to_copy, target_file in source_result_mapping.items():
+    for file_to_copy, target_file in source_result_mapping.iteritems():
         tmp = os.path.exists(target_file)
         if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
             copied[file_to_copy] = target_file
@@ -279,7 +281,7 @@ def compare_files(source_result_mapping):
 
 
 def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate=True):
-    for file_to_copy in list(source_result_mapping.keys()):
+    for file_to_copy in source_result_mapping.keys():
 
         time_diff = time.time() - os.path.getmtime(file_to_copy)
         if time_diff > max_time_diff:
