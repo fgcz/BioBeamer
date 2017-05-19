@@ -152,6 +152,7 @@
           instrument="QEXATCTIVE_3"
           min_size="1024000"
           min_time_diff="2"
+		  max_time_delete="604800"
           max_time_diff="222419200"
           simulate_copy='false'
           simulate_delete='false'
