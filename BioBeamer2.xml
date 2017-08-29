@@ -10,7 +10,7 @@
 
     <host name="fgcz-092"
           instrument="ULTRAFLEXTREME_1"
-          min_size="24"
+          min_size="1"
           min_time_diff="1600"
           max_time_diff="24192000"
           max_time_delete="1209600"
