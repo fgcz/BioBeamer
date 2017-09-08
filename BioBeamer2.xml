@@ -1,13 +1,11 @@
 <?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
 <BioBeamerHosts>
-
     <!--
     # $HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/config/BioBeamer.xml $
     # $Id: BioBeamer.xml 8124 2017-01-30 10:06:15Z cpanse $
     # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
     # $Author: cpanse $
     -->
-
     <host name="fgcz-092"
           instrument="ULTRAFLEXTREME_1"
           min_size="24"
@@ -28,7 +26,25 @@
             <applicationID>204</applicationID>
         </b-fabric>
     </host>
-
+    <host name="FGCZ-H-079"
+          instrument="Analysis"
+          min_size="1024"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='true'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Analysis\\GenericZip.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="130.60.81.148"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>185</applicationID>
+        </b-fabric>
+    </host>
     <host name="FGCZ-I-182"
           instrument="T100_1"
           min_size="1024"
