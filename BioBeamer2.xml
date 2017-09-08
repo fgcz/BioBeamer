@@ -8,7 +8,7 @@
     -->
     <host name="fgcz-092"
           instrument="ULTRAFLEXTREME_1"
-          min_size="24"
+          min_size="1"
           min_time_diff="1600"
           max_time_diff="24192000"
           max_time_delete="1209600"
@@ -156,7 +156,7 @@
           robocopy_mov="false"
           pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-proteomics.uzh.ch\\Data2San"
           syshandler_adress="130.60.81.148"
           syshandler_port="514"
     >
@@ -168,6 +168,7 @@
           instrument="QEXATCTIVE_3"
           min_size="1024000"
           min_time_diff="2"
+		  max_time_delete="604800"
           max_time_diff="222419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -245,16 +246,16 @@
         </b-fabric>
     </host>
 
-    <host name="fgcz-i-219"
+    <host name="fgcz-i-217"
           instrument="QUANTIVA_1"
           min_size="800"
           min_time_diff="1800"
-          max_time_diff="2419200"
+          max_time_diff="24192000"
           simulate_copy='false'
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+(Proteomics|Metabolomics)\\TSQ_2\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          pattern=".+(Proteomics|Metabolomics)\\QUANTIVA_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="130.60.81.148"
