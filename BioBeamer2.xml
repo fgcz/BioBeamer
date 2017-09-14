@@ -249,8 +249,8 @@
 
     <host name="fgcz-i-217"
           instrument="QUANTIVA_1"
-          min_size="10"
-          min_time_diff="1800"
+          min_size="1"
+          min_time_diff="18"
           max_time_diff="24192000"
           simulate_copy='false'
           simulate_delete='true'
