@@ -35,13 +35,14 @@
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
-	  <!-- .+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip) -->
-          pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+	  pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="130.60.81.148"
           syshandler_port="514"
     >
+	 <!-- .+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip) -->
+          
         <b-fabric>
             <applicationID>185</applicationID>
         </b-fabric>
