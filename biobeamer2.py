@@ -191,8 +191,6 @@ def robocopy_filter_sublist(f, regex, parameters):
     expecting a dictionary where the basename is the key
     returns True iff all files (values) fullfill the filter criteria
     """
-    if "Daddio" in f:
-        print (f)
     files_to_copy = filter(regex.match, f)
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > parameters['min_time_diff'],
                            files_to_copy)
