@@ -177,7 +177,7 @@
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="130.60.81.148"
