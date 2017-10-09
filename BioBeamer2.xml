@@ -120,8 +120,8 @@
           robocopy_mov="false"
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-ms.fgcz-net.unizh.ch\\Data2San"
-          syshandler_adress="130.60.81.148"
+          target_path="\\fgcz-ms.uzh.ch\\Data2San"
+          syshandler_adress="130.60.193.21"
           syshandler_port="514"
     >
         <b-fabric>
