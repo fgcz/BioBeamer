@@ -19,7 +19,7 @@
           pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -39,7 +39,7 @@
 	  pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
 	 <!-- .+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip) -->
@@ -60,7 +60,7 @@
           pattern=".+T100_1.+[-0-9a-zA-Z_\/\.\\]+\.(blr|bme|txt|zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -80,7 +80,7 @@
           pattern=".+p[0-9]{4,4}[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$"
           source_path="D:/Analyst Data/Projects/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -100,7 +100,7 @@
           pattern=".+FUSION_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -121,7 +121,7 @@
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -140,7 +140,7 @@
           pattern=".+VELOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -160,7 +160,7 @@
           pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -180,7 +180,7 @@
           pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -201,7 +201,7 @@
           pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -221,7 +221,7 @@
           pattern=".+QEXACTIVEHF_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -241,7 +241,7 @@
           pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -261,7 +261,7 @@
           pattern=".+(Proteomics|Metabolomics)\\QUANTIVA_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -281,7 +281,7 @@
           pattern=".+Metabolomics\\IMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.h5$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-ms.uzh.ch\\Data2San"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
@@ -300,7 +300,7 @@
           pattern=".+p1000/Proteomics/(VELOS_1|TRIPLETOF_1)/[-0-9a-zA-Z_\/\.]+\.(raw|RAW|wiff|wiff\.scan)$"
           source_path="/srv/www/htdocs/Data2San/"
           target_path="/srv/www/htdocs/"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
     </host>
@@ -317,7 +317,7 @@
           pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$"
           source_path="D:/Data2San/"
           target_path="D:/Data2SanDestination/"
-          syshandler_adress="130.60.193.21"
+          syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
