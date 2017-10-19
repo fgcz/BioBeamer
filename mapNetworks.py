@@ -24,7 +24,8 @@ class Drive:
         out, err = p.communicate()
         self._logger.info(out.replace("\r\n", " "))
         if not err == "":
-            self._logger.error(winCMD)
+            #self._logger.error(winCMD)
+            self._logger.info("Network drive {} for user {} can NOT be MAPPED.".format(self._networkPath,self._user))
             self._logger.error(err.replace("\r\n", " "))
         else:
             self._logger.info("Network drive {} for user {} mapped without error code.".format(self._networkPath,self._user))
