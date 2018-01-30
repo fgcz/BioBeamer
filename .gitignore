@@ -4,3 +4,4 @@ __pycache__
 *.log
 files2delete.bat
 biobeamer.bat
+venv
