@@ -230,7 +230,25 @@
             <applicationID>161</applicationID>
         </b-fabric>
     </host>
-
+    <host name="fgcz-i-218"
+          instrument="QEXACTIVEHFX_1"
+          min_size="1024000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVEHFX_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>232</applicationID>
+        </b-fabric>
+    </host>
     <host name="fgcz-i-216"
           instrument="QEXACTIVEHF_1"
           min_size="1024000"
