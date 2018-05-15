@@ -32,8 +32,8 @@
           min_time_diff="2"
           max_time_diff="2419200"
           max_time_delete="2"
-          simulate_copy='true'
-          simulate_delete='true'
+          simulate_copy='false'
+          simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
 	      pattern=".+Analysis\\ProgenesisQI\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
@@ -42,12 +42,31 @@
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
-	 <!-- .+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip) -->
-
         <b-fabric>
             <applicationID>185</applicationID>
         </b-fabric>
     </host>
+    <host name="FGCZ-H-XXX"
+          instrument="SkylineSRM"
+          min_size="1024"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          max_time_delete="2"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+	  pattern=".+Analysis\\SkylineSRM\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>234</applicationID>
+        </b-fabric>
+    </host>
+
     <host name="FGCZ-H-079"
           instrument="Analysis"
           min_size="1024"
@@ -64,8 +83,6 @@
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
-	 <!-- .+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}_.+[-0-9a-zA-Z_\/\.\\]+\.(zip) -->
-          
         <b-fabric>
             <applicationID>185</applicationID>
         </b-fabric>
