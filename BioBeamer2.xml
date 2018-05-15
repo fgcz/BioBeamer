@@ -216,10 +216,10 @@
 		  max_time_delete="604800"
           max_time_diff="222419200"
           simulate_copy='false'
-          simulate_delete='true'
+          simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+Metabolomics\\G2HD_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\."
+          pattern=".+Metabolomics\\G2HD_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
