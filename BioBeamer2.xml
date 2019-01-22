@@ -245,7 +245,7 @@
         </b-fabric>
     </host>
     <host name="fgcz-i-209"
-          instrument="G2HD_1"
+          instrument="G2SI_1"
           min_size="0"
           min_time_diff="2"
 		  max_time_delete="604800"
@@ -254,8 +254,8 @@
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+Metabolomics\\G2HD_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
-          source_path="D:/Data2San/"
+          pattern=".+Metabolomics\\G2SI_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          source_path="E:/Data2San/"
           target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
@@ -264,7 +264,7 @@
             <applicationID>163</applicationID>
         </b-fabric>
     </host>
-
+<!--G2SI_1-->
     <host name="fgcz-i-202"
           instrument="QEXATCTIVE_2"
           min_size="1024000"
