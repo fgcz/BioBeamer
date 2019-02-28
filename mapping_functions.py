@@ -46,9 +46,9 @@ def test_mapping_function(logger):
     '''
     tmp = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw'
     tmp2 = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff'
-    tmp_ = mapping_functions.map_data_analyst_qtrap_1(tmp, logger)
+    tmp_ = map_data_analyst_qtrap_1(tmp, logger)
     if tmp_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm.raw':
         print("mapping failed")
-    tmp2_ = mapping_functions.map_data_analyst_qtrap_1(tmp2, logger)
+    tmp2_ = map_data_analyst_qtrap_1(tmp2, logger)
     if tmp2_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm2.wiff':
         print("mapping failed")
