@@ -360,6 +360,7 @@ def robocopy(bio_beamer_parser, logger):
     if len(filesRR) == 0:
         return
     log_files_stat(filesRR, parameters, logger=logger)
+
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]

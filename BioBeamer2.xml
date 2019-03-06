@@ -264,18 +264,20 @@
             <applicationID>249</applicationID>
         </b-fabric>
     </host>
+    <!---->
+
     <host name="fgcz-089"
           instrument="G2HD_2"
           min_size="0"
           min_time_diff="2"
-		  max_time_delete="604800"
-          max_time_diff="222419200"
+		  max_time_delete="1209600"
+          max_time_diff="1209600"
           simulate_copy='false'
-          simulate_delete='false'
-          func_target_mapping=""
+          simulate_delete='true'
           robocopy_mov="false"
-          pattern=".+Proteomics\\G2HD_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
-          source_path="D:/Data2San/"
+          func_target_mapping="map_data_G2HD_2"
+          pattern=".+\\[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          source_path="D:/DataS19.PRO/Data"
           target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
