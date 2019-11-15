@@ -18,7 +18,7 @@
           robocopy_mov="false"
           pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -38,7 +38,7 @@
           robocopy_mov="false"
 	      pattern=".+Analysis\\ProgenesisQI\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -58,7 +58,7 @@
           robocopy_mov="false"
 	  pattern=".+Analysis\\SkylineSRM\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -79,7 +79,7 @@
           robocopy_mov="false"
 	  pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -98,7 +98,7 @@
           robocopy_mov="false"
           pattern=".+T100_1.+[-0-9a-zA-Z_\/\.\\]+\.(blr|bme|txt|zip)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -118,7 +118,7 @@
           robocopy_mov="false"
           pattern=".+p[0-9]{4,4}[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW|wiff|wiff\.scan)$"
           source_path="D:/Analyst Data/Projects/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -138,7 +138,7 @@
           robocopy_mov="false"
           pattern=".+FUSION_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -158,7 +158,7 @@
           robocopy_mov="false"
           pattern=".+LUMOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -185,7 +185,7 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <!--target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"-->
+    <!--target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"-->
 
     <host name="FGCZ-I-197"
           instrument="FUSION_2"
@@ -198,7 +198,7 @@
           robocopy_mov="false"
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -217,7 +217,7 @@
           robocopy_mov="false"
           pattern=".+VELOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -237,7 +237,7 @@
           robocopy_mov="false"
           pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -257,7 +257,7 @@
           robocopy_mov="false"
           pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -277,7 +277,7 @@
           robocopy_mov="false"
           pattern=".+Metabolomics\\G2SI_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
           source_path="E:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -299,7 +299,7 @@
           func_target_mapping="map_data_G2HD_2"
           pattern=".+\\[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
           source_path="D:/DataS19.PRO/Data"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -320,7 +320,7 @@
           robocopy_mov="false"
           pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -339,7 +339,7 @@
           robocopy_mov="false"
           pattern=".+QEXACTIVEHFX_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -379,7 +379,7 @@
           robocopy_mov="false"
           pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -399,7 +399,7 @@
           robocopy_mov="false"
           pattern=".+(Proteomics|Metabolomics)\\QUANTIVA_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
@@ -419,7 +419,7 @@
           robocopy_mov="false"
           pattern=".+Metabolomics\\IMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.h5$"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
