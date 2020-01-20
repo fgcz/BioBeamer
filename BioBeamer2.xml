@@ -310,8 +310,8 @@
           instrument="G2HD_2"
           min_size="0"
           min_time_diff="2"
-		  max_time_delete="1209600"
-          max_time_diff="1209600"
+		  max_time_delete="5184000"
+          max_time_diff="5184000"
           simulate_copy='false'
           simulate_delete='true'
           robocopy_mov="false"
