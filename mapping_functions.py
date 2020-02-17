@@ -2,6 +2,27 @@ import os
 import re
 
 
+def map_data_G2HD_2(path, logger):
+    """
+    input: '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\20190206HM_11728_C6CYS.raw\\_PROC003.SIG'
+    '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\p65\\Proteomics\\G2HD_2\\schesnov_20190101\\20190104HM_11622_C6.raw\\_PROC002.MAX'
+
+    output: p65/Proteomics/G2HD_2/schesnov_20190000
+    """
+    pattern = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8}.+)$"
+    regex = re.compile(pattern)
+    match = regex.match(path)
+
+    if match:
+        path = os.path.normpath(
+            "{0}p65\\Proteomics\\G2HD_2\\schesnov_20190101\\{1}".format(match.group(1), match.group(2)))
+        return path
+    else:
+        logger.error('Could not apply mapping function. Raising exception')
+        raise ValueError('Could not apply mapping function')
+    return None
+
+
 def map_data_analyst_tripletof_1(path, logger):
     """
     input:  'p1000/Data/selevsek_20150119'
@@ -36,7 +57,6 @@ def map_data_analyst_qtrap_1(path, logger):
         logger.error('Could not apply mapping function. Raising exception')
         raise ValueError('Could not apply mapping function')
     return None
-
 
 
 def test_mapping_function(logger):
