@@ -126,27 +126,25 @@
             <applicationID>92</applicationID>
         </b-fabric>
     </host>
-<!--
-    <host name="FGCZ-I-184"
-          instrument="FUSION_1"
-          min_size="500000"
+    <host name="FGCZ-I-219"
+          instrument="TIMSTOF_1"
+          min_size="4"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+FUSION_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
-            <applicationID>162</applicationID>
+            <applicationID>243</applicationID>
         </b-fabric>
     </host>
--->
     <host name="FGCZ-I-184"
           instrument="LUMOS_1"
           min_size="500000"

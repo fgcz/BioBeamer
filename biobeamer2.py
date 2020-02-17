@@ -95,7 +95,7 @@ class BioBeamerParser(object):
             else:
                 continue
 
-            if i.attrib['name'] == hostname:
+            if i.attrib['name'].lower() == hostname.lower():
                 for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
                         self.parameters[k] = os.path.normpath(i.attrib[k])
