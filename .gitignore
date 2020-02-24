@@ -5,3 +5,4 @@ __pycache__
 files2delete.bat
 biobeamer.bat
 venv
+log/copied_files.txt
