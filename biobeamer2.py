@@ -229,7 +229,12 @@ def log_files_stat(files_to_copy, parameters, logger):
         )
 
 
-def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/robocopy.log", simulate_copy=False):
+def robocopy_exec(file_to_copy,
+                  target_path,
+                  logger,
+                  mov=False,
+                  logfile="./log/robocopy.log",
+                  simulate_copy=False):
     """
     wrapper function to
     compose robocopy.exe command line and call it out of python
@@ -241,7 +246,10 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
 
     see also:
         https://technet.microsoft.com/en-us/library/cc733145.aspx
+        :rtype: object
     """
+    file_copied = None
+
     if not mov:
         robocopy_args = "/E /Z /NP /R:0 /LOG+:{log}".format(log=logfile)
     else:
@@ -264,7 +272,10 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
             logger.info("robocopy return code: '{0}'".format(return_code))
             if return_code > 7:
                 logger.warning("robocopy quit with return code highter than 7")
+
             robocopy_process.terminate()
+            # write to book-keeping file.
+            file_copied = file_to_copy
 
         except:
             logger.error("robocopy exception raised.")
@@ -272,10 +283,21 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
+    return file_copied
 
-def robocopy_exec_map(source_results, mov, logger, logfile, simulate=False):
+
+def robocopy_exec_map(source_results,
+                      mov,
+                      logger,
+                      logfile,
+                      simulate=False):
+    files_copied = []
     for source, destination in source_results.iteritems():
-        robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile, simulate_copy=simulate)
+        file_copied = robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile,
+                                    simulate_copy=simulate)
+        if file_copied is not None:
+            files_copied.append(file_copied)
+    return files_copied
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
@@ -306,7 +328,7 @@ def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
     return filemap
 
 
-def compare_files(source_result_mapping):
+def compare_files_destination(source_result_mapping):
     '''
     :param source_result_mapping:
     :return: map with fields "copied" and "not_copied"
@@ -322,7 +344,27 @@ def compare_files(source_result_mapping):
     return ({"copied": copied, "not_copied": not_copied})
 
 
-def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="files2delete/files2delete.bat"):
+def log_copied_files(copied_files,
+                     storage="./log/copied_files.txt"):
+    if len(copied_files) > 0:
+        with open(storage, "a") as file_log:
+            for file in copied_files:
+                file_log.write(file + "\n")
+
+
+def read_copied_files(storage="./log/copied_files.txt"):
+    if os.path.isfile(storage):
+        with open(storage, "r") as file_log:
+            copied_files = file_log.read().splitlines()
+            return copied_files
+    else:
+        return []
+
+
+def remove_old_copied(source_result_mapping,
+                      max_time_diff,
+                      logger,
+                      simulate="files2delete/files2delete.bat"):
     '''
     removes old files which have been already copied
     :param source_result_mapping:
@@ -336,19 +378,32 @@ def remove_old_copied(source_result_mapping, max_time_diff, logger, simulate="fi
     else:
         myfile = False
 
-    for file_to_copy in source_result_mapping.keys():
-
-        time_diff = time.time() - os.path.getmtime(file_to_copy)
-        if time_diff > max_time_diff:
-            logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
-                                                                                      max_time_diff))
-            if not myfile:
-                os.remove(file_to_copy)
-            else:
-                myfile.write("rm {0}\n".format(file_to_copy))
+    for file_to_copy in source_result_mapping:
+        if os.path.isfile(file_to_copy):
+            time_diff = time.time() - os.path.getmtime(file_to_copy)
+            if time_diff > max_time_diff:
+                logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
+                                                                                          max_time_diff))
+                if not myfile:
+                    os.remove(file_to_copy)
+                else:
+                    myfile.write("rm {0}\n".format(file_to_copy))
 
     if myfile:
         myfile.close()
+
+
+def compare_copied_with_log(copied, files_copied_old):
+    not_copied = copied["not_copied"]
+    copied = copied["copied"]
+    new_not_copied = {}
+    for (key, value) in not_copied.items():
+        if key not in set(files_copied_old):
+            new_not_copied[key] = value
+        else:
+            copied[key] = value
+    copied = ({"copied": copied, "not_copied": new_not_copied})
+    return copied
 
 
 def robocopy(bio_beamer_parser, logger):
@@ -370,14 +425,29 @@ def robocopy(bio_beamer_parser, logger):
         source_result_mapping = rename_destination(source_result_mapping, logger, mapping_function=method_to_call)
 
     # check if files are already copied and if so remove them from source_result_mapping
-    copied = compare_files(source_result_mapping)
+    copied = compare_files_destination(source_result_mapping)
 
-    robocopy_exec_map(copied["not_copied"], parameters["robocopy_mov"], logger, logfile="./log/robocopy.log",
-                      simulate=parameters['simulate_copy'])
-    # it might be that there are not enough files since strict robocopy filtering is applied.
+    files_copied_old = read_copied_files()  # added 02.2020
+    copied = compare_copied_with_log(copied, files_copied_old)  # added 02.2020
+
+    files_copied = robocopy_exec_map(copied["not_copied"],
+                                     parameters["robocopy_mov"],
+                                     logger, logfile="./log/robocopy.log",
+                                     simulate=parameters['simulate_copy'])
+
+    log_copied_files(files_copied)  # added 02.2020
+
     simulate = 'files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
-    remove_old_copied(copied["copied"], parameters["max_time_delete"], logger,
+    # removes files which have been copied
+    remove_old_copied(copied["copied"].keys(),
+                      parameters["max_time_delete"],
+                      logger,
                       simulate=simulate)
+
+    remove_old_copied(files_copied,
+                      parameters["max_time_delete"],
+                      logger,
+                      simulate=simulate)  # added 02.2020
 
 
 if __name__ == "__main__":

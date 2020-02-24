@@ -471,7 +471,7 @@
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*.d/[-0-9a-zA-Z_\/\.\\]*"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
@@ -485,19 +485,21 @@
           instrument="TOFTOFTOF_1"
           min_size="8"
           min_time_diff="2"
-          max_time_diff="122419"
+          max_time_diff="2419200"
+          max_time_delete="10"
           simulate_copy='false'
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$"
+          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]+\.d\\[-0-9a-zA-Z_\/\.\\]+"
           source_path="D:/Data2San/"
           target_path="D:/Data2SanDestination/"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
-            <applicationID>43</applicationID>
+            <applicationID>243</applicationID>
         </b-fabric>
     </host>
 </BioBeamerHosts>
+<!-- pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$" -->
