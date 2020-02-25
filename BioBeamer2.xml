@@ -245,8 +245,8 @@
         </b-fabric>
     </host>
 
-    <host name="fgcz-qex1"
-          instrument="QEXATCTIVE_1"
+    <host name="FGCZ-I-184"
+          instrument="QEXACTIVE_1"
           min_size="1024000"
           min_time_diff="2"
           max_time_diff="2419200"
