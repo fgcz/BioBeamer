@@ -197,7 +197,6 @@ def robocopy_filter_sublist(f, regex, parameters):
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < parameters['max_time_diff'],
                            files_to_copy)
     files_to_copy = filter(lambda f: os.path.getsize(f) > parameters['min_size'], files_to_copy)
-
     if len(files_to_copy) < len(f):
         return False
     return True
@@ -283,10 +282,10 @@ def robocopy_exec(file_to_copy,
                 file_copied = file_to_copy
             else:
                 logger.error("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
-                raise
+                raise Exception("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
         except:
             logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
-            raise
+            raise Exception("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
