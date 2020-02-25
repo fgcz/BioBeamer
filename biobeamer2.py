@@ -283,7 +283,7 @@ def robocopy_exec(file_to_copy,
                 file_copied = file_to_copy
             else:
                 logger.error("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
-                raise
+
         except:
             logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
             raise
