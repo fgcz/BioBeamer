@@ -6,6 +6,7 @@ import os
 import logging
 import logging.handlers
 import urllib
+import urllib.request
 
 import subprocess
 from lxml import etree
@@ -67,10 +68,10 @@ class BioBeamerParser(object):
         xml_url = xml
         # read config files from url
         try:
-            f = urllib.urlopen(xml)
+            f = urllib.request.urlopen(xml)
             xml = f.read()
 
-            f = urllib.urlopen(xsd)
+            f = urllib.request.urlopen(xsd)
             xsd = f.read()
 
         except:
@@ -137,12 +138,12 @@ class BioBeamerParser(object):
 
     def print_para(self):
         """ print class parameter setting """
-        for k, v in self.parameters.iteritems():
+        for k, v in self.parameters.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
     def log_para(self):
         self.logger.info("Logging bio beamer paramters:")
-        for k, v in self.parameters.iteritems():
+        for k, v in self.parameters.items():
             self.logger.info("{0}\t=\t{1}".format(k, v))
         self.logger.info("END PARAMETERS\n")
 
@@ -197,6 +198,7 @@ def robocopy_filter_sublist(f, regex, parameters):
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < parameters['max_time_diff'],
                            files_to_copy)
     files_to_copy = filter(lambda f: os.path.getsize(f) > parameters['min_size'], files_to_copy)
+    files_to_copy = list(files_to_copy)
     if len(files_to_copy) < len(f):
         return False
     return True
@@ -298,7 +300,7 @@ def robocopy_exec_map(source_results,
                       logfile,
                       simulate=False):
     files_copied = []
-    for source, destination in source_results.iteritems():
+    for source, destination in source_results.items():
         file_copied = robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile,
                                     simulate_copy=simulate)
         if file_copied is not None:
@@ -329,7 +331,7 @@ def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
     :param mapping_function:
     :return:
     '''
-    for key, value in filemap.iteritems():
+    for key, value in filemap.items():
         filemap[key] = mapping_function(value, logger)
     return filemap
 
@@ -341,7 +343,7 @@ def compare_files_destination(source_result_mapping):
     '''
     copied = {}
     not_copied = {}
-    for file_to_copy, target_file in source_result_mapping.iteritems():
+    for file_to_copy, target_file in source_result_mapping.items():
         tmp = os.path.exists(target_file)
         if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
             copied[file_to_copy] = target_file
@@ -435,7 +437,7 @@ def robocopy(bio_beamer_parser, logger):
     copied = compare_files_destination(source_result_mapping)
     files_copied_old = read_copied_files()  # added 02.2020
 
-    all_copied = copied["copied"].keys() + files_copied_old # add it because you start with empty file.
+    all_copied = list(copied["copied"].keys()) + files_copied_old # add it because you start with empty file.
     files_copied_old = set(all_copied)
 
 
