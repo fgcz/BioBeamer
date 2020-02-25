@@ -275,10 +275,17 @@ def robocopy_exec(file_to_copy,
 
             robocopy_process.terminate()
             # write to book-keeping file.
-            file_copied = file_to_copy
 
+            # make sure file was copied correctly
+            xx = os.path.exists(target_path)
+            xy = filecmp.cmp(file_to_copy, target_path)
+            if os.path.exists(target_path) and filecmp.cmp(file_to_copy, target_path):
+                file_copied = file_to_copy
+            else:
+                logger.error("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
+                raise
         except:
-            logger.error("robocopy exception raised.")
+            logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
             raise
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
@@ -347,7 +354,8 @@ def compare_files_destination(source_result_mapping):
 def log_copied_files(copied_files,
                      storage="./log/copied_files.txt"):
     if len(copied_files) > 0:
-        with open(storage, "a") as file_log:
+        copied_files.sort()
+        with open(storage, "w") as file_log:
             for file in copied_files:
                 file_log.write(file + "\n")
 
@@ -426,8 +434,12 @@ def robocopy(bio_beamer_parser, logger):
 
     # check if files are already copied and if so remove them from source_result_mapping
     copied = compare_files_destination(source_result_mapping)
-
     files_copied_old = read_copied_files()  # added 02.2020
+
+    all_copied = copied["copied"].keys() + files_copied_old # add it because you start with empty file.
+    files_copied_old = set(all_copied)
+
+
     copied = compare_copied_with_log(copied, files_copied_old)  # added 02.2020
 
     files_copied = robocopy_exec_map(copied["not_copied"],
@@ -435,7 +447,8 @@ def robocopy(bio_beamer_parser, logger):
                                      logger, logfile="./log/robocopy.log",
                                      simulate=parameters['simulate_copy'])
 
-    log_copied_files(files_copied)  # added 02.2020
+    files_copied = set(list(files_copied_old) + files_copied)
+    log_copied_files(list(files_copied))  # added 02.2020
 
     simulate = 'files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
     # removes files which have been copied
