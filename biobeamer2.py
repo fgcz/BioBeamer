@@ -300,8 +300,14 @@ def robocopy_exec_map(source_results,
                       logfile,
                       simulate=False):
     files_copied = []
-    for source, destination in source_results.items():
-        file_copied = robocopy_exec(source, destination, logger=logger, mov=mov, logfile=logfile,
+    sources = list(source_results.keys())
+    sources.sort()
+    for source in sources:
+        file_copied = robocopy_exec(source,
+                                    source_results[source],
+                                    logger=logger,
+                                    mov=mov,
+                                    logfile=logfile,
                                     simulate_copy=simulate)
         if file_copied is not None:
             files_copied.append(file_copied)
@@ -423,7 +429,8 @@ def robocopy(bio_beamer_parser, logger):
     filesRR = filter_input_filelist(files2copy, regex, parameters)
     if len(filesRR) == 0:
         return
-    log_files_stat(filesRR, parameters, logger=logger)
+    
+    #log_files_stat(filesRR, parameters, logger=logger)
 
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
