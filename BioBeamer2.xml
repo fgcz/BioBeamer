@@ -467,13 +467,13 @@
           min_size="4"
           min_time_diff="2"
           max_time_diff="2419200"
-          simulate_copy='false'
-          simulate_delete='false'
+          simulate_copy='true'
+          simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*.d/[-0-9a-zA-Z_\/\.\\]*"
+          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]+\.d\\[-0-9a-zA-Z_\/\.\\]+"
           source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
