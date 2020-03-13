@@ -43,6 +43,8 @@ class Drive:
         self._logger.info(winCMD)
         p = subprocess.Popen(winCMD, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
+        err = err.decode("utf-8")
+        out = out.decode("utf-8")
         if not err == "":
             self._logger.error(winCMD)
             self._logger.error(err)
