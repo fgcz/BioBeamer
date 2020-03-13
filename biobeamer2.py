@@ -397,9 +397,9 @@ def remove_old_copied(source_result_mapping,
         if os.path.isfile(file_to_copy):
             time_diff = time.time() - os.path.getmtime(file_to_copy)
             if time_diff > max_time_diff:
-                logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
-                                                                                          max_time_diff))
                 if not myfile and not simulate:
+                    logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
+                                                                                              max_time_diff))
                     os.remove(file_to_copy)
                 else:
                     myfile.write("rm {0}\n".format(file_to_copy))
