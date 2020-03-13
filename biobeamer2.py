@@ -187,14 +187,42 @@ def robocopy_get_basename_dict(files_to_copy):
     return basename_dict
 
 
-def robocopy_filter_sublist(f, regex, parameters):
+def robocopy_filter_sublist(files, regex, parameters, logger):
     """
     expecting a dictionary where the basename is the key
     returns True iff all files (values) fullfill the filter criteria
     """
+    files_to_copy = []
+    for f in files:
+        ok = True
+        false_str = []
+        if not regex.match(f):
+            ok = False
+            false_str.append('regex')
+        if not time.time() - os.path.getmtime(f) > parameters['min_time_diff']:
+            ok = False
+            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'], time.time() - os.path.getmtime(f)) );
+        if not time.time() - os.path.getmtime(f) < parameters['max_time_diff']:
+            ok = False
+            false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'], time.time() - os.path.getmtime(f)))
+        if not os.path.getsize(f) > parameters['min_size']:
+            ok = False
+            false_str.append("min_size = {}; actual_size = {}".format(parameters['min_size'], os.path.getsize(f)))
+        if ok:
+            files_to_copy.append(f)
+
+        if len(false_str) > 0:
+            false_str = " & ".join(false_str)
+            logger.info("not copying {file} for {reasons}".format(file=f, reasons=false_str) )
+
+    if len(files_to_copy) < len(files):
+        return False
+    return True
+
+def robocopy_filter_sublist_deprec(f, regex, parameters, logger):
     files_to_copy = filter(regex.match, f)
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > parameters['min_time_diff'],
-                           files_to_copy)
+                            files_to_copy)
     files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < parameters['max_time_diff'],
                            files_to_copy)
     files_to_copy = filter(lambda f: os.path.getsize(f) > parameters['min_size'], files_to_copy)
@@ -204,10 +232,10 @@ def robocopy_filter_sublist(f, regex, parameters):
     return True
 
 
-def filter_input_filelist(files_to_copy, regex, parameters):
+def filter_input_filelist(files_to_copy, regex, parameters, logger):
     basename_dict = robocopy_get_basename_dict(files_to_copy)
     files = basename_dict.values()
-    files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters), files)
+    files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters, logger=logger), files)
     files = [item for sublist in files for item in sublist]
     return files
 
@@ -421,7 +449,7 @@ def robocopy(bio_beamer_parser, logger):
     regex = bio_beamer_parser.regex
     files2copy = get_all_files(parameters["source_path"], logger=logger)
 
-    filesRR = filter_input_filelist(files2copy, regex, parameters)
+    filesRR = filter_input_filelist(files2copy, regex, parameters, logger=logger)
     if len(filesRR) == 0:
         return
 
