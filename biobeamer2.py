@@ -201,7 +201,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             false_str.append('regex')
         if not time.time() - os.path.getmtime(f) > parameters['min_time_diff']:
             ok = False
-            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'], time.time() - os.path.getmtime(f)) );
+            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'], time.time() - os.path.getmtime(f)))
         if not time.time() - os.path.getmtime(f) < parameters['max_time_diff']:
             ok = False
             false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'], time.time() - os.path.getmtime(f)))
@@ -306,8 +306,8 @@ def robocopy_exec(file_to_copy,
             # write to book-keeping file.
 
             # make sure file was copied correctly
-            xx = os.path.exists(target_path)
-            xy = filecmp.cmp(file_to_copy, target_path)
+            # xx = os.path.exists(target_path)
+            # xy = filecmp.cmp(file_to_copy, target_path)
             if os.path.exists(target_path) and filecmp.cmp(file_to_copy, target_path):
                 file_copied = file_to_copy
             else:
@@ -378,7 +378,7 @@ def compare_files_destination(source_result_mapping):
     copied = {}
     not_copied = {}
     for file_to_copy, target_file in source_result_mapping.items():
-        tmp = os.path.exists(target_file)
+        # tmp = os.path.exists(target_file)
         if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
             copied[file_to_copy] = target_file
         else:
