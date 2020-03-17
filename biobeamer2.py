@@ -95,7 +95,7 @@ class BioBeamerParser(object):
             else:
                 continue
 
-            if i.attrib['name'] == hostname:
+            if i.attrib['name'].lower() == hostname.lower():
                 for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
                         self.parameters[k] = os.path.normpath(i.attrib[k])
@@ -360,6 +360,7 @@ def robocopy(bio_beamer_parser, logger):
     if len(filesRR) == 0:
         return
     log_files_stat(filesRR, parameters, logger=logger)
+
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]
