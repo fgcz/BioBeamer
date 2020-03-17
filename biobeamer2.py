@@ -201,10 +201,12 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             false_str.append('regex')
         if not time.time() - os.path.getmtime(f) > parameters['min_time_diff']:
             ok = False
-            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'], time.time() - os.path.getmtime(f)))
+            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'],
+                                                                        time.time() - os.path.getmtime(f)))
         if not time.time() - os.path.getmtime(f) < parameters['max_time_diff']:
             ok = False
-            false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'], time.time() - os.path.getmtime(f)))
+            false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'],
+                                                                        time.time() - os.path.getmtime(f)))
         if not os.path.getsize(f) > parameters['min_size']:
             ok = False
             false_str.append("min_size = {}; actual_size = {}".format(parameters['min_size'], os.path.getsize(f)))
@@ -216,6 +218,8 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             logger.info("not copying {file} for {reasons}".format(file=f, reasons=false_str) )
 
     if len(files_to_copy) < len(files):
+        #files_rejected = ", ".join(files)
+        #logger.info("not copying nr of : {files}".format(files = len(files_to_copy)))
         return False
     return True
 
