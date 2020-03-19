@@ -207,7 +207,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             ok = False
             false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'],
                                                                         time.time() - os.path.getmtime(f)))
-        if not os.path.getsize(f) > parameters['min_size']:
+        if not os.path.getsize(f) >= parameters['min_size']:
             ok = False
             false_str.append("min_size = {}; actual_size = {}".format(parameters['min_size'], os.path.getsize(f)))
         if ok:
@@ -299,27 +299,28 @@ def robocopy_exec(file_to_copy,
     if not simulate_copy:
         logger.info("Running Command: [{0}]".format(" ".join(cmd)))
         try:
-            # TODO(cp): check if this is really necessary
             robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
             logger.info("robocopy return code: '{0}'".format(return_code))
             if return_code > 7:
                 logger.warning("robocopy quit with return code highter than 7")
+            else:
+                file_copied = file_to_copy
 
             robocopy_process.terminate()
-            # write to book-keeping file.
 
             # make sure file was copied correctly
-            # xx = os.path.exists(target_path)
-            # xy = filecmp.cmp(file_to_copy, target_path)
-            if os.path.exists(target_path) and filecmp.cmp(file_to_copy, target_path):
-                file_copied = file_to_copy
-            else:
-                logger.error("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
-                raise Exception("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
+            if False: #Windows API problem posted here https://stackoverflow.com/questions/60753914/os-path-exists-returns-false-on-windows-although-file-exists-max-path-260-windo
+                xx = os.path.exists(target_path)
+                if xx and filecmp.cmp(file_to_copy, target_path):
+                    file_copied = file_to_copy
+                else:
+                    logger.error("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
+                    logger.error("File size to copy ", os.path.getsize(file_to_copy), "; file size target " + os.path.getsize(target_path))
+                    raise Exception("Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
         except:
-            logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
-            raise Exception("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !!!")
+            logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !")
+            raise Exception("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !")
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
@@ -354,6 +355,7 @@ def make_destination_files(files_to_copy, source_path, target_path):
     :return:
     '''
     res = {}
+    #target_path = target_path.replace('\\\\', '\\\\?\\')
     for file_to_copy in files_to_copy:
         target_sub_path = os.path.relpath(file_to_copy, source_path)
         target_file = os.path.normpath("{0}/{1}".format(target_path, target_sub_path))
