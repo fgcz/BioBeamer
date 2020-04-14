@@ -95,8 +95,8 @@ class BioBeamerParser(object):
                 pass
             else:
                 continue
-
-            if i.attrib['name'].lower() == hostname.lower():
+            att_hostname = i.attrib['name'].lower()
+            if att_hostname == hostname.lower():
                 for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
                         self.parameters[k] = os.path.normpath(i.attrib[k])
@@ -150,7 +150,7 @@ class BioBeamerParser(object):
     def set_para(self, key, value):
         """ class parameter setting """
         self.parameters[key] = value
-        if key is 'pattern':
+        if key == 'pattern':
             self.regex = re.compile(self.parameters['pattern'])
 
 
@@ -215,7 +215,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
 
         if len(false_str) > 0:
             false_str = " & ".join(false_str)
-            logger.info("not copying {file} for {reasons}".format(file=f, reasons=false_str) )
+            logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str) )
 
     if len(files_to_copy) < len(files):
         #files_rejected = ", ".join(files)
@@ -508,8 +508,7 @@ if __name__ == "__main__":
 
     host = socket.gethostname()
     logger = MyLog()
-    logger.add_file()
-
+    logger.add_file(level=logging.INFO)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
 
@@ -517,6 +516,7 @@ if __name__ == "__main__":
     logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
                                    bio_beamer_parser.parameters["syshandler_port"]))
     logger.logger.info("Starting Remote Logging from host {}".format(host))
+
     bio_beamer_parser.log_para()
 
     drive = 0
