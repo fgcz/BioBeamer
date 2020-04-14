@@ -14,13 +14,18 @@ def map_data_G2HD_2(path, logger):
     strtoday = today.strftime("%Y%m%d")
 
 
-    pattern = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8}.+)$"
+    pattern = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8})(.+)$"
     regex = re.compile(pattern)
     match = regex.match(path)
 
+    pattern_date = "^([0-9]{8})(.+)"
     if match:
+        mg_path = match.group(1)
+        mg_date = match.group(2)
+        mg_folder = match.group(3)
         path = os.path.normpath(
-            "{path}p65\\Proteomics\\G2HD_2\\analytic_{strtoday}\\{folder}".format(path=match.group(1), date=strtoday, folder=match.group(2)))
+            "{path}p65\\Proteomics\\G2HD_2\\analytic_{date}\\{date}{folder}".format(
+                path=mg_path, date=mg_date, folder=mg_folder))
         return path
     else:
         logger.error('Could not apply mapping function. Raising exception')
