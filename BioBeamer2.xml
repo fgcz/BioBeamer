@@ -311,14 +311,14 @@
           min_size="0"
           min_time_diff="2"
 		  max_time_delete="5184000"
-          max_time_diff="5184000"
+          max_time_diff="95184000"
           simulate_copy='true'
           simulate_delete='true'
           robocopy_mov="false"
           func_target_mapping="map_data_G2HD_2"
           pattern=".+\\[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
-          source_path="D:/DataS19.PRO/Data"
-          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
+          source_path="D:/DataS20.PRO/Data"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
