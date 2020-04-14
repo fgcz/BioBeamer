@@ -306,13 +306,13 @@
     </host>
     <!---->
 
-    <host name="fgcz-089"
+    <host name="DESKTOP-B4RGQ2Q"
           instrument="G2HD_2"
           min_size="0"
           min_time_diff="2"
 		  max_time_delete="5184000"
           max_time_diff="5184000"
-          simulate_copy='false'
+          simulate_copy='true'
           simulate_delete='true'
           robocopy_mov="false"
           func_target_mapping="map_data_G2HD_2"

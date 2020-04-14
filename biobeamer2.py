@@ -8,7 +8,7 @@ import logging.handlers
 import urllib
 import urllib.request
 
-import subprocess
+from subprocess import Popen
 from lxml import etree
 import re
 import socket
@@ -299,7 +299,7 @@ def robocopy_exec(file_to_copy,
     if not simulate_copy:
         logger.info("Running Command: [{0}]".format(" ".join(cmd)))
         try:
-            robocopy_process = subprocess.Popen(" ".join(cmd), shell=True)
+            robocopy_process = Popen(" ".join(cmd), shell=True)
             return_code = robocopy_process.wait()
             logger.info("robocopy return code: '{0}'".format(return_code))
             if return_code > 7:

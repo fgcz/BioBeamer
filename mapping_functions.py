@@ -1,6 +1,6 @@
 import os
 import re
-
+from datetime import date
 
 def map_data_G2HD_2(path, logger):
     """
@@ -9,13 +9,18 @@ def map_data_G2HD_2(path, logger):
 
     output: p65/Proteomics/G2HD_2/schesnov_20190000
     """
+
+    today = date.today()
+    strtoday = today.strftime("%Y%m%d")
+
+
     pattern = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8}.+)$"
     regex = re.compile(pattern)
     match = regex.match(path)
 
     if match:
         path = os.path.normpath(
-            "{0}p65\\Proteomics\\G2HD_2\\schesnov_20190101\\{1}".format(match.group(1), match.group(2)))
+            "{path}p65\\Proteomics\\G2HD_2\\analytic_{strtoday}\\{folder}".format(path=match.group(1), date=strtoday, folder=match.group(2)))
         return path
     else:
         logger.error('Could not apply mapping function. Raising exception')
