@@ -363,16 +363,17 @@ def make_destination_files(files_to_copy, source_path, target_path):
     return res
 
 
-def rename_destination(filemap, logger, mapping_function=lambda x, logger: x, ):
+def rename_destination(filemap, source_path, logger,  mapping_function):
     '''
     uses mapping function to rename file
     :param filemap:
+    :param source_path
     :param logger:
     :param mapping_function:
     :return:
     '''
     for key, value in filemap.items():
-        filemap[key] = mapping_function(value, logger)
+        filemap[key] = mapping_function(value, source_path, logger)
     return filemap
 
 
@@ -467,7 +468,10 @@ def robocopy(bio_beamer_parser, logger):
     if mapping_function_name != "":
         logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
         method_to_call = getattr(mapping_functions, mapping_function_name)
-        source_result_mapping = rename_destination(source_result_mapping, logger, mapping_function=method_to_call)
+        source_result_mapping = rename_destination(source_result_mapping,
+                                                   parameters["source_path"],
+                                                   logger,
+                                                   mapping_function=method_to_call)
 
     # check if files are already copied and if so remove them from source_result_mapping
     copied = compare_files_destination(source_result_mapping)

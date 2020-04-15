@@ -2,7 +2,7 @@ import os
 import re
 from datetime import date
 
-def map_data_G2HD_2(path, logger):
+def map_data_G2HD_2(path, source_path, logger):
     """
     input: '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\20190206HM_11728_C6CYS.raw\\_PROC003.SIG'
     '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\p65\\Proteomics\\G2HD_2\\schesnov_20190101\\20190104HM_11622_C6.raw\\_PROC002.MAX'
@@ -14,18 +14,25 @@ def map_data_G2HD_2(path, logger):
     strtoday = today.strftime("%Y%m%d")
 
 
-    pattern = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8})(.+)$"
-    regex = re.compile(pattern)
-    match = regex.match(path)
+    pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8})(.+)$"
+    regex_dest = re.compile(pattern_dest)
+    match_dest = regex_dest.match(path)
 
-    pattern_date = "^([0-9]{8})(.+)"
-    if match:
-        mg_path = match.group(1)
-        mg_date = match.group(2)
-        mg_folder = match.group(3)
+    pattern_source = "(^D:\\\\Data2San\\\\)(.+)(\.PRO\\\\Data)"
+    regex_source = re.compile(pattern_source)
+    match_source = regex_source.match(source_path)
+
+
+    if match_dest and match_source:
+        mg_path = match_dest.group(1)
+        mg_date = match_dest.group(2)
+        mg_folder = match_dest.group(3)
+
+        mg_project_instrument = match_source.group(2)
+
         path = os.path.normpath(
-            "{path}p65\\Proteomics\\G2HD_2\\analytic_{date}\\{date}{folder}".format(
-                path=mg_path, date=mg_date, folder=mg_folder))
+            "{path}{project_instrument}\\analytic_{date}\\{date}{folder}".format(
+                path=mg_path, project_instrument=mg_project_instrument, date=mg_date, folder=mg_folder))
         return path
     else:
         logger.error('Could not apply mapping function. Raising exception')
