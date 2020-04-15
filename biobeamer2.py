@@ -215,7 +215,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
 
         if len(false_str) > 0:
             false_str = " & ".join(false_str)
-            logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str) )
+            logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str))
 
     if len(files_to_copy) < len(files):
         #files_rejected = ", ".join(files)
@@ -454,7 +454,12 @@ def compare_copied_with_log(not_copied, files_copied_old):
 def robocopy(bio_beamer_parser, logger):
     parameters = bio_beamer_parser.parameters
     regex = bio_beamer_parser.regex
-    files2copy = get_all_files(parameters["source_path"], logger=logger)
+    if os.path.exists(parameters["source_path"]):
+        files2copy = get_all_files(parameters["source_path"], logger=logger)
+    else:
+        error = 'source path: {source_path} does not exist!'.format(source_path=parameters["source_path"])
+        logger.error(error)
+        raise FileNotFoundError(error)
 
     filesRR = filter_input_filelist(files2copy, regex, parameters, logger=logger)
     if len(filesRR) == 0:
