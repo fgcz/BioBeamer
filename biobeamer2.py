@@ -25,20 +25,22 @@ class MyLog:
         self.is_syshandler = False
         self.is_filehandler = False
 
-    def add_file(self, filename="./log/biobeamer.log", level=logging.INFO):
+    def add_file(self, filename="./log/biobeamer.log", level=logging.DEBUG):
         if not self.is_syshandler:
             file_handler = logging.FileHandler(filename)
             file_handler.setLevel(level)
             file_handler.setFormatter(self.formatter)
             self.logger.addHandler(file_handler)
-            self.logger.setLevel(logging.INFO)
 
-    def add_syshandler(self, address=("130.60.81.148", 514), level=logging.INFO):
+    def add_syshandler(self, address=("130.60.81.148", 514), level=logging.DEBUG):
         if not self.is_filehandler:
             syslog_handler = logging.handlers.SysLogHandler(address=address)
             syslog_handler.setLevel(level)
             syslog_handler.setFormatter(self.formatter)
             self.logger.addHandler(syslog_handler)
+
+    def set_log_level(self, level=logging.INFO):
+        self.logger.setLevel(level)
 
 
 class BioBeamerParser(object):
@@ -517,13 +519,15 @@ if __name__ == "__main__":
 
     host = socket.gethostname()
     logger = MyLog()
-    logger.add_file(level=logging.INFO)
+    logger.add_file(level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
 
     bio_beamer_parser = BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
     logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
                                    bio_beamer_parser.parameters["syshandler_port"]))
+    logger.set_log_level(level=logging.DEBUG)
+
     logger.logger.info("Starting Remote Logging from host {}".format(host))
 
     bio_beamer_parser.log_para()
