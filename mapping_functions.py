@@ -11,14 +11,13 @@ def map_data_G2HD_2(path, source_path, logger):
     """
 
     today = date.today()
-    strtoday = today.strftime("%Y%m%d")
 
 
     pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)([0-9]{8})(.+)$"
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(path)
 
-    pattern_source = "(^D:\\\\Data2San\\\\)(.+)(\.PRO\\\\Data)"
+    pattern_source = "(^[DEF]{1,1}:\\\\Data2San\\\\)(.+)(\.PRO\\\\Data)"
     regex_source = re.compile(pattern_source)
     match_source = regex_source.match(source_path)
 
