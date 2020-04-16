@@ -25,7 +25,7 @@ def map_data_G2HD_2(path, logger):
                 path=mg_path, date=mg_date, folder=mg_folder))
         return path
     else:
-        logger.error('Could not apply mapping function. Raising exception')
+        logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
         raise ValueError('Could not apply mapping function')
     return None
 
