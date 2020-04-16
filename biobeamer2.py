@@ -21,23 +21,21 @@ class MyLog:
     def __init__(self, name="BioBeamer"):
         self.logger = logging.getLogger(name)
         self.formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s')
-        self.is_syshandler = False
-        self.is_filehandler = False
 
     def add_file(self, filename="./log/biobeamer.log", level=logging.INFO):
-        if not self.is_syshandler:
-            file_handler = logging.FileHandler(filename)
-            file_handler.setLevel(level)
-            file_handler.setFormatter(self.formatter)
-            self.logger.addHandler(file_handler)
-            self.logger.setLevel(logging.INFO)
+        file_handler = logging.FileHandler(filename)
+        file_handler.setLevel(level)
+        file_handler.setFormatter(self.formatter)
+        self.logger.addHandler(file_handler)
 
     def add_syshandler(self, address=("130.60.81.148", 514), level=logging.INFO):
-        if not self.is_filehandler:
-            syslog_handler = logging.handlers.SysLogHandler(address=address)
-            syslog_handler.setLevel(level)
-            syslog_handler.setFormatter(self.formatter)
-            self.logger.addHandler(syslog_handler)
+        syslog_handler = logging.handlers.SysLogHandler(address=address)
+        syslog_handler.setLevel(level)
+        syslog_handler.setFormatter(self.formatter)
+        self.logger.addHandler(syslog_handler)
+
+    def set_log_level(self, level=logging.INFO):
+        self.logger.setLevel(logging.INFO)
 
 
 class BioBeamerParser(object):
@@ -402,6 +400,8 @@ if __name__ == "__main__":
     logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
                                    bio_beamer_parser.parameters["syshandler_port"]))
     logger.logger.info("Starting Remote Logging from host {}".format(host))
+    logger.set_log_level()
+
     bio_beamer_parser.log_para()
 
     drive = 0
