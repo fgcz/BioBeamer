@@ -365,7 +365,7 @@ def make_destination_files(files_to_copy, source_path, target_path):
     return res
 
 
-def rename_destination(filemap, logger,  mapping_function):
+def rename_destination(filemap, logger, mapping_function):
     '''
     uses mapping function to rename file
     :param filemap:
