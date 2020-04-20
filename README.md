@@ -109,8 +109,9 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 
 ### @ FGCZ
 
-fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
-
+```cmd
+c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer <base64encoded password>
+```
 
 ## Authors
 - [Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
