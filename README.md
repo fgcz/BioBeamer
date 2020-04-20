@@ -57,7 +57,8 @@ xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 
 Biobeamer allows to specify instrument specific mapping functions.
 
-```
+```python
+
 def func_target_mapping_TRIPLETOF_1(path):
     """
     input:  'p1000/Data/selevsek_20150119'
