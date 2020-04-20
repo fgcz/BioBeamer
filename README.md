@@ -1,6 +1,9 @@
 # Collecting instrument data using BioBeamer
 
-[![Project Stats](https://www.openhub.net/p/BioBeamer/widgets/project_thin_badge.gif)](https://www.openhub.net/p/BioBeamer)
+fgcz_biobeamer.py is a complete new implementation based on the experience of
+Frank Potthast's Perl implementation which was running for 10yrs at the FGCZ and
+moved approximately 50TBytes of more than 164770 mass spectrometric raw data files.
+This implementation is used since approximately 2016 to move files from about 20 Windows machines to the storage.
 
 ## Install 
 * ensure you have python 2.7.* (for branch biobeamer2)
