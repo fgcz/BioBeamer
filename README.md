@@ -53,6 +53,28 @@ or
 xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 ```
 
+###
+
+Biobeamer allows to specify instrument specific mapping functions.
+
+```
+def func_target_mapping_TRIPLETOF_1(path):
+    """
+    input:  'p1000/Data/selevsek_20150119'
+    output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
+    """
+
+    pattern = ".*(p[0-9]+)\\\\Data\\\\([-0-9a-zA-Z_\.]+)$"
+    regex = re.compile(pattern)
+    match = regex.match(path)
+
+    if match:
+        return os.path.normpath("{0}/Proteomics/TRIPLETOF_1/{1}".format(match.group(1), match.group(2)))
+       
+    return None
+```
+
+For more examples see [mapping_functions.py](https://github.com/fgcz/BioBeamer/blob/biobeamer2/mapping_functions.py)
 
 ### Deploy @ new location
 * change syslog host
