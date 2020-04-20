@@ -113,11 +113,22 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 ### @ FGCZ
 
 ```cmd
-c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer <base64encoded password>
+c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer <encoded password>
 ```
 
 - First argument is the folder containing the `BioBeamer.xml` file
 - Second argument is the encoded password. 
+
+We wrapp this command into a biobeamer.bat file, which first pull the latest version of the Biobeamer and Biobeamer.xml file from the Biobeamer repository. By this we make sure that all instruments run the same Biobeamer version.
+
+```bat
+PUSHD C:\FGCZ\BioBeamer
+git -C C:\FGCZ\BioBeamer\ pull
+timeout 8
+c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer <encoded password>
+POPD
+```
+
 
 
 ## Authors
