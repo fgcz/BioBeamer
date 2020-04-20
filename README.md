@@ -113,6 +113,10 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer <base64encoded password>
 ```
 
+- First argument is the folder containing the `BioBeamer.xml` file
+- Second argument is the encoded password. 
+
+
 ## Authors
 - [Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
 - [Christian Panse](http://www.fgcz.ch/the-center/people/panse.html) :rocket:
