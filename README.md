@@ -13,7 +13,7 @@
 
 ### BioBeamer xml configuration file
 
-The entire file can be found here [Biobeamer.xml](biobeamer2/BioBeamer2.xml)
+The entire file can be found here [Biobeamer.xml](https://github.com/fgcz/BioBeamer/blob/biobeamer2/BioBeamer2.xml)
 
 
 ```xml
@@ -51,9 +51,14 @@ or
 xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 ```
 
+
 ### Deploy @ new location
 * change syslog host
 * change configuration url
+
+## Logging
+
+The biobeamer supports a filelogger and syslog
 
 ### Configure Syslog '/etc/rsyslog.conf' 
 
@@ -80,28 +85,25 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 ## Run
 
 ### @ FGCZ
-just 'run as administrator' justBeamFiles.exe.
 
-justBeamFiles.exe is an [autoitscript](https://www.autoitscript.com/site/autoit/).
-In our case the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
+TODO - describe bat file.
+
+fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
 
 ### otherwise
+
 * ensure that SAN is mounted 
 ```cmd
 python BioBeamer.py
 ```
 
-## BioBeamer class
-![BioBeamer UML](/images/classes_No_Name.png)
 
-
-## Author
+## Authors
+[Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
 [Christian Panse](http://www.fgcz.ch/the-center/people/panse.html) :rocket:
 
 ## See also
 * [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
-* [FGCZ configuration](http://fgcz-data.uzh.ch/config/BioBeamer.xml)
 
 ## TODO
 * munin plugin
-
