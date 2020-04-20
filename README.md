@@ -2,8 +2,6 @@
 
 [![Project Stats](https://www.openhub.net/p/BioBeamer/widgets/project_thin_badge.gif)](https://www.openhub.net/p/BioBeamer)
 
-
-
 ## Install 
 * ensure you have python 2.7.* (for branch biobeamer2)
 * ensure you have python >=3.7.*  (for branch p37).
