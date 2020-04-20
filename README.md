@@ -6,7 +6,7 @@
 
 ## Install 
 * ensure you have python 2.7.* (for branch biobeamer2)
-* ensure you have python 3.7 or higher (for branch p37).
+* ensure you have python >=3.7.*  (for branch p37).
 * ```git clone git@github.com:fgcz/BioBeamer.git```
 * if you want to use the p37 branch execute ```git checkout p37```
 
