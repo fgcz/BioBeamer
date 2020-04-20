@@ -75,13 +75,13 @@ def func_target_mapping_TRIPLETOF_1(path):
 
 For more examples see [mapping_functions.py](https://github.com/fgcz/BioBeamer/blob/biobeamer2/mapping_functions.py)
 
-### Deploy @ new location
-* change syslog host
-* change configuration url
+### Logging
 
-## Logging
+There are three log files in C:\FGCZ\BioBeamer\log
 
-The biobeamer supports a filelogger and syslog
+- robocopy.log : logs all the robocopy.exe logs (please see also the return codes of robocopy http://ss64.com/nt/robocopy-exit.html)
+- biobeamer.log logs biobeamer filtering and copying information (it also goes to syslog - see next section).
+
 
 ### Configure Syslog '/etc/rsyslog.conf' 
 
@@ -109,16 +109,7 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 
 ### @ FGCZ
 
-TODO - describe bat file.
-
 fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
-
-### otherwise
-
-* ensure that SAN is mounted 
-```cmd
-python BioBeamer.py
-```
 
 
 ## Authors
@@ -129,4 +120,4 @@ python BioBeamer.py
 * [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
 
 ## TODO
-* munin plugin
+* munin plugin ?
