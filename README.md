@@ -129,7 +129,29 @@ c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer
 POPD
 ```
 
+# Principle
 
+The BioBeamer works on Windows machines. It enhances the following script adding reading configurations for various instruments, filtering, loggin, error handling.
+
+```
+; Run robocopy script
+; /E recursive
+; /Z recover large copies
+; /MINAGE minimum last modified date: one day
+; /XD ignore P123.PRO folder (important for QTOF_1)
+; /XF ignore *.sld files 
+; /MOVE
+
+if not exist D:\robocopy_logs md D:\robocopy_logs
+
+net use R: \\130.60.81.21\Data2San /USER:FGCZ-NET\BioBeamer !XXXXX!
+
+for /L %p in (1000,1,2000) do if exist p%p robocopy.exe D:\Data2San\p%p\QEXACTIVEHD_1 \\fgcz-s-021.uzh.ch\Data2San\p%p\QEXACTIVEHD_1  /E /Z /XF *.sld /NP /LOG+:D:\robocopy_logs\CopyLog.txt"
+
+net use /delete /y R:
+```
+
+more information about [robocopy.exe](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy)
 
 ## Authors
 - [Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
