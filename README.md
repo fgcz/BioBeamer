@@ -4,13 +4,17 @@
 
 
 ## Install 
-* ensure you have python 2.7.* 
-* ```pip install PyFGCZ``` 
+* ensure you have python 2.7.* (for branch biobeamer2)
+* ensure you have python 3.7 or higher (for branch p37).
 * ```git clone git@github.com:fgcz/BioBeamer.git```
+* if you want to use the p37 branch execute ```git checkout p37```
 
 ## Configure 
 
 ### BioBeamer xml configuration file
+
+The entire file can be found here [Biobeamer.xml](biobeamer2/BioBeamer2.xml)
+
 
 ```xml
 
@@ -36,10 +40,13 @@
 ```
 
 the xml can be validated using
+
 ```bash
 xmllint --noout --schema BioBeamer.xsd BioBeamer.xml
 ```
+
 or 
+
 ```bash
 xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 ```
