@@ -131,7 +131,12 @@ POPD
 
 # Principle
 
-The BioBeamer works on Windows machines. It enhances the following script adding reading configurations for various instruments, filtering, loggin, error handling.
+The BioBeamer enhances the following Windows script by adding:
+- reading configurations for various instruments
+- filtering 
+- loggin 
+- error handling
+implemented in python.
 
 ```
 ; Run robocopy script
