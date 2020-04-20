@@ -138,6 +138,20 @@ The BioBeamer enhances the following Windows script by adding:
 - error handling
 implemented in python.
 
+```bat
+rem Simon Barkow <sb@fgcz.ethz.ch>
+rem Christian Panse <cp@fgcz.ethz.ch>
+rem Christian Trachsel <christian.trachsel@fgcz.ethz.ch>
+rem 2013-03-19
+rem 2015-01-22
+net use R: \\130.60.81.21\Data2San /USER:FGCZ-NET\BioBeamer !XXXXX!
+D:
+cd "\Eksigent NanoLC"
+R:\PP\robocopy.exe "autosave" R:\PP\TRIPLETOF_1\data /S /COPY:DAT /MAXAGE:14 /Z /NP /LOG+:R:\PP\TRIPLETOF_1\ppsync.log
+COPY %0 R:\PP\TRIPLETOF_1\
+net use /delete /y R:
+```
+
 ```
 ; Run robocopy script
 ; /E recursive
