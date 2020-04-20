@@ -113,8 +113,8 @@ fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to s
 
 
 ## Authors
-[Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
-[Christian Panse](http://www.fgcz.ch/the-center/people/panse.html) :rocket:
+- [Witold Wolski](http://www.fgcz.ch/the-center/people/wolski.html) :rocket:
+- [Christian Panse](http://www.fgcz.ch/the-center/people/panse.html) :rocket:
 
 ## See also
 * [fgcz-intranet wiki page](http://fgcz-intranet.uzh.ch/tiki-index.php?page=BioBeamer)
