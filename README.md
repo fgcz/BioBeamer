@@ -53,9 +53,7 @@ or
 xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
 ```
 
-###
-
-Biobeamer allows to specify instrument specific mapping functions.
+### Biobeamer allows to specify instrument specific mapping functions.
 
 ```python
 
