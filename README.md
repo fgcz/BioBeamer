@@ -10,7 +10,8 @@
 * ```git clone git@github.com:fgcz/BioBeamer.git```
 * if you want to use the p37 branch execute ```git checkout p37```
 
-TODO more installation instructions
+See also [Setup.bat](https://github.com/fgcz/BioBeamer/blob/biobeamer2/setup.bat)
+
 
 ## Configure 
 
