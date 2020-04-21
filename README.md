@@ -114,7 +114,7 @@ c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer
 ```
 
 - First argument is the folder containing the `BioBeamer.xml` file
-- Second argument is the encoded password. 
+- Second argument is the encoded password.
 
 We wrapp this command into a biobeamer.bat file, which first pull the latest version of the Biobeamer and Biobeamer.xml file from the Biobeamer repository. By this we make sure that all instruments run the same Biobeamer version.
 
@@ -126,9 +126,10 @@ c:\python27\python.exe C:\FGCZ\BioBeamer\biobeamer2.py file:///c:/FGCZ/BioBeamer
 POPD
 ```
 
+
 # Principle
 
-The BioBeamer enhances the following Windows script by adding:
+The BioBeamer enhances the following windows script by adding:
 - reading configurations for various instruments
 - filtering 
 - loggin 
