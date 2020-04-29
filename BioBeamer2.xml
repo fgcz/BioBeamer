@@ -26,6 +26,7 @@
             <applicationID>204</applicationID>
         </b-fabric>
     </host>
+    <!--
     <host name="FGCZ-b-167"
           instrument="Analysis"
           min_size="1024"
@@ -46,6 +47,28 @@
             <applicationID>185</applicationID>
         </b-fabric>
     </host>
+    -->
+    <host name="FGCZ-b-168"
+          instrument="Analysis"
+          min_size="1024"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          max_time_delete="2"
+          simulate_copy='true'
+          simulate_delete='true'
+          func_target_mapping=""
+          robocopy_mov="false"
+	      pattern=".+Analysis\\ProgenesisQI\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>185</applicationID>
+        </b-fabric>
+    </host>
+
     <host name="FGCZ-H-XXX"
           instrument="SkylineSRM"
           min_size="1024"

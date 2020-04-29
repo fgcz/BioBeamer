@@ -30,7 +30,7 @@ class Drive:
         out = out.decode("utf-8")
         if not err == "":
             #self._logger.error(winCMD)
-            self._logger.info("Network drive {} for user {} can NOT be MAPPED.".format(self._networkPath,self._user))
+            self._logger.info("Network drive {} for user {} can NOT be MAPPED.".format(self._networkPath, self._user))
             self._logger.error(err.replace("\r\n", " "))
         else:
             self._logger.info(out.replace("\r\n", " "))

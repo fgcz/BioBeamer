@@ -514,7 +514,7 @@ if __name__ == "__main__":
     host = socket.gethostname()
     logger = MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
-    file = "biobeamer_{date}.log".format(date=now)
+    file = "log/biobeamer_{date}.log".format(date=now)
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
