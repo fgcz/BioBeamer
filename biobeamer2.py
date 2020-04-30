@@ -451,6 +451,7 @@ def compare_copied_with_log(not_copied, files_copied_old):
 def robocopy(bio_beamer_parser, logger):
     parameters = bio_beamer_parser.parameters
     regex = bio_beamer_parser.regex
+
     if os.path.exists(parameters["source_path"]):
         files2copy = get_all_files(parameters["source_path"], logger=logger)
     else:
@@ -458,11 +459,12 @@ def robocopy(bio_beamer_parser, logger):
         logger.error(error)
         raise FileNotFoundError(error)
 
+    files_copied_log = read_copied_files()  # added 02.2020
+    files2copy = list(set(files2copy) - set(files_copied_log)) # remove all files which were already copied.
+
     filesRR = filter_input_filelist(files2copy, regex, parameters, logger=logger)
     if len(filesRR) == 0:
         return
-
-    #log_files_stat(filesRR, parameters, logger=logger)
 
     source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
 
@@ -476,7 +478,6 @@ def robocopy(bio_beamer_parser, logger):
 
     # check if files are already copied and if so remove them from source_result_mapping
     copied = compare_files_destination(source_result_mapping)
-    files_copied_log = read_copied_files()  # added 02.2020
 
     all_copied = list(copied["copied"].keys()) + files_copied_log # add it because you might start with empty copied file list.
     all_copied = set(all_copied)
