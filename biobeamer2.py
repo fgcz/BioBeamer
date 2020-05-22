@@ -329,11 +329,11 @@ def robocopy(bio_beamer_parser, logger):
     files_copied_log = read_copied_files()  # added 02.2020
     files2copy = list(set(files2copy) - set(files_copied_log)) # remove all files which were already copied.
 
-    filesRR = filter_input_filelist(files2copy, regex, parameters, logger=logger)
-    if len(filesRR) == 0:
+    files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
+    if len(files_filtered) == 0:
         return
 
-    source_result_mapping = make_destination_files(filesRR, parameters["source_path"], parameters["target_path"])
+    source_result_mapping = make_destination_files(files_filtered, parameters["source_path"], parameters["target_path"])
 
     mapping_function_name = parameters["func_target_mapping"]
     if mapping_function_name != "":
@@ -348,8 +348,9 @@ def robocopy(bio_beamer_parser, logger):
 
     all_copied = list(copied["copied"].keys()) + files_copied_log # add it because you might start with empty copied file list.
     all_copied = set(all_copied)
-
-    not_copied = compare_copied_with_log(copied["not_copied"], all_copied)  # added 02.2020
+    not_copied = copied["not_copied"]
+    not_copied_keys = not_copied.keys() - set(all_copied)
+    not_copied = dict((k, not_copied[k]) for k in not_copied_keys)
 
     files_copied = robocopy_exec_map(not_copied,
                                      parameters["robocopy_mov"],
