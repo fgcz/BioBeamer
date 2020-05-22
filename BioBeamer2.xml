@@ -335,7 +335,7 @@
           min_time_diff="2"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
-          simulate_copy='true'
+          simulate_copy='false'
           simulate_delete='true'
           robocopy_mov="false"
           func_target_mapping="map_data_G2HD_2"
