@@ -329,10 +329,31 @@
     </host>
     <!---->
 
+    <host name="fgcz-088"
+          instrument="G2SI_2"
+          min_size="0"
+          min_time_diff="7200"
+		  max_time_delete="5184000"
+          max_time_diff="95184000"
+          simulate_copy='false'
+          simulate_delete='true'
+          robocopy_mov="false"
+          func_target_mapping="map_data_G2HD_2"
+          pattern=".+\.PRO\\Data\\[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          source_path="E:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>272</applicationID>
+        </b-fabric>
+    </host>
+
     <host name="DESKTOP-B4RGQ2Q"
           instrument="G2HD_2"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="7200"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
           simulate_copy='true'
@@ -352,7 +373,7 @@
         <host name="fgcz-k-091"
           instrument="QDA_1"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="7200"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
           simulate_copy='false'
