@@ -226,7 +226,7 @@
     </host>
     <!--target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"-->
 
-    <host name="fgcz-k-197"
+    <host name="fgcz-i-197"
           instrument="FUSION_2"
           min_size="1024000"
           min_time_diff="2"
