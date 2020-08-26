@@ -207,7 +207,7 @@
     </host>
         <host name="fgcz-i-216"
           instrument="EXPLORIS_1"
-          min_size="500000"
+          min_size="10000000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
