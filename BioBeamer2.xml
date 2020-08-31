@@ -373,7 +373,7 @@
         <host name="fgcz-k-091"
           instrument="QDA_1"
           min_size="0"
-          min_time_diff="7200"
+          min_time_diff="10800"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
           simulate_copy='false'
