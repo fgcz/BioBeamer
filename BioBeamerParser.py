@@ -65,7 +65,8 @@ class BioBeamerParser(object):
             if att_hostname == hostname.lower():
                 for k in i.attrib.keys():
                     if k == 'source_path' or k == 'target_path':
-                        self.parameters[k] = os.path.normpath(i.attrib[k])
+                        # self.parameters[k] = os.path.normpath(i.attrib[k])
+                        self.parameters[k] = i.attrib[k]
                     elif k == 'pattern':
                         self.parameters[k] = i.attrib[k]
                         try:
