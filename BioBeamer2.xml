@@ -226,26 +226,27 @@
             <applicationID>160</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-I-208"
-          instrument="QEXACTIVE_3"
+        <host name="fgcz-i-202"
+          instrument="QEXACTIVE_2"
           min_size="1024000"
           min_time_diff="2"
+          max_time_diff="2419200"
 		  max_time_delete="604800"
-          max_time_diff="222419200"
-          simulate_copy='false'
-          simulate_delete='false'
-          func_target_mapping=""
+          simulate_copy='true'
+          simulate_delete='true'
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
-          pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW)$"
+          pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
     >
         <b-fabric>
-            <applicationID>163</applicationID>
+            <applicationID>161</applicationID>
         </b-fabric>
     </host>
+
     <host name="fgcz-i-209"
           instrument="G2SI_1"
           min_size="0"
@@ -329,65 +330,7 @@
             <applicationID>271</applicationID>
         </b-fabric>
     </host>
-<!--G2SI_1-->
-    <host name="fgcz-i-202"
-          instrument="QEXACTIVE_2"
-          min_size="1024000"
-          min_time_diff="2"
-          max_time_diff="2419200"
-		  max_time_delete="604800"
-          simulate_copy='false'
-          simulate_delete='false'
-          func_target_mapping=""
-          robocopy_mov="false"
-          pattern=".+QEXACTIVE_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
-          source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
-          syshandler_adress="fgcz-ms.uzh.ch"
-          syshandler_port="514"
-    >
-        <b-fabric>
-            <applicationID>161</applicationID>
-        </b-fabric>
-    </host>
-    <host name="fgcz-i-218"
-          instrument="QEXACTIVEHFX_1"
-          min_size="1024000"
-          min_time_diff="2"
-          max_time_diff="2419200"
-          simulate_copy='false'
-          simulate_delete='false'
-          func_target_mapping=""
-          robocopy_mov="false"
-          pattern=".+QEXACTIVEHFX_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
-          source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
-          syshandler_adress="fgcz-ms.uzh.ch"
-          syshandler_port="514"
-    >
-        <b-fabric>
-            <applicationID>232</applicationID>
-        </b-fabric>
-    </host>
-    <host name="fgcz-k-186"
-          instrument="QEXACTIVEHF_2"
-          min_size="1024000"
-          min_time_diff="2"
-          max_time_diff="2419200"
-          simulate_copy='false'
-          simulate_delete='false'
-          func_target_mapping=""
-          robocopy_mov="false"
-          pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
-          source_path="D:/Data2San/"
-          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
-          syshandler_adress="fgcz-ms.uzh.ch"
-          syshandler_port="514"
-    >
-        <b-fabric>
-            <applicationID>197</applicationID>
-        </b-fabric>
-    </host>
+
 
     <host name="fgcz-i-217"
           instrument="QUANTIVA_1"
@@ -483,5 +426,69 @@
             <applicationID>243</applicationID>
         </b-fabric>
     </host>
+
+    <!-- likely do not exist anymore -->
+
+    <host name="fgcz-i-218"
+          instrument="QEXACTIVEHFX_1"
+          min_size="1024000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVEHFX_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>232</applicationID>
+        </b-fabric>
+    </host>
+    <host name="fgcz-k-186"
+          instrument="QEXACTIVEHF_2"
+          min_size="1024000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Proteomics\\QEXACTIVEHF_2\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*\.raw$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>197</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="FGCZ-I-208"
+          instrument="QEXACTIVE_3"
+          min_size="1024000"
+          min_time_diff="2"
+		  max_time_delete="604800"
+          max_time_diff="222419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+QEXACTIVE_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw|RAW)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>163</applicationID>
+        </b-fabric>
+    </host>
+
+
 </BioBeamerHosts>
 <!-- pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$" -->
