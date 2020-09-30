@@ -212,8 +212,8 @@
           min_size="1024000"
           min_time_diff="2"
           max_time_diff="2419200"
-          simulate_copy='true'
-          simulate_delete='true'
+          simulate_copy='false'
+          simulate_delete='false'
           func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+QEXACTIVE_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
