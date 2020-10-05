@@ -37,7 +37,7 @@ def map_data_for_container(dest_path, logger):
     output: p65/Proteomics/G2HD_2/schesnov_20190000
     """
 
-    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\[A-Za-z]{1,20}\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\analytic_[0-9]{8}\\\\[_0-9A-Za-z]+_(C[0-9]{1,6})_.+$"
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\[A-Za-z]{1,20}\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\analytic_[0-9]{8}[_0-9A-Za-z]*\\\\[_0-9A-Za-z]+_(C[0-9]{1,6})_.+$"
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 

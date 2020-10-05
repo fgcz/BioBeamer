@@ -58,6 +58,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
     returns True iff all files (values) fullfill the filter criteria
     """
     files_to_copy = []
+    files.sort()
     for f in files:
         ok = True
         false_str = []
@@ -102,6 +103,7 @@ def robocopy_filter_sublist_deprec(f, regex, parameters, logger):
 
 
 def filter_input_filelist(files_to_copy, regex, parameters, logger):
+    files_to_copy.sort()
     basename_dict = robocopy_get_basename_dict(files_to_copy)
     files = basename_dict.values()
     files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters, logger=logger), files)
