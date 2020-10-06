@@ -46,6 +46,26 @@
             <applicationID>185</applicationID>
         </b-fabric>
     </host>
+     <host name="fgcz-r-032"
+          instrument="Analysis"
+          min_size="1024"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          max_time_delete="604800"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+	      pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          source_path="E:/Data2San/"
+          target_path="\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>185</applicationID>
+        </b-fabric>
+    </host>
     <host name="FGCZ-H-XXX"
           instrument="SkylineSRM"
           min_size="1024"
@@ -147,6 +167,8 @@
         </b-fabric>
     </host>
 -->
+    <!-- target_path="\\fgcz-r-035.fgcz-net.unizh.ch\Data2San" -->
+
     <host name="fgcz-k-185"
           instrument="LUMOS_2"
           min_size="500000"
@@ -187,7 +209,7 @@
     </host>
         <host name="fgcz-i-216"
           instrument="EXPLORIS_1"
-          min_size="500000"
+          min_size="10000000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
@@ -206,7 +228,7 @@
     </host>
     <!--target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"-->
 
-    <host name="fgcz-k-197"
+    <host name="fgcz-i-197"
           instrument="FUSION_2"
           min_size="1024000"
           min_time_diff="2"
@@ -245,8 +267,8 @@
         </b-fabric>
     </host>
 
-    <host name="fgcz-qex1"
-          instrument="QEXATCTIVE_1"
+    <host name="FGCZ-K-095"
+          instrument="QEXACTIVE_1"
           min_size="1024000"
           min_time_diff="2"
           max_time_diff="2419200"
@@ -462,7 +484,25 @@
           syshandler_port="514"
     >
     </host>
-
+    <host name="FGCZ-I-219"
+          instrument="TIMSTOF_1"
+          min_size="4"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>243</applicationID>
+        </b-fabric>
+    </host>
     <host name="wolski-fgcz"
           instrument="TOFTOFTOF_1"
           min_size="8"
