@@ -4,10 +4,8 @@ from datetime import date
 
 def map_data_G2HD_2(path, logger):
     """
-    input: '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\20190206HM_11728_C6CYS.raw\\_PROC003.SIG'
-    '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\p65\\Proteomics\\G2HD_2\\schesnov_20190101\\20190104HM_11622_C6.raw\\_PROC002.MAX'
-
-    output: p65/Proteomics/G2HD_2/schesnov_20190000
+    input:
+    output:
     """
 
     pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p[0-9]{1,4}\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})(.+)$"
@@ -25,6 +23,41 @@ def map_data_G2HD_2(path, logger):
                 path=mg_path, date=mg_date, folder=mg_folder))
         return path
     else:
+        logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
+        raise ValueError('Could not apply mapping function')
+    return None
+
+def map_data_QDA(path, logger):
+    """
+    input: '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\p65\\Proteomics\\QDA_1.PRO\\Data\\20201015_C22916_BSA.raw'
+
+
+    input: "\\fgcz-biobeamer.uzh.ch\\Data2San\p65\Proteomics\QDA_1.PRO\Data\20201021_C22959_P16G08-Atto488_1.raw"
+     output: "\\fgcz-biobeamer.uzh.ch\Data2San\p22959\Proteomics\QDA_1\analytic_20201021\20201021_C22959_P16G08-Atto488_1.raw
+    """
+    pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{3,5})_(.+)$"
+    regex_dest = re.compile(pattern_dest)
+    match_dest = regex_dest.match(path)
+
+    if match_dest:
+        mg_path_1 = match_dest.group(1)
+        mg_path_2 = match_dest.group(3)
+        mg_date = match_dest.group(5)
+        mg_container = match_dest.group(6)
+        mg_folder = match_dest.group(7)
+        project = mg_container.replace("C", "p")
+
+        path = os.path.normpath(
+            "{path1}{container}{path2}\\analytic_{date}\\{date}_{mg_container}_{folder}".format(
+                path1=mg_path_1,
+                container=project,
+                path2=mg_path_2,
+                date=mg_date,
+                mg_container=mg_container,
+                folder=mg_folder))
+        return path
+    else:
+
         logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
         raise ValueError('Could not apply mapping function')
     return None

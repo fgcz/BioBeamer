@@ -319,8 +319,8 @@
           simulate_copy='false'
           simulate_delete='true'
           robocopy_mov="false"
-          func_target_mapping="map_data_G2HD_2"
-          pattern=".+\.PRO\\Data\\[0-9]{8}[-0-9a-zA-Z_\/\.\\]*"
+          func_target_mapping="map_data_QDA"
+          pattern=".+\.PRO\\Data\\[0-9]{8}_C[0-9]{3,5}_[-0-9a-zA-Z_\/\.\\]*"
           source_path="E:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
