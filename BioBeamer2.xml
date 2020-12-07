@@ -74,7 +74,7 @@
           min_time_diff="2"
           max_time_diff="2419200"
           max_time_delete="2"
-          simulate_copy='true'
+          simulate_copy='false'
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
