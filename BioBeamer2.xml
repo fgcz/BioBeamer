@@ -213,7 +213,7 @@
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
