@@ -147,7 +147,7 @@
             <applicationID>92</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-K-218"
+    <host name="FGCZ-K-185"
           instrument="LUMOS_2"
           min_size="500000"
           min_time_diff="2"
