@@ -166,14 +166,14 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-I-184"
+    <host name="FGCZ-K-218"
           instrument="LUMOS_1"
           min_size="500000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+LUMOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
