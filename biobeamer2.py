@@ -84,10 +84,12 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str))
 
     if len(files_to_copy) < len(files):
-        #files_rejected = ", ".join(files)
-        #logger.info("not copying nr of : {files}".format(files = len(files_to_copy)))
+        if len(files_to_copy) > 0:
+            files_rejected = ", ".join(files)
+            logger.debug("not copying because of basename dictionary violation: {files}".format(files=files_rejected))
         return False
     return True
+
 
 def robocopy_filter_sublist_deprec(f, regex, parameters, logger):
     files_to_copy = filter(regex.match, f)
