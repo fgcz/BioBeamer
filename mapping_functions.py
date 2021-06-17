@@ -16,16 +16,25 @@ def map_data_G2HD_2(path, logger):
         mg_path = match_dest.group(1)
         mg_date = match_dest.group(3)
         mg_folder = match_dest.group(4)
-
-
         path = os.path.normpath(
             "{path}\\analytic_{date}\\{date}{folder}".format(
-                path=mg_path, date=mg_date, folder=mg_folder))
+                path=mg_path,
+                date=mg_date,
+                folder=mg_folder))
         return path
     else:
-        logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
-        raise ValueError('Could not apply mapping function')
-    return None
+        return None
+
+def map_data_order_QDA_G2HD(path, logger):
+    res = map_data_QDA(path, logger)
+    if res is None:
+        res = map_data_G2HD_2(path, logger)
+        if res is None:
+            logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
+            raise ValueError('Could not apply mapping function')
+
+    return res
+
 
 def map_data_QDA(path, logger):
     """
@@ -57,10 +66,7 @@ def map_data_QDA(path, logger):
                 folder=mg_folder))
         return path
     else:
-
-        logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
-        raise ValueError('Could not apply mapping function')
-    return None
+        return None
 
 def map_data_for_container(dest_path, logger):
     """
