@@ -68,7 +68,26 @@
             <applicationID>234</applicationID>
         </b-fabric>
     </host>
-
+    <host name="FGCZ-B-170"
+          instrument="Analysis"
+          min_size="1024"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          max_time_delete="2"
+          simulate_copy='false'
+          simulate_delete='true'
+          func_target_mapping=""
+          robocopy_mov="false"
+	      pattern=".+Analysis\\GenericZip\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>185</applicationID>
+        </b-fabric>
+    </host>
     <host name="FGCZ-H-079"
           instrument="Analysis"
           min_size="1024"
@@ -128,14 +147,14 @@
             <applicationID>92</applicationID>
         </b-fabric>
     </host>
-    <host name="fgcz-k-185"
+    <host name="FGCZ-K-185"
           instrument="LUMOS_2"
           min_size="500000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+LUMOS_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
@@ -147,14 +166,14 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-I-184"
+    <host name="FGCZ-K-218"
           instrument="LUMOS_1"
           min_size="500000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+LUMOS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
@@ -194,7 +213,7 @@
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+FUSION_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"

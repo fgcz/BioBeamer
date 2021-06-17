@@ -84,10 +84,12 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
             logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str))
 
     if len(files_to_copy) < len(files):
-        #files_rejected = ", ".join(files)
-        #logger.info("not copying nr of : {files}".format(files = len(files_to_copy)))
+        if len(files_to_copy) > 0:
+            files_rejected = ", ".join(files)
+            logger.debug("not copying because of basename dictionary violation: {files}".format(files=files_rejected))
         return False
     return True
+
 
 def robocopy_filter_sublist_deprec(f, regex, parameters, logger):
     files_to_copy = filter(regex.match, f)
@@ -303,6 +305,8 @@ def remove_old_copied(source_result_mapping,
                                                                                               max_time_diff))
                     os.remove(file_to_copy)
                 else:
+                    logger.info("Simulating command : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
+                                                                                              max_time_diff))
                     myfile.write("rm {0}\n".format(file_to_copy))
 
     if myfile:
@@ -332,43 +336,50 @@ def robocopy(bio_beamer_parser, logger):
     files2copy = list(set(files2copy) - set(files_copied_log)) # remove all files which were already copied.
 
     files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
-    if len(files_filtered) == 0:
-        return
-
-    source_result_mapping = make_destination_files(files_filtered, parameters["source_path"], parameters["target_path"])
-
-    mapping_function_name = parameters["func_target_mapping"]
-    if mapping_function_name != "":
-        logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
-        method_to_call = getattr(mapping_functions, mapping_function_name)
-        source_result_mapping = rename_destination(source_result_mapping,
-                                                   logger,
-                                                   mapping_function=method_to_call)
-
-    # check if files are already copied and if so remove them from source_result_mapping
-    copied = compare_files_destination(source_result_mapping)
-
-    all_copied = list(copied["copied"].keys()) + files_copied_log # add it because you might start with empty copied file list.
-    all_copied = set(all_copied)
-    not_copied = copied["not_copied"]
-    not_copied_keys = not_copied.keys() - set(all_copied)
-    not_copied = dict((k, not_copied[k]) for k in not_copied_keys)
-
-    files_copied = robocopy_exec_map(not_copied,
-                                     parameters["robocopy_mov"],
-                                     logger,
-                                     logfile="./log/robocopy.log",
-                                     simulate=parameters['simulate_copy'])
-
-    files_copied = set(list(all_copied) + files_copied)
-    log_copied_files(list(files_copied))  # added 02.2020
 
     simulate = 'files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
-    # removes files which have been copied
-    remove_old_copied(files_copied,
-                      parameters["max_time_delete"],
-                      logger,
-                      simulate=simulate)
+
+    if len(files_filtered) != 0:
+
+        source_result_mapping = make_destination_files(files_filtered, parameters["source_path"], parameters["target_path"])
+
+        mapping_function_name = parameters["func_target_mapping"]
+        if mapping_function_name != "":
+            logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
+            method_to_call = getattr(mapping_functions, mapping_function_name)
+            source_result_mapping = rename_destination(source_result_mapping,
+                                                       logger,
+                                                       mapping_function=method_to_call)
+
+        # check if files are already copied and if so remove them from source_result_mapping
+        copied = compare_files_destination(source_result_mapping)
+
+        all_copied = list(copied["copied"].keys()) + files_copied_log # add it because you might start with empty copied file list.
+        all_copied = set(all_copied)
+        not_copied = copied["not_copied"]
+        not_copied_keys = not_copied.keys() - set(all_copied)
+        not_copied = dict((k, not_copied[k]) for k in not_copied_keys)
+
+        files_copied = robocopy_exec_map(not_copied,
+                                         parameters["robocopy_mov"],
+                                         logger,
+                                         logfile="./log/robocopy.log",
+                                         simulate=parameters['simulate_copy'])
+
+        files_copied = set(list(all_copied) + files_copied)
+        log_copied_files(list(files_copied))  # added 02.2020
+
+
+        # removes files which have been copied
+        remove_old_copied(files_copied,
+                          parameters["max_time_delete"],
+                          logger,
+                          simulate=simulate)
+    else:
+        remove_old_copied(files_copied_log,
+                          parameters["max_time_delete"],
+                          logger,
+                          simulate=simulate)
 
 
 if __name__ == "__main__":
