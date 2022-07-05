@@ -8,14 +8,13 @@ def map_data_rapiflex(dest_path, logger):
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p28830\\Proteomics\\RAPIFLEX_1\\nanni_20201021\\N_1568
     """
 
-    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_([a-z]{1,30})_([0-9]{8})[_0-9A-Za-z]*\\\\[-0-9a-zA-Z_\/\.\\]+$"
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
     if match_dest:
         container_id = match_dest.group(2)
-        username = match_dest.group(3)
-        date = match_dest.group(4)
         order_id = container_id.replace("C", "p")
         dest_path = dest_path.replace("orders", order_id)
         dest_path = dest_path.replace(container_id + "_", "")
