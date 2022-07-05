@@ -6,7 +6,7 @@
     # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
     # $Author: cpanse $
     -->
-    <host name="wolski-fgcz"
+    <host name="wolski-fgcz-dx"
           instrument="RAPIFLEX_1"
           min_size="1"
           min_time_diff="2"
@@ -26,17 +26,17 @@
         </b-fabric>
     </host>
 
-    <host name="fgcz-092"
+    <host name="wolski-fgcz"
           instrument="ULTRAFLEXTREME_1"
           min_size="1"
-          min_time_diff="1600"
+          min_time_diff="1"
           max_time_diff="24192000"
           max_time_delete="1209600"
-          simulate_copy='false'
+          simulate_copy='true'
           simulate_delete='true'
-          func_target_mapping=""
+          func_target_mapping="map_data_ultraflex"
           robocopy_mov="false"
-          pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+$"
+          pattern=".+ULTRAFLEXTREME.[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"

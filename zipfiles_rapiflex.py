@@ -1,4 +1,6 @@
 import os
+import sys
+
 import MyLog
 import biobeamer2
 import re
@@ -30,14 +32,17 @@ def handleRemoveReadonly(func, path, exc):
       raise
 
 if __name__ == "__main__":
-    logger = MyLog.MyLog()
+    if len(sys.argv) >= 1:
+        depth = int(sys.argv[1])
+    else:
+        print("need folder depth")
+        exit(1)
 
     mypath = "D:/Data2San/"
-    dirs = get_dirs_zip(mypath, maxdepth=3)
+    dirs = get_dirs_zip(mypath, maxdepth=depth)
     dirs = [k for k in dirs if os.path.isdir(k)]
 
     for dir in dirs:
-        bname = os.path.basename(dir)
         shutil.make_archive(dir,'zip', dir)
         shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
 

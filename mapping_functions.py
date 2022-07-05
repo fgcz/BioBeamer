@@ -8,20 +8,24 @@ def map_data_ultraflex(dest_path, logger):
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME\\analytic_20200924_D_Eris_22708\\
     """
 
-    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
     #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
     if match_dest:
-        container_id = match_dest.group(2)
-        order_id = container_id.replace("C", "p")
+        date = match_dest.group(2)
+        name = match_dest.group(3)
+        container_id = match_dest.group(4)
+        order_id = "p" + container_id
         dest_path = dest_path.replace("p65", order_id)
-        dest_path = dest_path.replace(container_id + "_", "")
+        dest_path = dest_path.replace(date + "\\" + name, date + "_" + name)
         dest_path = os.path.normpath(dest_path)
         return dest_path
     else:
+        logger.logger.error("could not match + ", dest_path)
         return dest_path
+
 
 
 def map_data_rapiflex(dest_path, logger):
