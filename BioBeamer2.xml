@@ -6,6 +6,26 @@
     # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
     # $Author: cpanse $
     -->
+    <host name="Flex-PC"
+          instrument="RAPIFLEX_1"
+          min_size="500000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='true'
+          simulate_delete='true'
+          func_target_mapping="map_data_rapiflex"
+          robocopy_mov="false"
+          pattern=".+RAPIFLEX_1.[-0-9a-zA-Z_\/\.\\]+$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>248</applicationID>
+        </b-fabric>
+    </host>
+
     <host name="fgcz-092"
           instrument="ULTRAFLEXTREME_1"
           min_size="1"
