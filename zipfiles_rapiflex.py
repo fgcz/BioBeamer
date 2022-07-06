@@ -1,11 +1,10 @@
-import os
+import logging
+import socket
 import sys
-
+import BioBeamerParser
 import MyLog
-import biobeamer2
+from datetime import datetime
 import re
-
-from os.path import isfile, join
 
 import os,string
 import shutil
@@ -32,6 +31,20 @@ def handleRemoveReadonly(func, path, exc):
       raise
 
 if __name__ == "__main__":
+    host = socket.gethostname()
+    configuration_url = "file:///c:/FGCZ/BioBeamer"
+    biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
+    biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
+
+    host = socket.gethostname()
+    logger = MyLog.MyLog()
+    now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
+    file = "log/biobeamer_{date}.log".format(date=now)
+    logger.add_file(filename=file, level=logging.DEBUG)
+    logger.logger.info("\n\n\nStarting new Biobeamer!")
+    logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
+    bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
+
     if len(sys.argv) >= 1:
         depth = int(sys.argv[1])
     else:
@@ -42,7 +55,22 @@ if __name__ == "__main__":
     dirs = get_dirs_zip(mypath, maxdepth=depth)
     dirs = [k for k in dirs if os.path.isdir(k)]
 
-    for dir in dirs:
-        shutil.make_archive(dir,'zip', dir)
-        shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
+    pattern = bio_beamer_parser.parameters['pattern']
+    pattern = pattern.replace("\\.(zip)","")
+    dirs = [k for k in dirs if os.path.isdir(k)]
+    print(len(dirs))
+    dirspatt = [k for k in dirs if re.match(pattern,k)]
+    notdirs = [k for k in dirs if None == re.match(pattern, k)]
+    print(len(dirspatt))
+
+    textfile = open("AAA_folders_not_compressed.txt", "w")
+    for element in notdirs:
+        textfile.write(element + "\n")
+    textfile.close()
+
+
+    if not bio_beamer_parser.parameters['simulate_copy']:
+        for dir in dirs:
+            shutil.make_archive(dir,'zip', dir)
+            shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
 

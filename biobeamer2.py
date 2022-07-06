@@ -383,7 +383,6 @@ def robocopy(bio_beamer_parser, logger):
 
 
 if __name__ == "__main__":
-    configuration_url = "http://fgcz-ms.fgcz-net.unizh.ch/config/"
 
     configuration_url = "file:///c:/FGCZ/BioBeamer"
     if len(sys.argv) == 3:
