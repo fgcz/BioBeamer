@@ -6,7 +6,7 @@
     # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
     # $Author: cpanse $
     -->
-    <host name="wolski-fgcz-dx"
+    <host name="Flex-PC"
           instrument="RAPIFLEX_1"
           min_size="1"
           min_time_diff="2"

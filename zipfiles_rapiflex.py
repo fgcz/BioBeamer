@@ -59,7 +59,7 @@ if __name__ == "__main__":
     pattern = pattern.replace("\\.(zip)","")
     dirs = [k for k in dirs if os.path.isdir(k)]
     print(len(dirs))
-    dirspatt = [k for k in dirs if re.match(pattern,k)]
+    dirspatt = [k for k in dirs if re.match(pattern, k)]
     notdirs = [k for k in dirs if None == re.match(pattern, k)]
     print(len(dirspatt))
 
