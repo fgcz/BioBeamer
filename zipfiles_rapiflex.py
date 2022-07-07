@@ -33,6 +33,14 @@ def handleRemoveReadonly(func, path, exc):
 if __name__ == "__main__":
     host = socket.gethostname()
     configuration_url = "file:///c:/FGCZ/BioBeamer"
+    if len(sys.argv) >= 3:
+        configuration_url = sys.argv[1]
+        depth = int(sys.argv[2])
+    else:
+        print("need folder depth")
+        exit(1)
+
+
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
     biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
 
@@ -45,11 +53,6 @@ if __name__ == "__main__":
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
     bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger)
 
-    if len(sys.argv) >= 1:
-        depth = int(sys.argv[1])
-    else:
-        print("need folder depth")
-        exit(1)
 
     mypath = "D:/Data2San/"
     dirs = get_dirs_zip(mypath, maxdepth=depth)
