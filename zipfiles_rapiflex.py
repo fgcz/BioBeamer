@@ -71,9 +71,7 @@ if __name__ == "__main__":
         textfile.write(element + "\n")
     textfile.close()
 
-
     if not bio_beamer_parser.parameters['simulate_copy']:
-        for dir in dirs:
-            shutil.make_archive(dir,'zip', dir)
+        for dir in dirspatt:
+            shutil.make_archive(dir, 'zip', dir)
             shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
-
