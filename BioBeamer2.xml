@@ -212,7 +212,7 @@
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
-          func_target_mapping=""
+          func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+EXPLORIS_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
@@ -224,8 +224,8 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-     <host name="fgcz-k-335"
-          instrument="EXPLORIS_2"
+     <host name="fgcz-i-216"
+          instrument="EXPLORIS_1"
           min_size="500000"
           min_time_diff="2"
           max_time_diff="2419200"
@@ -233,7 +233,7 @@
           simulate_delete='false'
           func_target_mapping="map_data_for_container"
           robocopy_mov="false"
-          pattern=".+EXPLORIS_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          pattern=".+EXPLORIS_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
