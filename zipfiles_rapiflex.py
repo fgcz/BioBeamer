@@ -10,6 +10,9 @@ import os,string
 import shutil
 import errno, stat
 
+
+
+
 def get_dirs_zip(path = "D:/Data2San",maxdepth = 3):
     path = os.path.normpath(path)
     res = []
@@ -71,7 +74,10 @@ if __name__ == "__main__":
         textfile.write(element + "\n")
     textfile.close()
 
-    if not bio_beamer_parser.parameters['simulate_copy']:
+    if True or not bio_beamer_parser.parameters['simulate_copy']:
         for dir in dirspatt:
-            shutil.make_archive(dir, 'zip', dir)
+            print(dir)
+            bname = os.path.basename(dir)
+            dirpath = os.path.dirname(dir)
+            shutil.make_archive(dir, 'zip', root_dir=dirpath, base_dir=bname)
             shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
