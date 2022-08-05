@@ -36,7 +36,7 @@
           simulate_delete='true'
           func_target_mapping="map_data_ultraflex"
           robocopy_mov="false"
-          pattern=".+ULTRAFLEXTREME.[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          pattern=".+ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
