@@ -47,7 +47,7 @@ def map_data_rapiflex(dest_path, logger):
         dest_path = os.path.normpath(dest_path)
         return dest_path
     else:
-        return None
+        return dest_path
 
 
 def map_data_G2HD_2(path, logger):
