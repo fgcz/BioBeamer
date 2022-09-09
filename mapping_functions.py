@@ -4,11 +4,11 @@ from datetime import date
 
 def map_data_ultraflex(dest_path, logger):
     """
-    input: \\\\fgcz-biobeamer.uzh.ch\\Data2SAN\\p65\\Proteomics\\ULTRAFLEXTREME\\analytic_20200924\\D_Eris_22708
-    output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME\\analytic_20200924_D_Eris_22708\\
+    input: \\\\fgcz-biobeamer.uzh.ch\\Data2SAN\\p65\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924\\D_Eris_22708
+    output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924_D_Eris_22708\\
     """
 
-    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
     #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
@@ -23,8 +23,8 @@ def map_data_ultraflex(dest_path, logger):
         dest_path = os.path.normpath(dest_path)
         return dest_path
     else:
-        logger.logger.error("could not match + ", dest_path)
-        return dest_path
+        logger.error("could not match : " + dest_path)
+        return None
 
 
 
