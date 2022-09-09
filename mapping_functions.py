@@ -2,6 +2,54 @@ import os
 import re
 from datetime import date
 
+def map_data_ultraflex(dest_path, logger):
+    """
+    input: \\\\fgcz-biobeamer.uzh.ch\\Data2SAN\\p65\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924\\D_Eris_22708
+    output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924_D_Eris_22708\\
+    """
+
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+    #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
+    regex_dest = re.compile(pattern_dest)
+    match_dest = regex_dest.match(dest_path)
+
+    if match_dest:
+        date = match_dest.group(2)
+        name = match_dest.group(3)
+        container_id = match_dest.group(4)
+        order_id = "p" + container_id
+        dest_path = dest_path.replace("p65", order_id)
+        dest_path = dest_path.replace(date + "\\" + name, date + "_" + name)
+        dest_path = os.path.normpath(dest_path)
+        return dest_path
+    else:
+        logger.error("could not match : " + dest_path)
+        return None
+
+
+
+def map_data_rapiflex(dest_path, logger):
+    """
+    input: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\Proteomics\\RAPIFLEX_1\\C28830_nanni_20220701\\LN_1568
+    output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p28830\\Proteomics\\RAPIFLEX_1\\nanni_20201021\\N_1568
+    """
+
+    pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
+    regex_dest = re.compile(pattern_dest)
+    match_dest = regex_dest.match(dest_path)
+
+    if match_dest:
+        container_id = match_dest.group(2)
+        order_id = container_id.replace("C", "p")
+        dest_path = dest_path.replace("orders", order_id)
+        dest_path = dest_path.replace(container_id + "_", "")
+        dest_path = os.path.normpath(dest_path)
+        return dest_path
+    else:
+        return dest_path
+
+
 def map_data_G2HD_2(path, logger):
     """
     input:
