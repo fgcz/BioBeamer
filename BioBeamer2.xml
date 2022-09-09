@@ -240,6 +240,7 @@
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
+          time_out = "3"
     >
         <b-fabric>
             <applicationID>301</applicationID>
