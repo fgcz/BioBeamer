@@ -92,7 +92,7 @@ def map_data_QDA(path, logger):
     input: "\\fgcz-biobeamer.uzh.ch\\Data2San\p65\Proteomics\QDA_1.PRO\Data\20201021_C22959_P16G08-Atto488_1.raw"
      output: "\\fgcz-biobeamer.uzh.ch\Data2San\p22959\Proteomics\QDA_1\analytic_20201021\20201021_C22959_P16G08-Atto488_1.raw
     """
-    pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{3,5})_(.+)$"
+    pattern_dest = "^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(path)
 

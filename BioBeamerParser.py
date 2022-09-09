@@ -18,7 +18,8 @@ class BioBeamerParser(object):
                   'max_time_delete': 24 * 3600 * 7 * 2,
                   'min_size': 100 * 1024,
                   'source_path': "D:/Data2San/",
-                  'target_path': "\\\\130.60.81.21\\Data2San"}
+                  'target_path': "\\\\130.60.81.21\\Data2San",
+                  'time_out': 3}
 
     results = []
 
@@ -90,7 +91,6 @@ class BioBeamerParser(object):
                             self.parameters[k] = False
                         else:
                             self.parameters[k] = True
-
                     else:
                         try:
                             self.parameters[k] = int(i.attrib[k])
