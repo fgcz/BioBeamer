@@ -169,7 +169,7 @@
     </host>
     <host name="FGCZ-K-185"
           instrument="LUMOS_2"
-          min_size="500000"
+          min_size="3000000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
@@ -188,7 +188,7 @@
     </host>
     <host name="FGCZ-K-218"
           instrument="LUMOS_1"
-          min_size="500000"
+          min_size="3000000"
           min_time_diff="2"
           max_time_diff="2419200"
           simulate_copy='false'
