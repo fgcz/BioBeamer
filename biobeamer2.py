@@ -412,6 +412,9 @@ if __name__ == "__main__":
 
     logger.logger.info("Starting Remote Logging from host {}".format(host))
 
+    time_out = bio_beamer_parser.parameters["time_out"]
+    time.sleep(time_out)
+
     bio_beamer_parser.log_para()
 
     drive = 0
