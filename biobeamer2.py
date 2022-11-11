@@ -241,9 +241,9 @@ def robocopy_exec(file_to_copy, target_path, logger, mov=False, logfile="./log/r
         https://technet.microsoft.com/en-us/library/cc733145.aspx
     """
     if not mov:
-        robocopy_args = "/E /Z /NP /R:0 /LOG+:{log}".format(log=logfile)
+        robocopy_args = "/E /NP /R:0 /LOG+:{log}".format(log=logfile)
     else:
-        robocopy_args = "/E /Z /NP /R:0 /MOV /LOG+:{log}".format(log=logfile)
+        robocopy_args = "/E /NP /R:0 /MOV /LOG+:{log}".format(log=logfile)
 
     cmd = [
         "robocopy.exe",
