@@ -509,7 +509,7 @@
         </b-fabric>
     </host>
 
-    <host name="FGCZ-I-208"
+    <host name="mbxlab02"
           instrument="QEXACTIVE_3"
           min_size="1024000"
           min_time_diff="2"
