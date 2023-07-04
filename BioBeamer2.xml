@@ -392,13 +392,13 @@
     </host>
 
 
-    <host name="fgcz-i-217"
+    <host name="mbxlab01"
           instrument="QUANTIVA_1"
           min_size="1"
           min_time_diff="18"
           max_time_diff="24192000"
           simulate_copy='false'
-          simulate_delete='true'
+          simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+(Proteomics|Metabolomics)\\QUANTIVA_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
