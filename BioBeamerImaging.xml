@@ -1,0 +1,30 @@
+<?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
+<BioBeamerHosts>
+    <!--
+    # $HeadURL: http://fgcz-svn.uzh.ch/repos/fgcz/stable/proteomics/config/BioBeamer.xml $
+    # $Id: BioBeamer.xml 8124 2017-01-30 10:06:15Z cpanse $
+    # $Date: 2017-01-30 11:06:15 +0100 (Mon, 30 Jan 2017) $
+    # $Author: cpanse $
+    -->
+    <host name="Flex-PC"
+          instrument="RAPIFLEXIMG_1"
+          min_size="1"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='true'
+          func_target_mapping="map_data_rapiflex"
+          robocopy_mov="false"
+          pattern=".+Proteomics\\RAPIFLEXIMG_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]+\.d\\[-0-9a-zA-Z_\/\.\\]+"
+          source_path="D:/Data2SanIMG/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>248</applicationID>
+        </b-fabric>
+    </host>
+</BioBeamerHosts>
+<!-- pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$" -->
+<!-- .+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]+\.d\\[-0-9a-zA-Z_\/\.\\]+ -->
