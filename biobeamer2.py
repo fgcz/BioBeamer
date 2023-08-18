@@ -294,9 +294,10 @@ def remove_old_copied(source_result_mapping,
     :return:
     '''
     if simulate:
-        myfile = open(simulate, "w")
+        with open(simulate, "w") as myfile:
+            simulate_mode = True
     else:
-        myfile = False
+        simulate_mode = False
 
     for file_to_copy in source_result_mapping:
         if os.path.isfile(file_to_copy):
@@ -312,9 +313,8 @@ def remove_old_copied(source_result_mapping,
                                                                                            max_time_diff))
                     myfile.write("rm {0}\n".format(file_to_copy))
 
-    if myfile:
+    if simulate_mode and myfile:
         myfile.close()
-
 
 def compare_copied_with_log(not_copied, files_copied_old):
     new_not_copied = {}
@@ -335,7 +335,7 @@ def robocopy(bio_beamer_parser, logger):
         logger.error(error)
         raise FileNotFoundError(error)
 
-    files_copied_log = read_copied_files()  # added 02.2020
+    files_copied_log = read_copied_files(storage=parameters["copied_files_log"])  # added 02.2020
     files2copy = list(set(files2copy) - set(files_copied_log))  # remove all files which were already copied.
 
     files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
@@ -372,7 +372,7 @@ def robocopy(bio_beamer_parser, logger):
                                          simulate=parameters['simulate_copy'])
 
         files_copied = set(list(all_copied) + files_copied)
-        log_copied_files(list(files_copied))  # added 02.2020
+        log_copied_files(list(files_copied),storage = parameters["copied_files_log"])  # added 02.2020
 
         # removes files which have been copied
         remove_old_copied(files_copied,
@@ -389,12 +389,15 @@ def robocopy(bio_beamer_parser, logger):
 if __name__ == "__main__":
 
     configuration_url = "file:///c:/FGCZ/BioBeamer"
-    if len(sys.argv) == 3:
+    biobeamer_xml = "BioBeamer2.xml"
+    if len(sys.argv) >= 3:
         configuration_url = sys.argv[1]
         password = sys.argv[2]
+    if len(sys.argv) == 4:
+        biobeamer_xml = sys.argv[3]
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
-    biobeamer_xml = "{0}/BioBeamer2.xml".format(configuration_url)
+    biobeamer_xml = ("{0}/"+biobeamer_xml).format(configuration_url)
 
     host = socket.gethostname()
     logger = MyLog.MyLog()

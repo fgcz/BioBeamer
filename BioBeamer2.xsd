@@ -31,6 +31,7 @@
             <xs:attribute type="xs:string" name="pattern" use="optional"/>
             <xs:attribute type="xs:string" name="source_path" use="optional"/>
             <xs:attribute type="xs:string" name="target_path" use="optional"/>
+            <xs:attribute type="xs:string" name="copied_files_log" use="optional"/>
 			<xs:attribute type="xs:string" name="syshandler_adress" use="optional"/>
 			<xs:attribute type="xs:int" name="syshandler_port" use="optional"/>
           </xs:complexType>

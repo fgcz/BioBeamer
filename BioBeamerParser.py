@@ -19,7 +19,8 @@ class BioBeamerParser(object):
                   'min_size': 100 * 1024,
                   'source_path': "D:/Data2San/",
                   'target_path': "\\\\130.60.81.21\\Data2San",
-                  'time_out': 3}
+                  'time_out': 3,
+                  'copied_files_log': "./log/copied_files.txt"}
 
     results = []
 
