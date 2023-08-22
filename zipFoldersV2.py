@@ -15,7 +15,7 @@ else:
 if len(sys.argv) > 2:
     outdir = sys.argv[3]
 else:
-    outdir = os.path.join("A:\\", "zip_res")
+    outdir = os.path.join("A:\\", "Data2San_IMG")
 
 
 

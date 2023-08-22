@@ -15,8 +15,8 @@
           simulate_delete='true'
           func_target_mapping="map_data_rapiflex"
           robocopy_mov="false"
-          pattern=".+Proteomics\\RAPIFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
-          source_path="A:/zip_res/"
+          pattern=".+Proteomics\\RAPIFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+[\.(zip)$|\.(imzML)$|\.(ibd)$]"
+          source_path="A:/Data2San_IMG/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"
