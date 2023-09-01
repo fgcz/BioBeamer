@@ -372,7 +372,7 @@ def robocopy(bio_beamer_parser, logger):
                                          simulate=parameters['simulate_copy'])
 
         files_copied = set(list(all_copied) + files_copied)
-        log_copied_files(list(files_copied),storage = parameters["copied_files_log"])  # added 02.2020
+        log_copied_files(list(files_copied), storage=parameters["copied_files_log"])  # added 02.2020
 
         # removes files which have been copied
         remove_old_copied(files_copied,
@@ -397,17 +397,17 @@ if __name__ == "__main__":
         biobeamer_xml = sys.argv[3]
 
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
-    biobeamer_xml = ("{0}/"+biobeamer_xml).format(configuration_url)
+    biobeamer_xml_path = ("{0}/"+biobeamer_xml).format(configuration_url)
 
     host = socket.gethostname()
     logger = MyLog.MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
-    file = "log/biobeamer_{date}.log".format(date=now)
+    file = "log/biobeamer_{xml}_{date}.log".format(xml = biobeamer_xml, date=now)
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
 
-    bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host,
+    bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml_path, hostname=host,
                                                         logger=logger.logger)
     logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
                                    bio_beamer_parser.parameters["syshandler_port"]))
