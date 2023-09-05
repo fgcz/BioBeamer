@@ -332,7 +332,7 @@
     <host name="fgcz-088"
           instrument="G2SI_2"
           min_size="0"
-          min_time_diff="7200"
+          min_time_diff="2"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
           simulate_copy='false'
