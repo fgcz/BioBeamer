@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     for dir in dirspatt:
         print(dir)
-        if not bio_beamer_parser.parameters['simulate_copy']:
+        if not bio_beamer_parser.parameters['simulate_copy'] or True:
             bname = os.path.basename(dir)
             dirpath = os.path.dirname(dir)
             shutil.make_archive(dir, 'zip', root_dir=dirpath, base_dir=bname)

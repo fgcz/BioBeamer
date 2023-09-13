@@ -294,10 +294,10 @@ def remove_old_copied(source_result_mapping,
     :return:
     '''
     if simulate:
-        with open(simulate, "w") as myfile:
-            simulate_mode = True
-    else:
-        simulate_mode = False
+        myfile = open(simulate, "w")
+        simulate_mode = True
+    #else:
+    #    simulate_mode = False
 
     for file_to_copy in source_result_mapping:
         if os.path.isfile(file_to_copy):
@@ -311,7 +311,7 @@ def remove_old_copied(source_result_mapping,
                     logger.info(
                         "Simulating command : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
                                                                                            max_time_diff))
-                    myfile.write("rm {0}\n".format(file_to_copy))
+                    myfile.write("rm {f2c}\n".format(f2c=file_to_copy))
 
     if simulate_mode and myfile:
         myfile.close()
@@ -387,7 +387,6 @@ def robocopy(bio_beamer_parser, logger):
 
 
 if __name__ == "__main__":
-
     configuration_url = "file:///c:/FGCZ/BioBeamer"
     biobeamer_xml = "BioBeamer2.xml"
     if len(sys.argv) >= 3:
