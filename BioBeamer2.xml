@@ -11,7 +11,7 @@
           min_size="1"
           min_time_diff="2"
           max_time_diff="2419200"
-          simulate_copy='false'
+          simulate_copy='true'
           simulate_delete='true'
           func_target_mapping="map_data_rapiflex"
           robocopy_mov="false"
