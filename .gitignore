@@ -8,6 +8,7 @@ biobeamer.bat
 venv
 venv37
 log/copied_files.txt
+log/*
 AAA_folders_not_compressed.txt
 BiobeamerIMG.bat
 copiedFiles.sh

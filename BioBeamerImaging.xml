@@ -13,7 +13,7 @@
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
-          func_target_mapping="map_data_rapiflex"
+          func_target_mapping=""
           robocopy_mov="false"
           pattern=".+Proteomics\\RAPIFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+[\.(zip)$|\.(imzML)$|\.(ibd)$]"
           source_path="A:/Data2San_IMG/"
@@ -26,6 +26,28 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
+     <host name="TIMS-30816"
+          instrument="TIMSTOFFLEXIMG_1"
+          min_size="1"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='true'
+          func_target_mapping=""
+          robocopy_mov="false"
+          pattern=".+Proteomics\\TIMSTOFFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+[\.(zip)$|\.(imzML)$|\.(ibd)$]"
+          source_path="D:/Data2San_IMG_zip_tmp/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+          copied_files_log="./log/flexImaging_copied_files.txt"
+    >
+        <b-fabric>
+            <applicationID>248</applicationID>
+        </b-fabric>
+    </host>
+
+
 </BioBeamerHosts>
 <!-- pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$" -->
 <!-- .+Proteomics\\TIMSTOF_1\\[a-z]+_[0-9]{8}[-0-9a-zA-Z_\/\.\\]+\.d\\[-0-9a-zA-Z_\/\.\\]+ -->
