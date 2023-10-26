@@ -10,13 +10,13 @@
           instrument="RAPIFLEXIMG_1"
           min_size="1"
           min_time_diff="2"
-          max_time_diff="2419200"
+          max_time_diff="28239581"
           simulate_copy='false'
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
           pattern=".+Proteomics\\RAPIFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+[\.(zip)$|\.(imzML)$|\.(ibd)$]"
-          source_path="A:/Data2San_IMG/"
+          source_path="A:/Data2San_IMG_imzML_zip/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
           syshandler_port="514"

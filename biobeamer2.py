@@ -256,6 +256,7 @@ def compare_files_destination(source_result_mapping):
     for file_to_copy, target_file in source_result_mapping.items():
         # tmp = os.path.exists(target_file)
         if not target_file is None:
+            print(target_file + "\n")
             if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
                 copied[file_to_copy] = target_file
             else:
@@ -324,7 +325,7 @@ def compare_copied_with_log(not_copied, files_copied_old):
     return new_not_copied
 
 
-def robocopy(bio_beamer_parser, logger):
+def robocopy(bio_beamer_parser, logger, biobeamerlog="./log/robocopy.log"):
     parameters = bio_beamer_parser.parameters
     regex = bio_beamer_parser.regex
 
@@ -368,7 +369,7 @@ def robocopy(bio_beamer_parser, logger):
         files_copied = robocopy_exec_map(not_copied,
                                          parameters["robocopy_mov"],
                                          logger,
-                                         logfile="./log/robocopy.log",
+                                         logfile=biobeamerlog,
                                          simulate=parameters['simulate_copy'])
 
         files_copied = set(list(all_copied) + files_copied)
@@ -401,7 +402,8 @@ if __name__ == "__main__":
     host = socket.gethostname()
     logger = MyLog.MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
-    file = "log/biobeamer_{xml}_{date}.log".format(xml = biobeamer_xml, date=now)
+    file = "./log/biobeamer_{xml}_{date}.log".format(xml=os.path.splitext("BioBeamer2.xml")[0], date=now)
+    biobeamerlog = "./log/robocopy_{xml}.log".foramt(xml=os.path.splitext("BioBeamer2.xml")[0])
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
@@ -426,7 +428,7 @@ if __name__ == "__main__":
             logger.logger.error("Can't map network drive {}".format(bio_beamer_parser.parameters['target_path']))
             exit(0)
 
-    robocopy(bio_beamer_parser, logger.logger)
+    robocopy(bio_beamer_parser, logger.logger, biobeamerlog)
 
     if not drive == 0:
         drive.unmapDrive()
