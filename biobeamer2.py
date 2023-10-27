@@ -403,7 +403,7 @@ if __name__ == "__main__":
     logger = MyLog.MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
     file = "./log/biobeamer_{xml}_{date}.log".format(xml=os.path.splitext("BioBeamer2.xml")[0], date=now)
-    biobeamerlog = "./log/robocopy_{xml}.log".foramt(xml=os.path.splitext("BioBeamer2.xml")[0])
+    biobeamerlog = "./log/robocopy_{xml}.log".format(xml=os.path.splitext("BioBeamer2.xml")[0])
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
