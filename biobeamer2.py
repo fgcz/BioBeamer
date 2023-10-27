@@ -297,8 +297,9 @@ def remove_old_copied(source_result_mapping,
     if simulate:
         myfile = open(simulate, "w")
         simulate_mode = True
-    #else:
-    #    simulate_mode = False
+    else:
+        simulate_mode = False
+        myfile = False
 
     for file_to_copy in source_result_mapping:
         if os.path.isfile(file_to_copy):
