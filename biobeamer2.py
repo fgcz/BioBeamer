@@ -403,8 +403,14 @@ if __name__ == "__main__":
     host = socket.gethostname()
     logger = MyLog.MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
-    file = "./log/biobeamer_{xml}_{date}.log".format(xml=os.path.splitext("BioBeamer2.xml")[0], date=now)
-    biobeamerlog = "./log/robocopy_{xml}.log".format(xml=os.path.splitext("BioBeamer2.xml")[0])
+    config_file_name = biobeamer_xml.replace('file://', '')
+
+    # Use os.path.basename to get the file name
+    config_file_name = os.path.basename(config_file_name)
+    config_file_name, file_extension = os.path.splitext(config_file_name)
+
+    file = "./log/biobeamer_{xml}_{date}.log".format(xml=config_file_name, date=now)
+    biobeamerlog = "./log/robocopy_{xml}.log".format(xml=config_file_name)
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
