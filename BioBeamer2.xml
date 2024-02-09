@@ -226,6 +226,26 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
+	 <host name="914J7V3"
+          instrument="EXPLORIS_3"
+          min_size="500000"
+          min_time_diff="2"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping="map_data_for_container"
+          robocopy_mov="false"
+          pattern=".+EXPLORIS_3.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+          time_out = "3"
+    >
+        <b-fabric>
+            <applicationID>333</applicationID>
+        </b-fabric>
+    </host>
      <host name="fgcz-i-216"
           instrument="EXPLORIS_1"
           min_size="500000"
