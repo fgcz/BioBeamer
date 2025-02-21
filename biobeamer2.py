@@ -63,7 +63,7 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
         if not regex.match(f):
             ok = False
             false_str.append('regex')
-        if not time.time() - os.path.getmtime(f) > parameters['min_time_diff']:
+        if not time.time() - os.path.getctime(f) > parameters['min_time_diff']:
             ok = False
             false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'],
                                                                         time.time() - os.path.getmtime(f)))
