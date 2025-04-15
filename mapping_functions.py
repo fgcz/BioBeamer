@@ -8,7 +8,9 @@ def map_data_ultraflex(dest_path, logger):
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924_D_Eris_22708\\
     """
 
-    pattern_dest = r"^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+    #pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+    pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\p65\\(Proteomics|Metabolomics)\\[A-Z]{1,20}_[1-9]{1,1}\\[a-z]{1,30}_([0-9]{8,8})\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+
     #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
@@ -34,7 +36,9 @@ def map_data_rapiflex(dest_path, logger):
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p28830\\Proteomics\\RAPIFLEX_1\\nanni_20201021\\N_1568
     """
 
-    pattern_dest = r"^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    #pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\(Proteomics|Metabolomics)\\[A-Z]{1,20}_[0-9]{1,2}\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+
     #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
@@ -56,7 +60,9 @@ def map_data_G2HD_2(path, logger):
     output:
     """
 
-    pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p[0-9]{1,4}\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})(.+)$"
+    #pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p[0-9]{1,4}\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})(.+)$"
+    pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\p[0-9]{1,4}\\[A-Za-z]{1,20}\\[A-Z0-9_]+)(\.PRO\\Data\\)([0-9]{8,8})(.+)$"
+
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(path)
 
@@ -92,7 +98,9 @@ def map_data_QDA(path, logger):
     input: "\\fgcz-biobeamer.uzh.ch\\Data2San\p65\Proteomics\QDA_1.PRO\Data\20201021_C22959_P16G08-Atto488_1.raw"
      output: "\\fgcz-biobeamer.uzh.ch\Data2San\p22959\Proteomics\QDA_1\analytic_20201021\20201021_C22959_P16G08-Atto488_1.raw
     """
-    pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
+    #pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
+    pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\)(p[0-9]{1,4})(\\[A-Za-z]{1,20}\\[A-Z0-9_]+)(\.PRO\\Data\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
+
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(path)
 
@@ -124,7 +132,7 @@ def map_data_for_container(dest_path, logger):
     output: p65/Proteomics/G2HD_2/schesnov_20190000
     """
 
-    pattern_dest = r"^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\[A-Za-z]{1,20}\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\analytic_[0-9]{8}[_0-9A-Za-z]*\\\\[0-9]{8}_(C[0-9]{3,6})_.+$"
+    pattern_dest = r"^\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\[A-Za-z]{1,20}\\[A-Z]{1,20}_[0-9]{1,2}\\analytic_[0-9]{8}[_0-9A-Za-z]*\\[0-9]{8}_(C[0-9]{3,6})_.+$"
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
@@ -162,7 +170,7 @@ def map_data_analyst_qtrap_1(path, logger):
     input:  'p1000/Data/selevsek_20150119'
     output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
     """
-    pattern = "(.*p[0-9]+)\\\\Data\\\\([-0-9a-zA-Z_\\\.]+)$"
+    pattern = r"(.*p[0-9]+)\\Data\\([-0-9a-zA-Z_\.]+)$"
     regex = re.compile(pattern)
     match = regex.match(path)
 
