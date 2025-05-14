@@ -226,7 +226,7 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <host name="fgcz-k-218"
+    <host name="fgcz-k-431"
           instrument="ASCEND_1"
           min_size="3000000"
           min_time_diff="300"
