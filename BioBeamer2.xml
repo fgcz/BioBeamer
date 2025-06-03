@@ -210,10 +210,10 @@
     <host name="FGCZ-K-185"
           instrument="LUMOS_2"
           min_size="3000000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
-          simulate_delete='true'
+          simulate_delete='false'
           func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+LUMOS_2.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -226,10 +226,30 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-K-218"
+    <host name="fgcz-k-431"
+          instrument="ASCEND_1"
+          min_size="3000000"
+          min_time_diff="300"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping="map_data_for_container"
+          robocopy_mov="false"
+          pattern=".+ASCEND_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>376</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="replacedbyascent"
           instrument="LUMOS_1"
           min_size="3000000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -326,7 +346,7 @@
             <applicationID>301</applicationID>
         </b-fabric>
     </host>
-    <host name="4Y3J7V3"
+    <host name="fgcz-k-408"
           instrument="ASTRAL_1"
           min_size="500000"
           min_time_diff="300"
@@ -590,7 +610,7 @@
 
     <!-- likely do not exist anymore -->
 
-    <host name="fgcz-i-218"
+    <host name="doesnotexist"
           instrument="QEXACTIVEHFX_1"
           min_size="1024000"
           min_time_diff="300"
