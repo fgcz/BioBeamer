@@ -57,7 +57,7 @@
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-	      pattern=".+Analysis\\(CompoundDiscoV1|GenericZip)\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip|cdResult)$"
+	        pattern=".+Analysis\\(CompoundDiscoV1|GenericZip)\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip|cdResult)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
