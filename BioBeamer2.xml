@@ -212,7 +212,7 @@
           min_size="3000000"
           min_time_diff="2"
           max_time_diff="2419200"
-          simulate_copy='true'
+          simulate_copy='false'
           simulate_delete='true'
           func_target_mapping="map_data_for_container"
           robocopy_mov="false"
