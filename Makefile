@@ -2,9 +2,8 @@
 test: pytest xmltest
 
 pytest:
-	python -m unittest -v fgcz_biobeamer
-	python -m unittest -v testBioBeamerParser
+	python3 -m unittest discover -v -s tests
 
 xmltest:
-	xmllint --noout --schema BioBeamer.xsd BioBeamer.xml
+	xmllint --noout --schema configs/BioBeamer2.xsd configs/BioBeamer2.xml
 

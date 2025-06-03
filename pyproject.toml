@@ -1,0 +1,16 @@
+[project]
+name = "biobeamer"
+version = "0.1.0"
+description = "Collecting instrument data using BioBeamer"
+authors = [
+    { name = "Christian Panse", email = "panse@fgcz.ch" }
+]
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "lxml"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

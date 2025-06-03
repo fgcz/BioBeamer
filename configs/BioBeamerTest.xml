@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="BioBeamer.xsl"?>
+<BioBeamerHosts>
+
+  <host name="test_configuration"
+        instrument="test_instrument"
+        min_size="1024"
+        min_time_diff="10800"
+        max_time_diff="2419200"
+        max_time_delete="1209600"
+        time_out="3600"
+        simulate_copy="true"
+        simulate_delete="true"
+        func_target_mapping=""
+        robocopy_mov="false"
+        pattern="^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\\/\\.]+\\.(raw|RAW|wiff|wiff\\.scan)$"
+        source_path="/srv/www/htdocs/Data2San"
+        target_path="/srv/www/htdocs"
+        copied_files_log="./log/test_copied_files.txt"
+        syshandler_adress="ms-fgcz.uzh.ch"
+        syshandler_port="514"
+  >
+    <b-fabric>
+      <applicationID>93</applicationID>
+    </b-fabric>
+  </host>
+
+
+</BioBeamerHosts>
+  <!-- pattern=".+(Proteomics|Metabolomics)\\TOFTOFTOF_1\\[a-z]+_[0-9]{8}_[-0-9a-zA-Z_\/\.\\]+\.(raw|txt|csv|h5)$" -->

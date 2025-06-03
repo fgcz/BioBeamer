@@ -1,6 +1,6 @@
 import unittest
-from biobeamer2 import MyLog
-from mapNetworks import Drive
+from src.MyLog import MyLog
+from src.mapNetworks import Drive
 
 
 class TestDrive(unittest.TestCase):

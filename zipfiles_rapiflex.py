@@ -1,12 +1,11 @@
 import logging
 import socket
 import sys
-import BioBeamerParser
-import MyLog
+from src import BioBeamerParser, MyLog
 from datetime import datetime
 import re
 
-import os, string
+import os
 import shutil
 import errno, stat
 

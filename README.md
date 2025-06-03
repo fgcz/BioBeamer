@@ -4,7 +4,7 @@
 
 
 ## Install 
-* ensure you have python 2.7.* 
+* ensure you have python 3.7+
 * ```pip install PyFGCZ``` 
 * ```git clone git@github.com:fgcz/BioBeamer.git```
 
@@ -37,11 +37,11 @@
 
 the xml can be validated using
 ```bash
-xmllint --noout --schema BioBeamer.xsd BioBeamer.xml
+xmllint --noout --schema configs/BioBeamer2.xsd configs/BioBeamer2.xml
 ```
 or 
 ```bash
-xmlstarlet val --xsd BioBeamer.xsd BioBeamer.xml
+xmlstarlet val --xsd configs/BioBeamer2.xsd configs/BioBeamer2.xml
 ```
 
 ### Deploy @ new location
@@ -73,19 +73,16 @@ if ($fromhost-ip != '127.0.0.1') then ?RemoteHost;tplremote
 ## Run
 
 ### @ FGCZ
-just 'run as administrator' justBeamFiles.exe.
+copy biobeamerExample.bat to the instrument pc and edit the file to match your instrument and data paths.
 
-justBeamFiles.exe is an [autoitscript](https://www.autoitscript.com/site/autoit/).
-In our case the justBeamFiles.exe maps the storage and runs the fgcz_biobeamer.py script which uses robocopy.exe on Micorsoft installed PCs to sync the files.
+biobeamerExample.bat pulls the newest version from github and runs the BioBeamer.py script with the correct parameters.
+It uses robocopy.exe to sync the files to the SAN.
 
 ### otherwise
 * ensure that SAN is mounted 
 ```cmd
 python BioBeamer.py
 ```
-
-## BioBeamer class
-![BioBeamer UML](/images/classes_No_Name.png)
 
 
 ## Author

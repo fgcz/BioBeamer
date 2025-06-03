@@ -1,14 +1,35 @@
+# IDE and editor folders
 .vscode
 .idea
-__pycache__
+
+# Python cache and compiled files
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+venv37/
+
+# Logs and output
 *.log
-files2delete.bat
-*.bat
-venv
-venv37
-log/copied_files.txt
+log/
 log/*
-AAA_folders_not_compressed.txt
-BiobeamerIMG.bat
-copiedFiles.sh
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Test and temp files
+*.tmp
+*.bak
+
+# Distribution/build
+dist/
+build/
+*.egg-info/
+
+# Custom project scripts and batch files
+*.bat
+*.sh

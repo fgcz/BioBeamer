@@ -388,54 +388,47 @@ def robocopy(bio_beamer_parser, logger, biobeamerlog="./log/robocopy.log"):
                           simulate=simulate)
 
 
-if __name__ == "__main__":
-    configuration_url = "file:///c:/FGCZ/BioBeamer"
+def main():
+    configuration_url = "file:///c:/FGCZ/BioBeamer/configs"
     biobeamer_xml = "BioBeamer2.xml"
     if len(sys.argv) >= 3:
         configuration_url = sys.argv[1]
         password = sys.argv[2]
     if len(sys.argv) == 4:
         biobeamer_xml = sys.argv[3]
-
     biobeamer_xsd = "{0}/BioBeamer2.xsd".format(configuration_url)
-    biobeamer_xml_path = ("{0}/"+biobeamer_xml).format(configuration_url)
-
+    biobeamer_xml_path = ("{0}/" + biobeamer_xml).format(configuration_url)
     host = socket.gethostname()
     logger = MyLog.MyLog()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")  # current date and time
     config_file_name = biobeamer_xml.replace('file://', '')
-
     # Use os.path.basename to get the file name
     config_file_name = os.path.basename(config_file_name)
     config_file_name, file_extension = os.path.splitext(config_file_name)
-
     file = "./log/biobeamer_{xml}_{date}.log".format(xml=config_file_name, date=now)
     biobeamerlog = "./log/robocopy_{xml}.log".format(xml=config_file_name)
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
-
     bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml_path, hostname=host,
                                                         logger=logger.logger)
     logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
                                    bio_beamer_parser.parameters["syshandler_port"]))
     logger.set_log_level(level=logging.DEBUG)
-
     logger.logger.info("Starting Remote Logging from host {}".format(host))
-
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)
-
     bio_beamer_parser.log_para()
-
     drive = 0
     if re.match("^\\\\", bio_beamer_parser.parameters['target_path']):
         drive = Drive(logger.logger, password=password, networkPath=bio_beamer_parser.parameters['target_path'])
         if not drive.mapDrive() == 0:
             logger.logger.error("Can't map network drive {}".format(bio_beamer_parser.parameters['target_path']))
             exit(0)
-
     robocopy(bio_beamer_parser, logger.logger, biobeamerlog)
-
     if not drive == 0:
         drive.unmapDrive()
+
+
+if __name__ == "__main__":
+    main()
