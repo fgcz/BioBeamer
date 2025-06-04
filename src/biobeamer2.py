@@ -131,8 +131,8 @@ def log_files_stat(files_to_copy, parameters, logger):
 def copy_with_robocopy(file_to_copy,
                        target_path,
                        logger,
+                       tool_log_file,
                        mov=False,
-                       logfile="./log/robocopy.log",
                        simulate_copy=False):
     """
     wrapper function to
@@ -150,9 +150,9 @@ def copy_with_robocopy(file_to_copy,
     file_copied = None
 
     if not mov:
-        robocopy_args = "/E /NP /R:0 /LOG+:{log}".format(log=logfile)
+        robocopy_args = "/E /NP /R:0 /LOG+:{log}".format(log=tool_log_file)
     else:
-        robocopy_args = "/E /NP /R:0 /MOV /LOG+:{log}".format(log=logfile)
+        robocopy_args = "/E /NP /R:0 /MOV /LOG+:{log}".format(log=tool_log_file)
 
     cmd = [
         "robocopy.exe",
@@ -196,9 +196,10 @@ def copy_with_robocopy(file_to_copy,
     return file_copied
 
 
-def copy_with_scp(source, target, logger, simulate_copy=False):
+def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     """
     Executes an scp command to copy a file from source to target.
+    :param tool_log_file: Log file path
     :param source: Source file path
     :param target: Target file path
     :param logger: Logger object
@@ -206,9 +207,10 @@ def copy_with_scp(source, target, logger, simulate_copy=False):
     :return: The source file if copied successfully, else None
     """
     file_copied = None
-    # Compose the scp command
+    # Compose the scp command with verbose output
     cmd = [
         "scp",
+        "-v",
         shlex.quote(source),
         shlex.quote(target)
     ]
@@ -216,8 +218,12 @@ def copy_with_scp(source, target, logger, simulate_copy=False):
     if not simulate_copy:
         logger.info(f"Running Command: [{cmd_str}]")
         try:
-            scp_process = Popen(cmd_str, shell=True)
-            return_code = scp_process.wait()
+            # Write a header to the log file to ensure it is touched
+            with open(tool_log_file, "a") as logf:
+                logf.write(f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+                logf.flush()
+                scp_process = Popen(cmd_str, shell=True, stdout=logf, stderr=logf)
+                return_code = scp_process.wait()
             logger.info(f"scp return code: '{return_code}'")
             if return_code != 0:
                 logger.warning("scp quit with non-zero return code")
@@ -243,7 +249,7 @@ def copy_with_scp(source, target, logger, simulate_copy=False):
 def copy_files_with_tool(source_results,
                          mov,
                          logger,
-                         logfile,
+                         tool_log_file,
                          tool,
                          simulate=False):
     files_copied = []
@@ -255,12 +261,13 @@ def copy_files_with_tool(source_results,
                                              source_results[source],
                                              logger=logger,
                                              mov=mov,
-                                             logfile=logfile,
+                                             tool_log_file=tool_log_file,
                                              simulate_copy=simulate)
         elif tool == "scp":
             file_copied = copy_with_scp(source,
                                         source_results[source],
                                         logger=logger,
+                                        tool_log_file=tool_log_file,
                                         simulate_copy=simulate)
         else:
             logger.error("Tool {0} not supported!".format(tool))
@@ -318,17 +325,17 @@ def compare_files_destination(source_result_mapping):
 
 
 def log_copied_files(copied_files,
-                     storage="./log/copied_files.txt"):
+                     copied_files_log_path):
     if len(copied_files) > 0:
         copied_files.sort()
-        with open(storage, "w") as file_log:
+        with open(copied_files_log_path, "w") as file_log:
             for file in copied_files:
                 file_log.write(file + "\n")
 
 
-def read_copied_files(storage="./log/copied_files.txt"):
-    if os.path.isfile(storage):
-        with open(storage, "r") as file_log:
+def read_copied_files(copied_files_log_path):
+    if os.path.isfile(copied_files_log_path):
+        with open(copied_files_log_path, "r") as file_log:
             copied_files = file_log.read().splitlines()
             return copied_files
     else:
@@ -380,7 +387,7 @@ def compare_copied_with_log(not_copied, files_copied_old):
     return new_not_copied
 
 
-def copy_files(bio_beamer_parser, logger, tool, biobeamerlog="./log/robocopy.log"):
+def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
     parameters = bio_beamer_parser.parameters
     regex = bio_beamer_parser.regex
 
@@ -391,7 +398,7 @@ def copy_files(bio_beamer_parser, logger, tool, biobeamerlog="./log/robocopy.log
         logger.error(error)
         raise FileNotFoundError(error)
 
-    files_copied_log = read_copied_files(storage=parameters["copied_files_log"])  # added 02.2020
+    files_copied_log = read_copied_files(copied_files_log_path=parameters["copied_files_log"])  # added 02.2020
     files2copy = list(set(files2copy) - set(files_copied_log))  # remove all files which were already copied.
 
     files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
@@ -424,12 +431,12 @@ def copy_files(bio_beamer_parser, logger, tool, biobeamerlog="./log/robocopy.log
         files_copied = copy_files_with_tool(source_results=not_copied,
                                             mov=parameters["robocopy_mov"],
                                             logger=logger,
-                                            logfile=biobeamerlog,
+                                            tool_log_file=tool_log_file_path,
                                             tool=tool,
                                             simulate=parameters['simulate_copy'])
 
         files_copied = set(list(all_copied) + files_copied)
-        log_copied_files(list(files_copied), storage=parameters["copied_files_log"])  # added 02.2020
+        log_copied_files(list(files_copied), copied_files_log_path=parameters["copied_files_log"])  # added 02.2020
 
         # removes files which have been copied
         remove_old_copied(files_copied,
@@ -458,12 +465,18 @@ def parse_args():
     return configuration_url, biobeamer_xml, password, hostname
 
 
-def setup_logger(config_file_name, now):
-    file = f"./log/biobeamer_{config_file_name}_{now}.log"
-    biobeamerlog = f"./log/robocopy_{config_file_name}.log"
+def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=None):
+    if log_file_path is None:
+        biobeamer_log_file_path = f"./log/biobeamer_{config_file_name}_{now}.log"
+    else:
+        biobeamer_log_file_path = log_file_path
+    if tool_log_file_path is None:
+        tool_log_file_path = f"./log/robocopy_{config_file_name}.log"
+    else:
+        tool_log_file_path = tool_log_file_path
     logger = MyLog.MyLog()
-    logger.add_file(filename=file, level=logging.DEBUG)
-    return logger, biobeamerlog
+    logger.add_file(filename=biobeamer_log_file_path, level=logging.DEBUG)
+    return logger, tool_log_file_path
 
 
 def get_config_file_name(biobeamer_xml):
@@ -488,8 +501,6 @@ def setup_remote_logging(logger, bio_beamer_parser, host):
 
 
 def handle_network_drive(parameters, logger, password):
-
-
     tool = "scp"
     drive = None
     if re.match(r"^\\\\", parameters['target_path']):
@@ -504,7 +515,7 @@ def main():
     configuration_url, biobeamer_xml, password, hostname = parse_args()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     config_file_name = get_config_file_name(biobeamer_xml)
-    logger, biobeamerlog = setup_logger(config_file_name, now)
+    logger, tool_log_file = setup_logger(config_file_name, now)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info(f"retrieving config from {biobeamer_xml} for hostname {hostname}")
     bio_beamer_parser = setup_biobeamer_parser(configuration_url, biobeamer_xml, hostname, logger.logger)
@@ -513,7 +524,7 @@ def main():
     time.sleep(time_out)
     bio_beamer_parser.log_para()
     drive, tool = handle_network_drive(bio_beamer_parser.parameters, logger.logger, password)
-    copy_files(bio_beamer_parser, logger.logger, tool, biobeamerlog)
+    copy_files(bio_beamer_parser, logger.logger, tool, tool_log_file)
     if drive:
         drive.unmapDrive()
 
