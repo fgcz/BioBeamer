@@ -616,13 +616,16 @@ def setup_remote_logging(logger, bio_beamer_parser, host):
 
 
 def handle_network_drive(parameters, logger, password):
-    tool = "scp"
+    tool = parameters["tool"]
     drive = None
-    if re.match(r"^\\\\", parameters['target_path']):
-        drive = Drive(logger, password=password, networkPath=parameters['target_path'])
-        if drive.mapDrive() != 0:
-            logger.error(f"Can't map network drive {parameters['target_path']}")
-            tool = "scp"
+    if tool == "robocopy":
+        if re.match(r"^\\\\", parameters["target_path"]):
+            drive = Drive(
+                logger, password=password, networkPath=parameters["target_path"]
+            )
+            if drive.mapDrive() != 0:
+                logger.error(f"Can't map network drive {parameters['target_path']}")
+    # For 'scp', do not mount the drive at all
     return drive, tool
 
 
