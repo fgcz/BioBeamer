@@ -529,18 +529,49 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
 
 
 def parse_args():
-    configuration_url = "file:///c:/FGCZ/BioBeamer/configs"
-    biobeamer_xml = "BioBeamer2.xml"
-    password = None
-    hostname = socket.gethostname()
-    if len(sys.argv) >= 3:
-        configuration_url = sys.argv[1]
-        password = sys.argv[2]
-    if len(sys.argv) >= 4:
-        biobeamer_xml = sys.argv[3]
-    if len(sys.argv) >= 5:
-        hostname = sys.argv[4]
-    return configuration_url, biobeamer_xml, password, hostname
+    parser = argparse.ArgumentParser(description="BioBeamer2 command line arguments")
+    parser.add_argument(
+        "--config-url",
+        "-c",
+        default="file:///c:/FGCZ/BioBeamer/configs",
+        help="Configuration URL (default: file:///c:/FGCZ/BioBeamer/configs)",
+    )
+    parser.add_argument(
+        "--xml",
+        "-x",
+        default="BioBeamer2.xml",
+        help="BioBeamer XML file (default: BioBeamer2.xml)",
+    )
+    parser.add_argument(
+        "--password",
+        "-p",
+        default=None,
+        help="Password for network drive (default: None)",
+    )
+    parser.add_argument(
+        "--hostname",
+        "-n",
+        default=socket.gethostname(),
+        help="Hostname (default: current machine hostname)",
+    )
+    parser.add_argument(
+        "--xsd",
+        "-s",
+        default=None,
+        help="BioBeamer XSD file (optional, default: BioBeamer2.xsd in the same directory as the XML file)",
+    )
+    args = parser.parse_args()
+    # Determine xsd path if not provided
+    if args.xsd is None:
+        import os
+
+        xml_dir = os.path.dirname(args.xml)
+        if not xml_dir:
+            xml_dir = "."
+        xsd_path = os.path.join(xml_dir, "BioBeamer2.xsd")
+    else:
+        xsd_path = args.xsd
+    return args.config_url, args.xml, args.password, args.hostname, xsd_path
 
 
 def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=None):
