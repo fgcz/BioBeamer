@@ -33,3 +33,4 @@ build/
 # Custom project scripts and batch files
 *.bat
 *.sh
+/uv.lock
