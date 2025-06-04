@@ -1,11 +1,11 @@
 # This should go into the robocopy because otherwise it might conflict with the Checker class.
+import argparse
 import filecmp
 import logging.handlers
 import os
 import re
 import shlex
 import socket
-import sys
 import time
 from datetime import datetime
 from subprocess import Popen
@@ -17,15 +17,18 @@ from mapNetworks import Drive
 
 
 def get_all_files(source_path, logger):
-    '''
+    """
     :param source_path:
     :param logger:
     :return: return list of files in directory
-    '''
+    """
     all_files = []
-    for (root, dirs, files) in os.walk(source_path,
-                                       topdown=False, followlinks=False,
-                                       onerror=lambda e: logger.error("os.walk: {0}\n".format(e))):
+    for root, dirs, files in os.walk(
+        source_path,
+        topdown=False,
+        followlinks=False,
+        onerror=lambda e: logger.error("os.walk: {0}\n".format(e)),
+    ):
         # BioBeamer filters
         files_to_copy = map(lambda f: os.path.join(root, f), files)
         all_files += files_to_copy
@@ -61,40 +64,62 @@ def robocopy_filter_sublist(files, regex, parameters, logger):
         false_str = []
         if not regex.match(f):
             ok = False
-            false_str.append('regex')
-        if not time.time() - os.path.getctime(f) > parameters['min_time_diff']:
+            false_str.append("regex")
+        if not time.time() - os.path.getctime(f) > parameters["min_time_diff"]:
             ok = False
-            false_str.append('min_time_diff = {}; observed = {}'.format(parameters['min_time_diff'],
-                                                                        time.time() - os.path.getmtime(f)))
-        if not time.time() - os.path.getmtime(f) < parameters['max_time_diff']:
+            false_str.append(
+                "min_time_diff = {}; observed = {}".format(
+                    parameters["min_time_diff"], time.time() - os.path.getmtime(f)
+                )
+            )
+        if not time.time() - os.path.getmtime(f) < parameters["max_time_diff"]:
             ok = False
-            false_str.append('max_time_diff = {}; observed = {}'.format(parameters['max_time_diff'],
-                                                                        time.time() - os.path.getmtime(f)))
-        if not os.path.getsize(f) >= parameters['min_size']:
+            false_str.append(
+                "max_time_diff = {}; observed = {}".format(
+                    parameters["max_time_diff"], time.time() - os.path.getmtime(f)
+                )
+            )
+        if not os.path.getsize(f) >= parameters["min_size"]:
             ok = False
-            false_str.append("min_size = {}; actual_size = {}".format(parameters['min_size'], os.path.getsize(f)))
+            false_str.append(
+                "min_size = {}; actual_size = {}".format(
+                    parameters["min_size"], os.path.getsize(f)
+                )
+            )
         if ok:
             files_to_copy.append(f)
 
         if len(false_str) > 0:
             false_str = " & ".join(false_str)
-            logger.debug("not copying {file} for {reasons}".format(file=f, reasons=false_str))
+            logger.debug(
+                "not copying {file} for {reasons}".format(file=f, reasons=false_str)
+            )
 
     if len(files_to_copy) < len(files):
         if len(files_to_copy) > 0:
             files_rejected = ", ".join(files)
-            logger.debug("not copying because of basename dictionary violation: {files}".format(files=files_rejected))
+            logger.debug(
+                "not copying because of basename dictionary violation: {files}".format(
+                    files=files_rejected
+                )
+            )
         return False
     return True
 
 
 def robocopy_filter_sublist_deprec(f, regex, parameters, logger):
     files_to_copy = filter(regex.match, f)
-    files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) > parameters['min_time_diff'],
-                           files_to_copy)
-    files_to_copy = filter(lambda f: time.time() - os.path.getmtime(f) < parameters['max_time_diff'],
-                           files_to_copy)
-    files_to_copy = filter(lambda f: os.path.getsize(f) > parameters['min_size'], files_to_copy)
+    files_to_copy = filter(
+        lambda f: time.time() - os.path.getmtime(f) > parameters["min_time_diff"],
+        files_to_copy,
+    )
+    files_to_copy = filter(
+        lambda f: time.time() - os.path.getmtime(f) < parameters["max_time_diff"],
+        files_to_copy,
+    )
+    files_to_copy = filter(
+        lambda f: os.path.getsize(f) > parameters["min_size"], files_to_copy
+    )
     files_to_copy = list(files_to_copy)
     if len(files_to_copy) < len(f):
         return False
@@ -105,35 +130,38 @@ def filter_input_filelist(files_to_copy, regex, parameters, logger):
     files_to_copy.sort()
     basename_dict = robocopy_get_basename_dict(files_to_copy)
     files = basename_dict.values()
-    files = filter(lambda fl: robocopy_filter_sublist(fl, regex=regex, parameters=parameters, logger=logger), files)
+    files = filter(
+        lambda fl: robocopy_filter_sublist(
+            fl, regex=regex, parameters=parameters, logger=logger
+        ),
+        files,
+    )
     files = [item for sublist in files for item in sublist]
     return files
 
 
 def log_files_stat(files_to_copy, parameters, logger):
-    '''
+    """
     :param files_to_copy: list with files to copy
     :param logger: a logger
     :return: nil
-    '''
+    """
     for file_to_copy in files_to_copy:
         logger.info(
             "consider: '{name}' filetime={time}; filesize={size}, maxtime={maxtime}, mintime={mintime}, minsize={minsize}".format(
                 name=file_to_copy,
                 time=time.time() - os.path.getmtime(file_to_copy),
                 size=os.path.getsize(file_to_copy),
-                mintime=parameters['min_time_diff'],
-                maxtime=parameters['max_time_diff'],
-                minsize=parameters['min_size'])
+                mintime=parameters["min_time_diff"],
+                maxtime=parameters["max_time_diff"],
+                minsize=parameters["min_size"],
+            )
         )
 
 
-def copy_with_robocopy(file_to_copy,
-                       target_path,
-                       logger,
-                       tool_log_file,
-                       mov=False,
-                       simulate_copy=False):
+def copy_with_robocopy(
+    file_to_copy, target_path, logger, tool_log_file, mov=False, simulate_copy=False
+):
     """
     wrapper function to
     compose robocopy.exe command line and call it out of python
@@ -159,7 +187,7 @@ def copy_with_robocopy(file_to_copy,
         robocopy_args,
         '"{}"'.format(os.path.dirname(file_to_copy)),
         '"{}"'.format(os.path.dirname(target_path)),
-        '"{}"'.format(os.path.basename(file_to_copy))
+        '"{}"'.format(os.path.basename(file_to_copy)),
     ]
 
     if not simulate_copy:
@@ -176,20 +204,47 @@ def copy_with_robocopy(file_to_copy,
             robocopy_process.terminate()
 
             # make sure file was copied correctly
-            if False:  # Windows API problem posted here https://stackoverflow.com/questions/60753914/os-path-exists-returns-false-on-windows-although-file-exists-max-path-260-windo
+            if (
+                False
+            ):  # Windows API problem posted here https://stackoverflow.com/questions/60753914/os-path-exists-returns-false-on-windows-although-file-exists-max-path-260-windo
                 xx = os.path.exists(target_path)
                 if xx and filecmp.cmp(file_to_copy, target_path):
                     file_copied = file_to_copy
                 else:
                     logger.error(
-                        "Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
-                    logger.error("File size to copy ", os.path.getsize(file_to_copy),
-                                 "; file size target " + os.path.getsize(target_path))
+                        "Python check on robocopy failed on files - from: "
+                        + file_to_copy
+                        + " to "
+                        + target_path
+                        + " !!!"
+                    )
+                    logger.error(
+                        "File size to copy ",
+                        os.path.getsize(file_to_copy),
+                        "; file size target " + os.path.getsize(target_path),
+                    )
                     raise Exception(
-                        "Python check on robocopy failed on files - from: " + file_to_copy + " to " + target_path + " !!!")
+                        "Python check on robocopy failed on files - from: "
+                        + file_to_copy
+                        + " to "
+                        + target_path
+                        + " !!!"
+                    )
         except:
-            logger.error("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !")
-            raise Exception("robocopy exception raised on files - from " + file_to_copy + " to " + target_path + " !")
+            logger.error(
+                "robocopy exception raised on files - from "
+                + file_to_copy
+                + " to "
+                + target_path
+                + " !"
+            )
+            raise Exception(
+                "robocopy exception raised on files - from "
+                + file_to_copy
+                + " to "
+                + target_path
+                + " !"
+            )
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
@@ -208,19 +263,16 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     """
     file_copied = None
     # Compose the scp command with verbose output
-    cmd = [
-        "scp",
-        "-v",
-        shlex.quote(source),
-        shlex.quote(target)
-    ]
+    cmd = ["scp", "-v", shlex.quote(source), shlex.quote(target)]
     cmd_str = " ".join(cmd)
     if not simulate_copy:
         logger.info(f"Running Command: [{cmd_str}]")
         try:
             # Write a header to the log file to ensure it is touched
             with open(tool_log_file, "a") as logf:
-                logf.write(f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+                logf.write(
+                    f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n"
+                )
                 logf.flush()
                 scp_process = Popen(cmd_str, shell=True, stdout=logf, stderr=logf)
                 return_code = scp_process.wait()
@@ -237,38 +289,44 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
                     file_copied = source
                 else:
                     logger.error(
-                        f"File size mismatch after scp: {source} ({os.path.getsize(source)}) vs {target} ({os.path.getsize(target)})")
+                        f"File size mismatch after scp: {source} ({os.path.getsize(source)}) vs {target} ({os.path.getsize(target)})"
+                    )
         except Exception as e:
-            logger.error(f"scp exception raised on files - from {source} to {target}! Exception: {e}")
-            raise Exception(f"scp exception raised on files - from {source} to {target}! Exception: {e}")
+            logger.error(
+                f"scp exception raised on files - from {source} to {target}! Exception: {e}"
+            )
+            raise Exception(
+                f"scp exception raised on files - from {source} to {target}! Exception: {e}"
+            )
     else:
         logger.info(f"Simulating Command: [{cmd_str}]")
     return file_copied
 
 
-def copy_files_with_tool(source_results,
-                         mov,
-                         logger,
-                         tool_log_file,
-                         tool,
-                         simulate=False):
+def copy_files_with_tool(
+    source_results, mov, logger, tool_log_file, tool, simulate=False
+):
     files_copied = []
     sources = list(source_results.keys())
     sources.sort()
     for source in sources:
         if tool == "robocopy":
-            file_copied = copy_with_robocopy(source,
-                                             source_results[source],
-                                             logger=logger,
-                                             mov=mov,
-                                             tool_log_file=tool_log_file,
-                                             simulate_copy=simulate)
+            file_copied = copy_with_robocopy(
+                source,
+                source_results[source],
+                logger=logger,
+                mov=mov,
+                tool_log_file=tool_log_file,
+                simulate_copy=simulate,
+            )
         elif tool == "scp":
-            file_copied = copy_with_scp(source,
-                                        source_results[source],
-                                        logger=logger,
-                                        tool_log_file=tool_log_file,
-                                        simulate_copy=simulate)
+            file_copied = copy_with_scp(
+                source,
+                source_results[source],
+                logger=logger,
+                tool_log_file=tool_log_file,
+                simulate_copy=simulate,
+            )
         else:
             logger.error("Tool {0} not supported!".format(tool))
             raise NotImplementedError("Tool {0} not supported!".format(tool))
@@ -278,12 +336,12 @@ def copy_files_with_tool(source_results,
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
-    '''
+    """
     :param files_to_copy:
     :param source_path:
     :param target_path:
     :return:
-    '''
+    """
     res = {}
     # target_path = target_path.replace('\\\\', '\\\\?\\')
     for file_to_copy in files_to_copy:
@@ -294,23 +352,23 @@ def make_destination_files(files_to_copy, source_path, target_path):
 
 
 def rename_destination(filemap, logger, mapping_function):
-    '''
+    """
     uses mapping function to rename file
     :param filemap:
     :param logger:
     :param mapping_function:
     :return:
-    '''
+    """
     for key, value in filemap.items():
         filemap[key] = mapping_function(value, logger)
     return filemap
 
 
 def compare_files_destination(source_result_mapping):
-    '''
+    """
     :param source_result_mapping:
     :return: map with fields "copied" and "not_copied"
-    '''
+    """
     copied = {}
     not_copied = {}
     for file_to_copy, target_file in source_result_mapping.items():
@@ -321,11 +379,10 @@ def compare_files_destination(source_result_mapping):
                 copied[file_to_copy] = target_file
             else:
                 not_copied[file_to_copy] = target_file
-    return ({"copied": copied, "not_copied": not_copied})
+    return {"copied": copied, "not_copied": not_copied}
 
 
-def log_copied_files(copied_files,
-                     copied_files_log_path):
+def log_copied_files(copied_files, copied_files_log_path):
     if len(copied_files) > 0:
         copied_files.sort()
         with open(copied_files_log_path, "w") as file_log:
@@ -342,18 +399,20 @@ def read_copied_files(copied_files_log_path):
         return []
 
 
-def remove_old_copied(source_result_mapping,
-                      max_time_diff,
-                      logger,
-                      simulate="../files2delete/files2delete.bat"):
-    '''
+def remove_old_copied(
+    source_result_mapping,
+    max_time_diff,
+    logger,
+    simulate="../files2delete/files2delete.bat",
+):
+    """
     removes old files which have been already copied
     :param source_result_mapping:
     :param max_time_diff:
     :param logger:
     :param simulate:
     :return:
-    '''
+    """
     if simulate:
         myfile = open(simulate, "w")
         simulate_mode = True
@@ -366,13 +425,18 @@ def remove_old_copied(source_result_mapping,
             time_diff = time.time() - os.path.getmtime(file_to_copy)
             if time_diff > max_time_diff:
                 if not myfile and not simulate:
-                    logger.info("removing file : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
-                                                                                              max_time_diff))
+                    logger.info(
+                        "removing file : [rm {0}] since tf {1} > max_time {2}".format(
+                            file_to_copy, time_diff, max_time_diff
+                        )
+                    )
                     os.remove(file_to_copy)
                 else:
                     logger.info(
-                        "Simulating command : [rm {0}] since tf {1} > max_time {2}".format(file_to_copy, time_diff,
-                                                                                           max_time_diff))
+                        "Simulating command : [rm {0}] since tf {1} > max_time {2}".format(
+                            file_to_copy, time_diff, max_time_diff
+                        )
+                    )
                     myfile.write("rm {f2c}\n".format(f2c=file_to_copy))
 
     if simulate_mode and myfile:
@@ -381,7 +445,7 @@ def remove_old_copied(source_result_mapping,
 
 def compare_copied_with_log(not_copied, files_copied_old):
     new_not_copied = {}
-    for (key, value) in not_copied.items():
+    for key, value in not_copied.items():
         if key not in set(files_copied_old):
             new_not_copied[key] = value
     return new_not_copied
@@ -394,60 +458,74 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
     if os.path.exists(parameters["source_path"]):
         files2copy = get_all_files(parameters["source_path"], logger=logger)
     else:
-        error = 'source path: {source_path} does not exist!'.format(source_path=parameters["source_path"])
+        error = "source path: {source_path} does not exist!".format(
+            source_path=parameters["source_path"]
+        )
         logger.error(error)
         raise FileNotFoundError(error)
 
-    files_copied_log = read_copied_files(copied_files_log_path=parameters["copied_files_log"])  # added 02.2020
-    files2copy = list(set(files2copy) - set(files_copied_log))  # remove all files which were already copied.
+    files_copied_log = read_copied_files(
+        copied_files_log_path=parameters["copied_files_log"]
+    )  # added 02.2020
+    files2copy = list(
+        set(files2copy) - set(files_copied_log)
+    )  # remove all files which were already copied.
 
     files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
 
-    simulate = '../files2delete/files2delete.bat' if parameters['simulate_delete'] else ''
+    simulate = (
+        "../files2delete/files2delete.bat" if parameters["simulate_delete"] else ""
+    )
 
     if len(files_filtered) != 0:
 
-        source_result_mapping = make_destination_files(files_filtered, parameters["source_path"],
-                                                       parameters["target_path"])
+        source_result_mapping = make_destination_files(
+            files_filtered, parameters["source_path"], parameters["target_path"]
+        )
 
         mapping_function_name = parameters["func_target_mapping"]
         if mapping_function_name != "":
-            logger.info("trying to apply mapping function : {}.".format(mapping_function_name))
+            logger.info(
+                "trying to apply mapping function : {}.".format(mapping_function_name)
+            )
             method_to_call = getattr(mapping_functions, mapping_function_name)
-            source_result_mapping = rename_destination(source_result_mapping,
-                                                       logger,
-                                                       mapping_function=method_to_call)
+            source_result_mapping = rename_destination(
+                source_result_mapping, logger, mapping_function=method_to_call
+            )
 
         # check if files are already copied and if so remove them from source_result_mapping
         copied = compare_files_destination(source_result_mapping)
 
-        all_copied = list(
-            copied["copied"].keys()) + files_copied_log  # add it because you might start with empty copied file list.
+        all_copied = (
+            list(copied["copied"].keys()) + files_copied_log
+        )  # add it because you might start with empty copied file list.
         all_copied = set(all_copied)
         not_copied = copied["not_copied"]
         not_copied_keys = not_copied.keys() - set(all_copied)
         not_copied = dict((k, not_copied[k]) for k in not_copied_keys)
 
-        files_copied = copy_files_with_tool(source_results=not_copied,
-                                            mov=parameters["robocopy_mov"],
-                                            logger=logger,
-                                            tool_log_file=tool_log_file_path,
-                                            tool=tool,
-                                            simulate=parameters['simulate_copy'])
+        files_copied = copy_files_with_tool(
+            source_results=not_copied,
+            mov=parameters["robocopy_mov"],
+            logger=logger,
+            tool_log_file=tool_log_file_path,
+            tool=tool,
+            simulate=parameters["simulate_copy"],
+        )
 
         files_copied = set(list(all_copied) + files_copied)
-        log_copied_files(list(files_copied), copied_files_log_path=parameters["copied_files_log"])  # added 02.2020
+        log_copied_files(
+            list(files_copied), copied_files_log_path=parameters["copied_files_log"]
+        )  # added 02.2020
 
         # removes files which have been copied
-        remove_old_copied(files_copied,
-                          parameters["max_time_delete"],
-                          logger,
-                          simulate=simulate)
+        remove_old_copied(
+            files_copied, parameters["max_time_delete"], logger, simulate=simulate
+        )
     else:
-        remove_old_copied(files_copied_log,
-                          parameters["max_time_delete"],
-                          logger,
-                          simulate=simulate)
+        remove_old_copied(
+            files_copied_log, parameters["max_time_delete"], logger, simulate=simulate
+        )
 
 
 def parse_args():
@@ -480,22 +558,28 @@ def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=N
 
 
 def get_config_file_name(biobeamer_xml):
-    config_file_name = biobeamer_xml.replace('file://', '')
+    config_file_name = biobeamer_xml.replace("file://", "")
     config_file_name = os.path.basename(config_file_name)
     config_file_name, _ = os.path.splitext(config_file_name)
     return config_file_name
 
 
-def setup_biobeamer_parser(configuration_url, biobeamer_xml, host, logger):
+def setup_biobeamer_parser(configuration_url, biobeamer_xml, hostname, logger):
     biobeamer_xsd = f"{configuration_url}/BioBeamer2.xsd"
     biobeamer_xml_path = f"{configuration_url}/{biobeamer_xml}"
-    bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml_path, hostname=host, logger=logger)
+    bio_beamer_parser = BioBeamerParser.BioBeamerParser(
+        biobeamer_xsd, biobeamer_xml_path, hostname=hostname, logger=logger
+    )
     return bio_beamer_parser
 
 
 def setup_remote_logging(logger, bio_beamer_parser, host):
-    logger.add_syshandler(address=(bio_beamer_parser.parameters["syshandler_adress"],
-                                   bio_beamer_parser.parameters["syshandler_port"]))
+    logger.add_syshandler(
+        address=(
+            bio_beamer_parser.parameters["syshandler_adress"],
+            bio_beamer_parser.parameters["syshandler_port"],
+        )
+    )
     logger.set_log_level(level=logging.DEBUG)
     logger.logger.info(f"Starting Remote Logging from host {host}")
 
@@ -512,18 +596,27 @@ def handle_network_drive(parameters, logger, password):
 
 
 def main():
-    configuration_url, biobeamer_xml, password, hostname = parse_args()
+    configuration_url, biobeamer_xml, password, hostname, xsd_path = parse_args()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     config_file_name = get_config_file_name(biobeamer_xml)
     logger, tool_log_file = setup_logger(config_file_name, now)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
-    logger.logger.info(f"retrieving config from {biobeamer_xml} for hostname {hostname}")
-    bio_beamer_parser = setup_biobeamer_parser(configuration_url, biobeamer_xml, hostname, logger.logger)
+    logger.logger.info(
+        f"retrieving config from {biobeamer_xml} for hostname {hostname}"
+    )
+    bio_beamer_parser = setup_biobeamer_parser(
+        configuration_url=configuration_url,
+        biobeamer_xml=biobeamer_xml,
+        hostname=hostname,
+        logger=logger.logger,
+    )
     setup_remote_logging(logger, bio_beamer_parser, hostname)
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)
     bio_beamer_parser.log_para()
-    drive, tool = handle_network_drive(bio_beamer_parser.parameters, logger.logger, password)
+    drive, tool = handle_network_drive(
+        bio_beamer_parser.parameters, logger.logger, password
+    )
     copy_files(bio_beamer_parser, logger.logger, tool, tool_log_file)
     if drive:
         drive.unmapDrive()
