@@ -11,7 +11,7 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 """
 
 import os
-import unittest
+import pytest
 
 from src.BioBeamerParser import BioBeamerParser
 from src.MyLog import MyLog
@@ -26,42 +26,39 @@ if not os.path.exists(xsd_path):
 xml_url = f"file://{xml_path}"
 xsd_url = f"file://{xsd_path}"
 
+PARAM_TEST = {
+    "name": "test_configuration",
+    "instrument": "test_instrument",
+    "min_size": 1024,
+    "min_time_diff": 10800,
+    "max_time_diff": 2419200,
+    "max_time_delete": 1209600,
+    "time_out": 3600,
+    "simulate_copy": True,
+    "simulate_delete": True,
+    "func_target_mapping": "",
+    "robocopy_mov": False,
+    "pattern": r"^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\\/\\.]+\\.(raw|RAW|wiff|wiff\\.scan)$",
+    "source_path": "/srv/www/htdocs/Data2San",
+    "target_path": "/srv/www/htdocs",
+    "copied_files_log": "./log/test_copied_files.txt",
+    "syshandler_adress": "ms-fgcz.uzh.ch",
+    "syshandler_port": 514,
+}
 
-class TestBioBeamerParser(unittest.TestCase):
-    """
-    """
-    PARAM_TEST = {
-        'name': 'test_configuration',
-        'instrument': 'test_instrument',
-        'min_size': 1024,
-        'min_time_diff': 10800,
-        'max_time_diff': 2419200,
-        'max_time_delete': 1209600,
-        'time_out': 3600,
-        'simulate_copy': True,
-        'simulate_delete': True,
-        'func_target_mapping': '',
-        'robocopy_mov': False,
-        'pattern': r'^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\\/\\.]+\\.(raw|RAW|wiff|wiff\\.scan)$',
-        'source_path': '/srv/www/htdocs/Data2San',
-        'target_path': '/srv/www/htdocs',
-        'copied_files_log': './log/test_copied_files.txt',
-        'syshandler_adress': 'ms-fgcz.uzh.ch',
-        'syshandler_port': 514,
-    }
 
-    def test_beam_and_check(self):
-        logger = MyLog()
+@pytest.fixture(autouse=True)
+def cleanup_log():
+    log_path = "./log/test_copied_files.txt"
+    if os.path.exists(log_path):
+        os.remove(log_path)
 
-        bio_beamer_parser = BioBeamerParser(xml=xml_url,
-                                            xsd=xsd_url,
-                                            hostname="test_configuration",
-                                            logger=logger.logger)
-        param = bio_beamer_parser.parameters
-        self.assertEqual(param, self.PARAM_TEST, "Parameters from BioBeamerParser do not match expected values.")
 
-    def setUp(self):
-        pass
+def test_beam_and_check():
+    logger = MyLog()
 
-    def tearDown(self):
-        pass
+    bio_beamer_parser = BioBeamerParser(
+        xml=xml_url, xsd=xsd_url, hostname="test_configuration", logger=logger.logger
+    )
+    param = bio_beamer_parser.parameters
+    assert param == PARAM_TEST

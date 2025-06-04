@@ -11,20 +11,38 @@ from src import biobeamer2
 
 def test_parse_args_default(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["biobeamer2.py"])
-    config_url, xml, password, hostname = biobeamer2.parse_args()
+    config_url, xml, password, hostname, xsd_path = biobeamer2.parse_args()
     assert config_url.startswith("file://")
     assert xml == "BioBeamer2.xml"
     assert password is None
     assert hostname
+    assert xsd_path.endswith("BioBeamer2.xsd")
 
 
 def test_parse_args_with_args(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["biobeamer2.py", "url", "pw", "xmlfile", "host"])
-    config_url, xml, password, hostname = biobeamer2.parse_args()
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "biobeamer2.py",
+            "--config-url",
+            "url",
+            "--password",
+            "pw",
+            "--xml",
+            "xmlfile",
+            "--hostname",
+            "host",
+            "--xsd",
+            "xsdfile",
+        ],
+    )
+    config_url, xml, password, hostname, xsd_path = biobeamer2.parse_args()
     assert config_url == "url"
     assert password == "pw"
     assert xml == "xmlfile"
     assert hostname == "host"
+    assert xsd_path == "xsdfile"
 
 
 def test_get_config_file_name():
