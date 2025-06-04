@@ -62,6 +62,11 @@ class TestBioBeamer2Main(unittest.TestCase):
             if host.attrib.get("name") == "testhost_integration":
                 host.set("source_path", src_dir)
                 host.set("target_path", tgt_dir)
+                host.set("min_time_diff", "0")
+                host.set("min_size", "0")
+                host.set("pattern", ".*")
+                # Use a dedicated log file for the test to avoid clutter, but always in ./log
+                host.set("copied_files_log", os.path.join("./log", "copied_files_test_integration.txt"))
         tree.write(xml_path)
         # Prepare sys.argv
         sys.argv = [
@@ -74,6 +79,13 @@ class TestBioBeamer2Main(unittest.TestCase):
         # Patch time.sleep to skip delay
         original_sleep = time.sleep
         time.sleep = lambda x: None
+        # Patch setup_logger to use a fixed log file in the ./log dir
+        orig_setup_logger = biobeamer2.setup_logger
+        def test_setup_logger(config_file_name, now, log_file_path=None, robocopy_log_file_path=None):
+            log_file = os.path.join("./log", "biobeamer_test.log")
+            robocopy_log_file = os.path.join("./log", "tool_test.log")
+            return orig_setup_logger(config_file_name, now, log_file, robocopy_log_file)
+        biobeamer2.setup_logger = test_setup_logger
         try:
             # Run main
             biobeamer2.main()
@@ -83,9 +95,10 @@ class TestBioBeamer2Main(unittest.TestCase):
             with open(copied_file, "rb") as f:
                 self.assertEqual(f.read(), b"biobeamer integration test")
         finally:
-            # Restore original XML
+            # Restore original XML and logger
             with open(xml_path, "w") as f:
                 f.write(original_xml)
+            biobeamer2.setup_logger = orig_setup_logger
             shutil.rmtree(src_dir)
             shutil.rmtree(tgt_dir)
             time.sleep = original_sleep
