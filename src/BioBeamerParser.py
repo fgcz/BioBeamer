@@ -6,21 +6,24 @@ import os
 import sys
 
 
-
 class BioBeamerParser(object):
     """
     class for syncing data from instrument PC to archive
     """
-    parameters = {'simulate_copy': False,
-                  'simulate_delete': True,
-                  'min_time_diff': 2 * 3600,
-                  'max_time_diff': 24 * 3600 * 7 * 4,
-                  'max_time_delete': 24 * 3600 * 7 * 2,
-                  'min_size': 100 * 1024,
-                  'source_path': "D:/Data2San/",
-                  'target_path': "\\\\130.60.81.21\\Data2San",
-                  'time_out': 3,
-                  'copied_files_log': "./log/copied_files.txt"}
+
+    parameters = {
+        "simulate_copy": False,
+        "simulate_delete": True,
+        "min_time_diff": 2 * 3600,
+        "max_time_diff": 24 * 3600 * 7 * 4,
+        "max_time_delete": 24 * 3600 * 7 * 2,
+        "min_size": 100 * 1024,
+        "source_path": "D:/Data2San/",
+        "target_path": "\\\\130.60.81.21\\Data2San",
+        "time_out": 3,
+        "copied_files_log": "./log/copied_files.txt",
+        "tool": "robocopy",  # default tool
+    }
 
     results = []
 
@@ -59,35 +62,35 @@ class BioBeamerParser(object):
         found_host_config = False
         # init para dictionary
         for i in xml_bio_beamer:
-            if i.tag == 'host' and 'name' in i.attrib.keys():
+            if i.tag == "host" and "name" in i.attrib.keys():
                 pass
             else:
                 continue
-            att_hostname = i.attrib['name'].lower()
+            att_hostname = i.attrib["name"].lower()
             if att_hostname == hostname.lower():
                 for k in i.attrib.keys():
-                    if k == 'target_path':
+                    if k == "target_path":
                         self.parameters[k] = i.attrib[k]
-                    elif k == 'source_path':
+                    elif k == "source_path":
                         self.parameters[k] = os.path.normpath(i.attrib[k])
-                    elif k == 'pattern':
+                    elif k == "pattern":
                         self.parameters[k] = i.attrib[k]
                         try:
-                            self.regex = re.compile(self.parameters['pattern'])
+                            self.regex = re.compile(self.parameters["pattern"])
                         except:
                             self.logger.error("re.compile pattern failed.")
                             raise
-                    elif k == 'simulate_copy':
+                    elif k == "simulate_copy":
                         if i.attrib[k] == "false":
                             self.parameters[k] = False
                         else:
                             self.parameters[k] = True
-                    elif k == 'simulate_delete':
+                    elif k == "simulate_delete":
                         if i.attrib[k] == "false":
                             self.parameters[k] = False
                         else:
                             self.parameters[k] = True
-                    elif k == 'robocopy_mov':
+                    elif k == "robocopy_mov":
                         if i.attrib[k] == "false":
                             self.parameters[k] = False
                         else:
@@ -106,7 +109,7 @@ class BioBeamerParser(object):
             sys.exit(1)
 
     def print_para(self):
-        """ print class parameter setting """
+        """print class parameter setting"""
         for k, v in self.parameters.items():
             sys.stdout.write("{0}\t=\t{1}\n".format(k, v))
 
@@ -117,7 +120,7 @@ class BioBeamerParser(object):
         self.logger.info("END PARAMETERS\n")
 
     def set_para(self, key, value):
-        """ class parameter setting """
+        """class parameter setting"""
         self.parameters[key] = value
-        if key == 'pattern':
-            self.regex = re.compile(self.parameters['pattern'])
+        if key == "pattern":
+            self.regex = re.compile(self.parameters["pattern"])
