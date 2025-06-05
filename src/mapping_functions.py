@@ -2,16 +2,17 @@ import os
 import re
 from datetime import date
 
+
 def map_data_ultraflex(dest_path, logger):
     """
     input: \\\\fgcz-biobeamer.uzh.ch\\Data2SAN\\p65\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924\\D_Eris_22708
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p22708\\Proteomics\\ULTRAFLEXTREME_1\\analytic_20200924_D_Eris_22708\\
     """
 
-    #pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
+    # pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p65\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[1-9]{1,1}\\\\[a-z]{1,30}_([0-9]{8,8})\\\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
     pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\p65\\(Proteomics|Metabolomics)\\[A-Z]{1,20}_[1-9]{1,1}\\[a-z]{1,30}_([0-9]{8,8})\\([A-Za-z_]+)_([0-9]{5,5})\S+$"
 
-    #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
+    # "[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
@@ -29,17 +30,16 @@ def map_data_ultraflex(dest_path, logger):
         return None
 
 
-
 def map_data_rapiflex(dest_path, logger):
     """
     input: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\Proteomics\\RAPIFLEX_1\\C28830_nanni_20220701\\LN_1568
     output: \\\\fgcz-biobeamer.uzh.ch\\Data2San\\p28830\\Proteomics\\RAPIFLEX_1\\nanni_20201021\\N_1568
     """
 
-    #pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
+    # pattern_dest = "^\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\orders\\\\(Proteomics|Metabolomics)\\\\[A-Z]{1,20}_[0-9]{1,2}\\\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
     pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\(Proteomics|Metabolomics)\\[A-Z]{1,20}_[0-9]{1,2}\\(C[0-9]{3,6})_[a-z]{1,30}_[0-9]{8}\S[^%]+$"
 
-    #"[-0-9a-zA-Z\\_\/\.]" #does not match with.
+    # "[-0-9a-zA-Z\\_\/\.]" #does not match with.
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
@@ -60,7 +60,7 @@ def map_data_G2HD_2(path, logger):
     output:
     """
 
-    #pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p[0-9]{1,4}\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})(.+)$"
+    # pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\p[0-9]{1,4}\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})(.+)$"
     pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\p[0-9]{1,4}\\[A-Za-z]{1,20}\\[A-Z0-9_]+)(\.PRO\\Data\\)([0-9]{8,8})(.+)$"
 
     regex_dest = re.compile(pattern_dest)
@@ -72,20 +72,25 @@ def map_data_G2HD_2(path, logger):
         mg_folder = match_dest.group(4)
         path = os.path.normpath(
             "{path}\\analytic_{date}\\{date}{folder}".format(
-                path=mg_path,
-                date=mg_date,
-                folder=mg_folder))
+                path=mg_path, date=mg_date, folder=mg_folder
+            )
+        )
         return path
     else:
         return None
+
 
 def map_data_order_QDA_G2HD(path, logger):
     res = map_data_QDA(path, logger)
     if res is None:
         res = map_data_G2HD_2(path, logger)
         if res is None:
-            logger.error('Could not apply mapping function to {path}. Raising exception'.format(path=path))
-            raise ValueError('Could not apply mapping function')
+            logger.error(
+                "Could not apply mapping function to {path}. Raising exception".format(
+                    path=path
+                )
+            )
+            raise ValueError("Could not apply mapping function")
 
     return res
 
@@ -98,7 +103,7 @@ def map_data_QDA(path, logger):
     input: "\\fgcz-biobeamer.uzh.ch\\Data2San\p65\Proteomics\QDA_1.PRO\Data\20201021_C22959_P16G08-Atto488_1.raw"
      output: "\\fgcz-biobeamer.uzh.ch\Data2San\p22959\Proteomics\QDA_1\analytic_20201021\20201021_C22959_P16G08-Atto488_1.raw
     """
-    #pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
+    # pattern_dest = r"^(\\\\\\\\fgcz-biobeamer.uzh.ch\\\\Data2San\\\\)(p[0-9]{1,4})(\\\\[A-Za-z]{1,20}\\\\[A-Z0-9_]+)(\.PRO\\\\Data\\\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
     pattern_dest = r"^(\\\\fgcz-biobeamer.uzh.ch\\Data2San\\)(p[0-9]{1,4})(\\[A-Za-z]{1,20}\\[A-Z0-9_]+)(\.PRO\\Data\\)([0-9]{8,8})_(C[0-9]{2,5})_(.+)$"
 
     regex_dest = re.compile(pattern_dest)
@@ -119,10 +124,13 @@ def map_data_QDA(path, logger):
                 path2=mg_path_2,
                 date=mg_date,
                 mg_container=mg_container,
-                folder=mg_folder))
+                folder=mg_folder,
+            )
+        )
         return path
     else:
         return None
+
 
 def map_data_for_container(dest_path, logger):
     """
@@ -153,15 +161,17 @@ def map_data_analyst_tripletof_1(path, logger):
     output: 'p1000/Proteomics/TRIPLETOF_1/selevsek_20150119'
     """
 
-    pattern = ".*(p[0-9]+)\\\\Data\\\\([-0-9a-zA-Z_\\\.]+)$"
+    pattern = r".*(p[0-9]+)\\Data\\([-0-9a-zA-Z_\.]+)$"
     regex = re.compile(pattern)
     match = regex.match(path)
 
     if match:
-        return os.path.normpath("{0}/Proteomics/TRIPLETOF_1/{1}".format(match.group(1), match.group(2)))
+        return os.path.normpath(
+            "{0}/Proteomics/TRIPLETOF_1/{1}".format(match.group(1), match.group(2))
+        )
     else:
-        logger.error('Could not apply mapping function. Raising exception')
-        raise ValueError('Could not apply mapping function')
+        logger.error("Could not apply mapping function. Raising exception")
+        raise ValueError("Could not apply mapping function")
     return None
 
 
@@ -175,24 +185,24 @@ def map_data_analyst_qtrap_1(path, logger):
     match = regex.match(path)
 
     if match:
-        res = "{0}\\Proteomics\\QTRAP_1\\{1}".format(match.group(1), match.group(2))
+        res = r"{0}\\Proteomics\\QTRAP_1\\{1}".format(match.group(1), match.group(2))
         return res
     else:
-        logger.error('Could not apply mapping function. Raising exception')
-        raise ValueError('Could not apply mapping function')
+        logger.error("Could not apply mapping function. Raising exception")
+        raise ValueError("Could not apply mapping function")
     return None
 
 
 def test_mapping_function(logger):
-    '''
+    """
     Test mapping
     :return: nil
-    '''
-    tmp = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw'
-    tmp2 = '\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff'
+    """
+    tmp = "\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm.raw"
+    tmp2 = "\\\\130.60.81.21\\Data2San\\p1001\\Data\\selevsek_20150119\\testdumm2.wiff"
     tmp_ = map_data_analyst_qtrap_1(tmp, logger)
-    if tmp_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm.raw':
+    if tmp_ != "p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm.raw":
         print("mapping failed")
     tmp2_ = map_data_analyst_qtrap_1(tmp2, logger)
-    if tmp2_ != 'p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm2.wiff':
+    if tmp2_ != "p1001\\Proteomics\\QTRAP_1\\selevsek_20150119\\testdumm2.wiff":
         print("mapping failed")
