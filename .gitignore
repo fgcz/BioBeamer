@@ -34,3 +34,4 @@ build/
 *.bat
 *.sh
 /uv.lock
+/tests/20250101_120000
