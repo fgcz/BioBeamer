@@ -569,10 +569,16 @@ def parse_args():
 
 
 def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=None):
+    import os
+
     if log_file_path is None:
         biobeamer_log_file_path = f"./log/biobeamer_{config_file_name}_{now}.log"
     else:
         biobeamer_log_file_path = log_file_path
+    # Ensure log directory exists
+    log_dir = os.path.dirname(biobeamer_log_file_path)
+    if log_dir and not os.path.exists(log_dir):
+        os.makedirs(log_dir, exist_ok=True)
     if tool_log_file_path is None:
         tool_log_file_path = f"./log/robocopy_{config_file_name}.log"
     else:
