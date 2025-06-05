@@ -44,6 +44,7 @@ PARAM_TEST = {
     "copied_files_log": "./log/test_copied_files.txt",
     "syshandler_adress": "ms-fgcz.uzh.ch",
     "syshandler_port": 514,
+    "tool": "robocopy",
 }
 
 

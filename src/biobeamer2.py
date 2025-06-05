@@ -531,16 +531,16 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
 def parse_args():
     parser = argparse.ArgumentParser(description="BioBeamer2 command line arguments")
     parser.add_argument(
-        "--config-url",
-        "-c",
-        default="file:///c:/FGCZ/BioBeamer/configs",
-        help="Configuration URL (default: file:///c:/FGCZ/BioBeamer/configs)",
-    )
-    parser.add_argument(
         "--xml",
         "-x",
         default="BioBeamer2.xml",
         help="BioBeamer XML file (default: BioBeamer2.xml)",
+    )
+    parser.add_argument(
+        "--xsd",
+        "-s",
+        default=None,
+        help="BioBeamer XSD file (optional, default: BioBeamer2.xsd in the same directory as the XML file)",
     )
     parser.add_argument(
         "--password",
@@ -554,12 +554,6 @@ def parse_args():
         default=socket.gethostname(),
         help="Hostname (default: current machine hostname)",
     )
-    parser.add_argument(
-        "--xsd",
-        "-s",
-        default=None,
-        help="BioBeamer XSD file (optional, default: BioBeamer2.xsd in the same directory as the XML file)",
-    )
     args = parser.parse_args()
     # Determine xsd path if not provided
     if args.xsd is None:
@@ -571,7 +565,7 @@ def parse_args():
         xsd_path = os.path.join(xml_dir, "BioBeamer2.xsd")
     else:
         xsd_path = args.xsd
-    return args.config_url, args.xml, args.password, args.hostname, xsd_path
+    return args.xml, xsd_path, args.hostname, args.password
 
 
 def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=None):
@@ -593,15 +587,6 @@ def get_config_file_name(biobeamer_xml):
     config_file_name = os.path.basename(config_file_name)
     config_file_name, _ = os.path.splitext(config_file_name)
     return config_file_name
-
-
-def setup_biobeamer_parser(configuration_url, biobeamer_xml, hostname, logger):
-    biobeamer_xsd = f"{configuration_url}/BioBeamer2.xsd"
-    biobeamer_xml_path = f"{configuration_url}/{biobeamer_xml}"
-    bio_beamer_parser = BioBeamerParser.BioBeamerParser(
-        biobeamer_xsd, biobeamer_xml_path, hostname=hostname, logger=logger
-    )
-    return bio_beamer_parser
 
 
 def setup_remote_logging(logger, bio_beamer_parser, host):
@@ -629,18 +614,32 @@ def handle_network_drive(parameters, logger, password):
     return drive, tool
 
 
+def path_to_url(path: str) -> str:
+    """Convert a local file path to a file:// URL if not already a URL."""
+    if (
+        path.startswith("file://")
+        or path.startswith("http://")
+        or path.startswith("https://")
+    ):
+        return path
+    return f"file://{os.path.abspath(path)}"
+
+
 def main():
-    configuration_url, biobeamer_xml, password, hostname, xsd_path = parse_args()
+    biobeamer_xml_path, biobeamer_xsd_path, hostname, password = parse_args()
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    config_file_name = get_config_file_name(biobeamer_xml)
-    logger, tool_log_file = setup_logger(config_file_name, now)
+    logger, tool_log_file = setup_logger("biobeamer_log", now)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info(
-        f"retrieving config from {biobeamer_xml} for hostname {hostname}"
+        f"retrieving config from {biobeamer_xml_path} for hostname {hostname}"
     )
-    bio_beamer_parser = setup_biobeamer_parser(
-        configuration_url=configuration_url,
-        biobeamer_xml=biobeamer_xml,
+
+    biobeamer_xml_url = path_to_url(biobeamer_xml_path)
+    biobeamer_xsd_url = path_to_url(biobeamer_xsd_path)
+
+    bio_beamer_parser = BioBeamerParser.BioBeamerParser(
+        xml=biobeamer_xml_url,
+        xsd=biobeamer_xsd_url,
         hostname=hostname,
         logger=logger.logger,
     )

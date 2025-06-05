@@ -37,8 +37,6 @@ def test_main():
     ) as mock_sleep:
         test_args = [
             "biobeamer2.py",
-            "--config-url",
-            "file:///tmp/configs",
             "--password",
             "test_password",
             "--xml",
@@ -127,8 +125,7 @@ def _run_bio_beamer_main_integration_with_tool(tool):
     # Prepare sys.argv with new style args
     sys.argv = [
         "biobeamer2.py",
-        f"--config-url=file://{os.path.dirname(xml_path)}",
-        f"--xml={os.path.basename(xml_path)}",
+        f"--xml={xml_path}",
         f"--hostname=testhost_integration",
     ]
     # Patch time.sleep to skip delay

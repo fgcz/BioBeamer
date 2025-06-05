@@ -1,9 +1,8 @@
-import sys
 import os
-import logging
-import types
-import pytest
+import sys
 from unittest import mock
+
+import pytest
 
 # Import the functions to test
 from src import biobeamer2
@@ -11,9 +10,8 @@ from src import biobeamer2
 
 def test_parse_args_default(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["biobeamer2.py"])
-    config_url, xml, password, hostname, xsd_path = biobeamer2.parse_args()
-    assert config_url.startswith("file://")
-    assert xml == "BioBeamer2.xml"
+    xml_path, xsd_path, hostname, password = biobeamer2.parse_args()
+    assert xml_path == "BioBeamer2.xml"
     assert password is None
     assert hostname
     assert xsd_path.endswith("BioBeamer2.xsd")
@@ -25,8 +23,6 @@ def test_parse_args_with_args(monkeypatch):
         "argv",
         [
             "biobeamer2.py",
-            "--config-url",
-            "url",
             "--password",
             "pw",
             "--xml",
@@ -37,10 +33,9 @@ def test_parse_args_with_args(monkeypatch):
             "xsdfile",
         ],
     )
-    config_url, xml, password, hostname, xsd_path = biobeamer2.parse_args()
-    assert config_url == "url"
+    xml_path, xsd_path, hostname, password = biobeamer2.parse_args()
     assert password == "pw"
-    assert xml == "xmlfile"
+    assert xml_path == "xmlfile"
     assert hostname == "host"
     assert xsd_path == "xsdfile"
 
@@ -59,22 +54,6 @@ def test_setup_logger(tmp_path):
     logger, biobeamerlog = biobeamer2.setup_logger(config_file_name, now)
     assert hasattr(logger, "add_file")
     assert biobeamerlog.endswith(f"robocopy_{config_file_name}.log")
-
-
-def test_setup_biobeamer_parser(monkeypatch):
-    class DummyParser:
-        def __init__(self, xsd, xml, hostname, logger):
-            self.xsd = xsd
-            self.xml = xml
-            self.hostname = hostname
-            self.logger = logger
-
-    monkeypatch.setattr(biobeamer2.BioBeamerParser, "BioBeamerParser", DummyParser)
-    parser = biobeamer2.setup_biobeamer_parser("url", "xml", "host", "logger")
-    assert parser.xsd == "url/BioBeamer2.xsd"
-    assert parser.xml == "url/xml"
-    assert parser.hostname == "host"
-    assert parser.logger == "logger"
 
 
 def test_copy_files_with_tool_robocopy(monkeypatch):
