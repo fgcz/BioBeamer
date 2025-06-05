@@ -56,6 +56,48 @@ def test_setup_logger(tmp_path):
     assert biobeamerlog.endswith(f"robocopy_{config_file_name}.log")
 
 
+def test_setup_logger_missing_log_dir(tmp_path, monkeypatch):
+    """Test setup_logger raises FileNotFoundError if log dir does not exist."""
+    import shutil
+    import logging
+
+    log_dir = tmp_path / "log"
+    # Ensure log dir does not exist
+    if log_dir.exists():
+        shutil.rmtree(log_dir)
+    config_file_name = "biobeamer_log_missing_dir"
+    now = "20250101_120000"
+    log_file_path = str(log_dir / f"biobeamer_{config_file_name}_{now}.log")
+    # Patch log_file_path to use our missing dir
+    from src import biobeamer2
+
+    # Don't Expect FileNotFoundError
+    logger, tool_log_file = biobeamer2.setup_logger(
+        config_file_name, now, log_file_path=log_file_path
+    )
+
+
+def test_setup_logger_creates_log_dir(tmp_path, monkeypatch):
+    """Test setup_logger creates the log directory if it does not exist."""
+    import shutil
+
+    log_dir = tmp_path / "log"
+    if log_dir.exists():
+        shutil.rmtree(log_dir)
+    config_file_name = "biobeamer_log_create_dir"
+    now = "20250101_120000"
+    log_file_path = str(log_dir / f"biobeamer_{config_file_name}_{now}.log")
+    # Patch log_file_path to use our custom dir
+    from src import biobeamer2
+
+    # Should not raise
+    logger, tool_log_file = biobeamer2.setup_logger(
+        config_file_name, now, log_file_path=log_file_path
+    )
+    assert os.path.exists(log_dir)
+    assert os.path.exists(log_file_path)
+
+
 def test_copy_files_with_tool_robocopy(monkeypatch):
     # Prepare mock functions and data
     source_results = {"/src/file1.txt": "/dst/file1.txt"}
