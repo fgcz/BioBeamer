@@ -301,7 +301,9 @@ def test_copy_and_log_files(monkeypatch):
     tool = "robocopy"
     monkeypatch.setattr(biobeamer2, "copy_files_with_tool", lambda **kwargs: ["a"])
     monkeypatch.setattr(
-        biobeamer2, "log_copied_files", lambda files, copied_files_log_path: None
+        biobeamer2,
+        "log_copied_files",
+        lambda files, copied_files_log_path, log_dir=None: None,
     )
     result = biobeamer2.copy_and_log_files(
         not_copied, all_copied, parameters, logger, tool_log_file_path, tool
