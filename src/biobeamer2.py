@@ -9,6 +9,7 @@ import socket
 import time
 from datetime import datetime
 from subprocess import Popen
+from pathlib import Path
 
 import BioBeamerParser
 import MyLog
@@ -564,7 +565,7 @@ def path_to_url(path: str) -> str:
         or path.startswith("https://")
     ):
         return path
-    return f"file://{os.path.abspath(path)}"
+    return Path(path).absolute().as_uri()
 
 
 def resolve_xsd_path(xml_path, xsd_arg):
