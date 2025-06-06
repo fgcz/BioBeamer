@@ -193,6 +193,11 @@ def map_data_analyst_qtrap_1(path, logger):
     return None
 
 
+def myfunc(val, logger):
+    """Dummy mapping function for testing purposes."""
+    return val
+
+
 def test_mapping_function(logger):
     """
     Test mapping
