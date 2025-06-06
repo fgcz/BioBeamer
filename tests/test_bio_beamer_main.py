@@ -135,7 +135,11 @@ def _run_bio_beamer_main_integration_with_tool(tool):
     orig_setup_logger = biobeamer2.setup_logger
 
     def test_setup_logger(
-        config_file_name, now, log_file_path=None, robocopy_log_file_path=None
+        config_file_name,
+        now,
+        log_file_path=None,
+        robocopy_log_file_path=None,
+        log_dir=None,
     ):
         log_file = os.path.join("./log", f"biobeamer_test_{tool}.log")
         robocopy_log_file = os.path.join("./log", f"tool_test_{tool}.log")
