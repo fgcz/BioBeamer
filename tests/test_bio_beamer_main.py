@@ -134,16 +134,10 @@ def _run_bio_beamer_main_integration_with_tool(tool):
     # Patch setup_logger to use a fixed log file in the ./log dir
     orig_setup_logger = biobeamer2.setup_logger
 
-    def test_setup_logger(
-        config_file_name,
-        now,
-        log_file_path=None,
-        robocopy_log_file_path=None,
-        log_dir=None,
-    ):
+    def test_setup_logger(now, log_file_path=None, log_dir=None):
         log_file = os.path.join("./log", f"biobeamer_test_{tool}.log")
-        robocopy_log_file = os.path.join("./log", f"tool_test_{tool}.log")
-        return orig_setup_logger(config_file_name, now, log_file, robocopy_log_file)
+        # Call the original with the new signature
+        return orig_setup_logger(now, log_file_path=log_file)
 
     biobeamer2.setup_logger = test_setup_logger
     try:

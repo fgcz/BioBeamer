@@ -562,8 +562,6 @@ def parse_args():
     args = parser.parse_args()
     # Determine xsd path if not provided
     if args.xsd is None:
-        import os
-
         xml_dir = os.path.dirname(args.xml)
         if not xml_dir:
             xml_dir = "."
@@ -571,36 +569,50 @@ def parse_args():
     else:
         xsd_path = args.xsd
 
-    args.xsd = xsd_path
+    # Convert xml and xsd to URLs if needed
+    def path_to_url(path: str) -> str:
+        if (
+            path.startswith("file://")
+            or path.startswith("http://")
+            or path.startswith("https://")
+        ):
+            return path
+        return f"file://{os.path.abspath(path)}"
+
+    args.xml = path_to_url(args.xml)
+    args.xsd = path_to_url(xsd_path)
     return args
 
 
-def setup_logger(
-    config_file_name, now, log_file_path=None, tool_log_file_path=None, log_dir=None
-):
+def setup_logger(now, log_file_path=None, log_dir=None):
     import os
 
     if log_dir is not None:
         os.makedirs(log_dir, exist_ok=True)
-        biobeamer_log_file_path = os.path.join(
-            log_dir, f"biobeamer_{config_file_name}_{now}.log"
-        )
-        tool_log_file_path = os.path.join(log_dir, f"robocopy_{config_file_name}.log")
+        biobeamer_log_file_path = os.path.join(log_dir, f"biobeamer_{now}.log")
     else:
         if log_file_path is None:
-            biobeamer_log_file_path = f"./log/biobeamer_{config_file_name}_{now}.log"
+            biobeamer_log_file_path = f"./log/biobeamer_{now}.log"
         else:
             biobeamer_log_file_path = log_file_path
         log_dir = os.path.dirname(biobeamer_log_file_path)
         if log_dir and not os.path.exists(log_dir):
             os.makedirs(log_dir, exist_ok=True)
-        if tool_log_file_path is None:
-            tool_log_file_path = f"./log/robocopy_{config_file_name}.log"
-        else:
-            tool_log_file_path = tool_log_file_path
     logger = MyLog.MyLog()
     logger.add_file(filename=biobeamer_log_file_path, level=logging.DEBUG)
-    return logger, tool_log_file_path
+    return logger, biobeamer_log_file_path
+
+
+def get_tool_log_file(log_dir, tool_name="robocopy", now=None):
+    import os
+
+    suffix = f"_{now}" if now else ""
+    if log_dir is not None:
+        os.makedirs(log_dir, exist_ok=True)
+        tool_log_file_path = os.path.join(log_dir, f"{tool_name}{suffix}.log")
+    else:
+        tool_log_file_path = f"./log/{tool_name}{suffix}.log"
+    return tool_log_file_path
 
 
 def get_config_file_name(biobeamer_xml):
@@ -635,48 +647,29 @@ def handle_network_drive(parameters, logger, password):
     return drive, tool
 
 
-def path_to_url(path: str) -> str:
-    """Convert a local file path to a file:// URL if not already a URL."""
-    if (
-        path.startswith("file://")
-        or path.startswith("http://")
-        or path.startswith("https://")
-    ):
-        return path
-    return f"file://{os.path.abspath(path)}"
-
-
 def main():
     args = parse_args()
-    biobeamer_xml_path = args.xml
-    biobeamer_xsd_path = args.xsd
-    hostname = args.hostname
-    password = args.password
-    log_dir = args.log_dir
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    config_file_name = get_config_file_name(biobeamer_xml_path)
-    logger, tool_log_file = setup_logger(config_file_name, now, log_dir=log_dir)
+    logger, _ = setup_logger(now, log_dir=args.log_dir)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info(
-        f"retrieving config from {biobeamer_xml_path} for hostname {hostname}"
+        f"retrieving config from {args.xml} for hostname {args.hostname}"
     )
-
-    biobeamer_xml_url = path_to_url(biobeamer_xml_path)
-    biobeamer_xsd_url = path_to_url(biobeamer_xsd_path)
 
     bio_beamer_parser = BioBeamerParser.BioBeamerParser(
-        xml=biobeamer_xml_url,
-        xsd=biobeamer_xsd_url,
-        hostname=hostname,
+        xml=args.xml,
+        xsd=args.xsd,
+        hostname=args.hostname,
         logger=logger.logger,
     )
-    setup_remote_logging(logger, bio_beamer_parser, hostname)
+    setup_remote_logging(logger, bio_beamer_parser, args.hostname)
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)
     bio_beamer_parser.log_para()
     drive, tool = handle_network_drive(
-        bio_beamer_parser.parameters, logger.logger, password
+        bio_beamer_parser.parameters, logger.logger, args.password
     )
+    tool_log_file = get_tool_log_file(args.log_dir, tool, now)
     copy_files(bio_beamer_parser, logger.logger, tool, tool_log_file)
     if drive:
         drive.unmapDrive()

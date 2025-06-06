@@ -11,7 +11,8 @@ from src import biobeamer2
 def test_parse_args_default(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["biobeamer2.py"])
     args = biobeamer2.parse_args()
-    assert args.xml == "BioBeamer2.xml"
+    expected_xml = f"file://{os.path.abspath('BioBeamer2.xml')}"
+    assert args.xml == expected_xml
     assert args.password is None
     assert args.hostname
     assert args.xsd.endswith("BioBeamer2.xsd")
@@ -35,9 +36,16 @@ def test_parse_args_with_args(monkeypatch):
     )
     args = biobeamer2.parse_args()
     assert args.password == "pw"
-    assert args.xml == "xmlfile"
+
+    # Accept both file:// and plain for xml/xsd, but normalize for test
+    def normalize_path(val):
+        if val.startswith("file://"):
+            return os.path.basename(val)
+        return val
+
+    assert normalize_path(args.xml) == "xmlfile"
     assert args.hostname == "host"
-    assert args.xsd == "xsdfile"
+    assert normalize_path(args.xsd) == "xsdfile"
 
 
 def test_get_config_file_name():
@@ -49,32 +57,27 @@ def test_get_config_file_name():
 
 
 def test_setup_logger(tmp_path):
-    config_file_name = "TestConfig_test_setup_logger"
     now = "20250101_120000"
-    logger, biobeamerlog = biobeamer2.setup_logger(config_file_name, now)
+    logger, biobeamerlog = biobeamer2.setup_logger(now, log_dir=tmp_path)
     assert hasattr(logger, "add_file")
-    assert biobeamerlog.endswith(f"robocopy_{config_file_name}.log")
+    assert biobeamerlog.endswith(f"biobeamer_{now}.log")
 
 
 def test_setup_logger_missing_log_dir(tmp_path, monkeypatch):
-    """Test setup_logger raises FileNotFoundError if log dir does not exist."""
     import shutil
     import logging
 
     log_dir = tmp_path / "log"
-    # Ensure log dir does not exist
     if log_dir.exists():
         shutil.rmtree(log_dir)
-    config_file_name = "biobeamer_log_missing_dir"
     now = "20250101_120000"
-    log_file_path = str(log_dir / f"biobeamer_{config_file_name}_{now}.log")
-    # Patch log_file_path to use our missing dir
+    log_file_path = str(log_dir / f"biobeamer_{now}.log")
     from src import biobeamer2
 
-    # Don't Expect FileNotFoundError
-    logger, tool_log_file = biobeamer2.setup_logger(
-        config_file_name, now, log_file_path=log_file_path
-    )
+    # Should not raise
+    logger, biobeamerlog = biobeamer2.setup_logger(now, log_file_path=log_file_path)
+    assert os.path.exists(log_dir)
+    assert os.path.exists(log_file_path)
 
 
 def test_setup_logger_creates_log_dir(tmp_path, monkeypatch):
@@ -84,16 +87,13 @@ def test_setup_logger_creates_log_dir(tmp_path, monkeypatch):
     log_dir = tmp_path / "log"
     if log_dir.exists():
         shutil.rmtree(log_dir)
-    config_file_name = "biobeamer_log_create_dir"
     now = "20250101_120000"
-    log_file_path = str(log_dir / f"biobeamer_{config_file_name}_{now}.log")
+    log_file_path = str(log_dir / f"biobeamer_{now}.log")
     # Patch log_file_path to use our custom dir
     from src import biobeamer2
 
     # Should not raise
-    logger, tool_log_file = biobeamer2.setup_logger(
-        config_file_name, now, log_file_path=log_file_path
-    )
+    logger, biobeamerlog = biobeamer2.setup_logger(now, log_file_path=log_file_path)
     assert os.path.exists(log_dir)
     assert os.path.exists(log_file_path)
 
