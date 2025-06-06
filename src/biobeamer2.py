@@ -386,13 +386,17 @@ def compare_files_destination(source_result_mapping):
     return {"copied": copied, "not_copied": not_copied}
 
 
-def log_copied_files(copied_files, copied_files_log_path):
+def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
     if len(copied_files) > 0:
         copied_files.sort()
-        # Ensure parent directory exists
-        log_dir = os.path.dirname(os.path.abspath(copied_files_log_path))
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir, exist_ok=True)
+        # If log_dir is provided, override the log file location
+        if log_dir:
+            copied_files_log_path = os.path.join(
+                log_dir, os.path.basename(copied_files_log_path)
+            )
+        log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
+        if log_dir_path and not os.path.exists(log_dir_path):
+            os.makedirs(log_dir_path, exist_ok=True)
         with open(copied_files_log_path, "w") as file_log:
             for file in copied_files:
                 file_log.write(file + "\n")
@@ -509,8 +513,12 @@ def copy_and_log_files(
         simulate=parameters["simulate_copy"],
     )
     files_copied = set(list(all_copied) + files_copied)
+    # Use log_dir if present in parameters
+    log_dir = parameters.get("log_dir", None)
     log_copied_files(
-        list(files_copied), copied_files_log_path=parameters["copied_files_log"]
+        list(files_copied),
+        copied_files_log_path=parameters["copied_files_log"],
+        log_dir=log_dir,
     )
     return files_copied
 
