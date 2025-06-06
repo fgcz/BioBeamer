@@ -554,6 +554,11 @@ def parse_args():
         default=socket.gethostname(),
         help="Hostname (default: current machine hostname)",
     )
+    parser.add_argument(
+        "--log_dir",
+        default=None,
+        help="Directory for all logs (overrides default log location)",
+    )
     args = parser.parse_args()
     # Determine xsd path if not provided
     if args.xsd is None:
@@ -565,24 +570,34 @@ def parse_args():
         xsd_path = os.path.join(xml_dir, "BioBeamer2.xsd")
     else:
         xsd_path = args.xsd
-    return args.xml, xsd_path, args.hostname, args.password
+
+    args.xsd = xsd_path
+    return args
 
 
-def setup_logger(config_file_name, now, log_file_path=None, tool_log_file_path=None):
+def setup_logger(
+    config_file_name, now, log_file_path=None, tool_log_file_path=None, log_dir=None
+):
     import os
 
-    if log_file_path is None:
-        biobeamer_log_file_path = f"./log/biobeamer_{config_file_name}_{now}.log"
-    else:
-        biobeamer_log_file_path = log_file_path
-    # Ensure log directory exists
-    log_dir = os.path.dirname(biobeamer_log_file_path)
-    if log_dir and not os.path.exists(log_dir):
+    if log_dir is not None:
         os.makedirs(log_dir, exist_ok=True)
-    if tool_log_file_path is None:
-        tool_log_file_path = f"./log/robocopy_{config_file_name}.log"
+        biobeamer_log_file_path = os.path.join(
+            log_dir, f"biobeamer_{config_file_name}_{now}.log"
+        )
+        tool_log_file_path = os.path.join(log_dir, f"robocopy_{config_file_name}.log")
     else:
-        tool_log_file_path = tool_log_file_path
+        if log_file_path is None:
+            biobeamer_log_file_path = f"./log/biobeamer_{config_file_name}_{now}.log"
+        else:
+            biobeamer_log_file_path = log_file_path
+        log_dir = os.path.dirname(biobeamer_log_file_path)
+        if log_dir and not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+        if tool_log_file_path is None:
+            tool_log_file_path = f"./log/robocopy_{config_file_name}.log"
+        else:
+            tool_log_file_path = tool_log_file_path
     logger = MyLog.MyLog()
     logger.add_file(filename=biobeamer_log_file_path, level=logging.DEBUG)
     return logger, tool_log_file_path
@@ -632,9 +647,15 @@ def path_to_url(path: str) -> str:
 
 
 def main():
-    biobeamer_xml_path, biobeamer_xsd_path, hostname, password = parse_args()
+    args = parse_args()
+    biobeamer_xml_path = args.xml
+    biobeamer_xsd_path = args.xsd
+    hostname = args.hostname
+    password = args.password
+    log_dir = args.log_dir
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    logger, tool_log_file = setup_logger("biobeamer_log", now)
+    config_file_name = get_config_file_name(biobeamer_xml_path)
+    logger, tool_log_file = setup_logger(config_file_name, now, log_dir=log_dir)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
     logger.logger.info(
         f"retrieving config from {biobeamer_xml_path} for hostname {hostname}"
