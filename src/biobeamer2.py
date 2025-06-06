@@ -387,13 +387,13 @@ def compare_files_destination(source_result_mapping):
 
 
 def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
+    if log_dir:
+        # Always write to log_dir, using only the filename part
+        copied_files_log_path = os.path.join(
+            log_dir, os.path.basename(copied_files_log_path)
+        )
     if len(copied_files) > 0:
         copied_files.sort()
-        # If log_dir is provided, override the log file location
-        if log_dir:
-            copied_files_log_path = os.path.join(
-                log_dir, os.path.basename(copied_files_log_path)
-            )
         log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
         if log_dir_path and not os.path.exists(log_dir_path):
             os.makedirs(log_dir_path, exist_ok=True)
