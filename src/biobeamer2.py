@@ -451,81 +451,134 @@ def compare_copied_with_log(not_copied, files_copied_old):
     return new_not_copied
 
 
-def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
-    parameters = bio_beamer_parser.parameters
-    regex = bio_beamer_parser.regex
-
-    if os.path.exists(parameters["source_path"]):
-        files2copy = get_all_files(parameters["source_path"], logger=logger)
+def validate_and_collect_files(source_path, logger):
+    if os.path.exists(source_path):
+        return get_all_files(source_path, logger=logger)
     else:
-        error = "source path: {source_path} does not exist!".format(
-            source_path=parameters["source_path"]
-        )
+        error = f"source path: {source_path} does not exist!"
         logger.error(error)
         raise FileNotFoundError(error)
 
+
+def remove_already_copied(files, copied_log):
+    return list(set(files) - set(copied_log))
+
+
+def filter_files(files, regex, parameters, logger):
+    return filter_input_filelist(files, regex, parameters, logger=logger)
+
+
+def map_source_to_dest(files, source_path, target_path):
+    return make_destination_files(files, source_path, target_path)
+
+
+def apply_mapping_function(mapping, func_name, logger):
+    if func_name:
+        logger.info(f"trying to apply mapping function : {func_name}.")
+        method_to_call = getattr(mapping_functions, func_name)
+        return rename_destination(mapping, logger, mapping_function=method_to_call)
+    return mapping
+
+
+def remove_files_already_at_destination(mapping, copied_log):
+    copied = compare_files_destination(mapping)
+    all_copied = list(copied["copied"].keys()) + copied_log
+    all_copied = set(all_copied)
+    not_copied = copied["not_copied"]
+    not_copied_keys = not_copied.keys() - set(all_copied)
+    return dict((k, not_copied[k]) for k in not_copied_keys), all_copied
+
+
+def copy_and_log_files(
+    not_copied, all_copied, parameters, logger, tool_log_file_path, tool
+):
+    files_copied = copy_files_with_tool(
+        source_results=not_copied,
+        mov=parameters["robocopy_mov"],
+        logger=logger,
+        tool_log_file=tool_log_file_path,
+        tool=tool,
+        simulate=parameters["simulate_copy"],
+    )
+    files_copied = set(list(all_copied) + files_copied)
+    log_copied_files(
+        list(files_copied), copied_files_log_path=parameters["copied_files_log"]
+    )
+    return files_copied
+
+
+def cleanup_copied_files(files_copied, parameters, logger, simulate):
+    remove_old_copied(
+        files_copied, parameters["max_time_delete"], logger, simulate=simulate
+    )
+
+
+def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
+    """
+    Orchestrates the process of copying files from a source to a target directory.
+    Steps:
+    1. Validate source path and collect files.
+    2. Remove already copied files (from log).
+    3. Filter files by regex and parameters.
+    4. Map source files to destination paths.
+    5. Optionally apply a mapping function to destination names.
+    6. Remove files already present at destination.
+    7. Copy remaining files and log results.
+    8. Remove old copied files if needed.
+    """
+    parameters = bio_beamer_parser.parameters
+    regex = bio_beamer_parser.regex
+
+    files2copy = validate_and_collect_files(parameters["source_path"], logger)
     files_copied_log = read_copied_files(
         copied_files_log_path=parameters["copied_files_log"]
-    )  # added 02.2020
-    files2copy = list(
-        set(files2copy) - set(files_copied_log)
-    )  # remove all files which were already copied.
-
-    files_filtered = filter_input_filelist(files2copy, regex, parameters, logger=logger)
-
+    )
+    files2copy = remove_already_copied(files2copy, files_copied_log)
+    files_filtered = filter_files(files2copy, regex, parameters, logger)
     simulate = (
         "../files2delete/files2delete.bat" if parameters["simulate_delete"] else ""
     )
 
     if len(files_filtered) != 0:
-
-        source_result_mapping = make_destination_files(
+        source_result_mapping = map_source_to_dest(
             files_filtered, parameters["source_path"], parameters["target_path"]
         )
-
-        mapping_function_name = parameters["func_target_mapping"]
-        if mapping_function_name != "":
-            logger.info(
-                "trying to apply mapping function : {}.".format(mapping_function_name)
-            )
-            method_to_call = getattr(mapping_functions, mapping_function_name)
-            source_result_mapping = rename_destination(
-                source_result_mapping, logger, mapping_function=method_to_call
-            )
-
-        # check if files are already copied and if so remove them from source_result_mapping
-        copied = compare_files_destination(source_result_mapping)
-
-        all_copied = (
-            list(copied["copied"].keys()) + files_copied_log
-        )  # add it because you might start with empty copied file list.
-        all_copied = set(all_copied)
-        not_copied = copied["not_copied"]
-        not_copied_keys = not_copied.keys() - set(all_copied)
-        not_copied = dict((k, not_copied[k]) for k in not_copied_keys)
-
-        files_copied = copy_files_with_tool(
-            source_results=not_copied,
-            mov=parameters["robocopy_mov"],
-            logger=logger,
-            tool_log_file=tool_log_file_path,
-            tool=tool,
-            simulate=parameters["simulate_copy"],
+        source_result_mapping = apply_mapping_function(
+            source_result_mapping, parameters["func_target_mapping"], logger
         )
-
-        files_copied = set(list(all_copied) + files_copied)
-        log_copied_files(
-            list(files_copied), copied_files_log_path=parameters["copied_files_log"]
-        )  # added 02.2020
-
-        # removes files which have been copied
-        remove_old_copied(
-            files_copied, parameters["max_time_delete"], logger, simulate=simulate
+        not_copied, all_copied = remove_files_already_at_destination(
+            source_result_mapping, files_copied_log
         )
+        files_copied = copy_and_log_files(
+            not_copied, all_copied, parameters, logger, tool_log_file_path, tool
+        )
+        cleanup_copied_files(files_copied, parameters, logger, simulate)
     else:
-        remove_old_copied(
-            files_copied_log, parameters["max_time_delete"], logger, simulate=simulate
-        )
+        cleanup_copied_files(files_copied_log, parameters, logger, simulate)
+
+
+def path_to_url(path: str) -> str:
+    if (
+        path.startswith("file://")
+        or path.startswith("http://")
+        or path.startswith("https://")
+    ):
+        return path
+    return f"file://{os.path.abspath(path)}"
+
+
+def resolve_xsd_path(xml_path, xsd_arg):
+    """
+    Given the xml path and the xsd argument, return the correct xsd path.
+    If xsd_arg is None, use the same directory as xml_path and 'BioBeamer2.xsd'.
+    """
+    if xsd_arg is None:
+        xml_dir = os.path.dirname(xml_path)
+        if not xml_dir:
+            xml_dir = "."
+        return os.path.join(xml_dir, "BioBeamer2.xsd")
+    else:
+        return xsd_arg
 
 
 def parse_args():
@@ -561,24 +614,8 @@ def parse_args():
     )
     args = parser.parse_args()
     # Determine xsd path if not provided
-    if args.xsd is None:
-        xml_dir = os.path.dirname(args.xml)
-        if not xml_dir:
-            xml_dir = "."
-        xsd_path = os.path.join(xml_dir, "BioBeamer2.xsd")
-    else:
-        xsd_path = args.xsd
-
+    xsd_path = resolve_xsd_path(args.xml, args.xsd)
     # Convert xml and xsd to URLs if needed
-    def path_to_url(path: str) -> str:
-        if (
-            path.startswith("file://")
-            or path.startswith("http://")
-            or path.startswith("https://")
-        ):
-            return path
-        return f"file://{os.path.abspath(path)}"
-
     args.xml = path_to_url(args.xml)
     args.xsd = path_to_url(xsd_path)
     return args
