@@ -47,6 +47,7 @@ class BioBeamerParser(object):
 
         except:
             self.logger.error("can not fetch xml or xsd information")
+            self.logger.error(f"XML URL: {xml}, XSD URL: {xsd}")
             raise
 
         schema = etree.XMLSchema(etree.XML(xsd))
