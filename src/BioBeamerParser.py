@@ -33,21 +33,40 @@ class BioBeamerParser(object):
         :param xml: BioBeamer.xml
         :return:
         """
-        self.logger = logger
-        # self.parameters = {}
+        from pathlib import Path
+        import urllib.parse
 
-        xml_url = xml
+        self.logger = logger
+        # Validate XML and XSD paths
+        if not xml:
+            self.logger.error("XML path/URL is empty!")
+            raise ValueError("XML path/URL must not be empty")
+        if not xsd:
+            self.logger.error("XSD path/URL is empty!")
+            raise ValueError("XSD path/URL must not be empty")
+
+        # Convert to file URL if not already a URL
+        def ensure_url(path):
+            if urllib.parse.urlparse(path).scheme in ("http", "https", "file"):
+                return path
+            return Path(path).absolute().as_uri()
+
+        xml_url = ensure_url(xml)
+        xsd_url = ensure_url(xsd)
+        self.logger.info(f"Resolved XML URL: {xml_url}")
+        self.logger.info(f"Resolved XSD URL: {xsd_url}")
         # read config files from url
         try:
-            f = urllib.request.urlopen(xml)
+            f = urllib.request.urlopen(xml_url)
             xml = f.read()
 
-            f = urllib.request.urlopen(xsd)
+            f = urllib.request.urlopen(xsd_url)
             xsd = f.read()
 
-        except:
+        except Exception as e:
             self.logger.error("can not fetch xml or xsd information")
-            self.logger.error(f"XML URL: {xml}, XSD URL: {xsd}")
+            self.logger.error(f"XML URL: {xml_url}, XSD URL: {xsd_url}")
+            self.logger.error(f"Exception: {e}")
             raise
 
         schema = etree.XMLSchema(etree.XML(xsd))
