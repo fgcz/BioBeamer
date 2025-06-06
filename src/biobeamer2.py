@@ -198,10 +198,11 @@ def copy_with_robocopy(
             return_code = robocopy_process.wait()
             logger.info("robocopy return code: '{0}'".format(return_code))
             if return_code > 7:
-                logger.warning("robocopy quit with return code highter than 7")
+                logger.error("robocopy failed with return code > 7; treating as error.")
+                robocopy_process.terminate()
+                return None  # Signal failure
             else:
                 file_copied = file_to_copy
-
             robocopy_process.terminate()
 
             # make sure file was copied correctly
@@ -231,21 +232,15 @@ def copy_with_robocopy(
                         + target_path
                         + " !!!"
                     )
-        except:
+        except Exception as e:
             logger.error(
                 "robocopy exception raised on files - from "
                 + file_to_copy
                 + " to "
                 + target_path
-                + " !"
+                + f" ! Exception: {e}"
             )
-            raise Exception(
-                "robocopy exception raised on files - from "
-                + file_to_copy
-                + " to "
-                + target_path
-                + " !"
-            )
+            return None  # Signal failure
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
 
@@ -308,6 +303,7 @@ def copy_files_with_tool(
     source_results, mov, logger, tool_log_file, tool, simulate=False
 ):
     files_copied = []
+    failed_files = []
     sources = list(source_results.keys())
     sources.sort()
     for source in sources:
@@ -333,6 +329,13 @@ def copy_files_with_tool(
             raise NotImplementedError("Tool {0} not supported!".format(tool))
         if file_copied is not None:
             files_copied.append(file_copied)
+        else:
+            failed_files.append(source)
+    if failed_files:
+        logger.error(f"Failed to copy files: {failed_files}")
+        import sys
+
+        sys.exit(2)
     return files_copied
 
 
@@ -386,6 +389,10 @@ def compare_files_destination(source_result_mapping):
 def log_copied_files(copied_files, copied_files_log_path):
     if len(copied_files) > 0:
         copied_files.sort()
+        # Ensure parent directory exists
+        log_dir = os.path.dirname(os.path.abspath(copied_files_log_path))
+        if log_dir and not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
         with open(copied_files_log_path, "w") as file_log:
             for file in copied_files:
                 file_log.write(file + "\n")
