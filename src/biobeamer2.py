@@ -671,6 +671,10 @@ def get_tool_log_file(log_dir, tool_name="robocopy", now=None):
         tool_log_file_path = os.path.join(log_dir, f"{tool_name}{suffix}.log")
     else:
         tool_log_file_path = f"./log/{tool_name}{suffix}.log"
+
+    with open(tool_log_file_path, "a"):
+        # Ensure the file is created and ready for writing
+        pass
     return tool_log_file_path
 
 
