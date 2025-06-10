@@ -260,7 +260,7 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     file_copied = None
     # Compose the scp command with verbose output
     cmd = ["scp", "-v", shlex.quote(source), shlex.quote(target)]
-    cmd_str = " ".join(cmd)
+    cmd_str = shlex.join(cmd)
     if not simulate_copy:
         logger.info(f"Running Command: [{cmd_str}]")
         try:
