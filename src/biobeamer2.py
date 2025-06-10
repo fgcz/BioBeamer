@@ -392,14 +392,13 @@ def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
         copied_files_log_path = os.path.join(
             log_dir, os.path.basename(copied_files_log_path)
         )
-    if len(copied_files) > 0:
-        copied_files.sort()
-        log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
-        if log_dir_path and not os.path.exists(log_dir_path):
-            os.makedirs(log_dir_path, exist_ok=True)
-        with open(copied_files_log_path, "w") as file_log:
-            for file in copied_files:
-                file_log.write(file + "\n")
+    # Always create the log file, even if empty
+    log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
+    if log_dir_path and not os.path.exists(log_dir_path):
+        os.makedirs(log_dir_path, exist_ok=True)
+    with open(copied_files_log_path, "w") as file_log:
+        for file in sorted(copied_files):
+            file_log.write(file + "\n")
 
 
 def read_copied_files(copied_files_log_path):
@@ -570,6 +569,13 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
         )
         cleanup_copied_files(files_copied, parameters, logger, simulate)
     else:
+        # Always create the copied files log, even if no files are copied
+        log_dir = parameters.get("log_dir", None)
+        log_copied_files(
+            list(files_copied_log),
+            copied_files_log_path=parameters["copied_files_log"],
+            log_dir=log_dir,
+        )
         cleanup_copied_files(files_copied_log, parameters, logger, simulate)
 
 
