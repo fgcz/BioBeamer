@@ -27,7 +27,7 @@ class BioBeamerParser(object):
 
     results = []
 
-    def __init__(self, xsd, xml, hostname, logger):
+    def __init__(self, xsd, xml, hostname, logger, log_dir=None):
         """
         :param xsd: BioBeamer.xsd
         :param xml: BioBeamer.xml
@@ -127,6 +127,13 @@ class BioBeamerParser(object):
             print(msg)
             self.logger.error(msg)
             sys.exit(1)
+        # --- Set log_dir for all log files if provided ---
+        if log_dir:
+            self.parameters["copied_files_log"] = os.path.join(
+                log_dir, "copied_files.txt"
+            )
+            self.parameters["log_dir"] = log_dir
+        # ------------------------------------------------
 
     def print_para(self):
         """print class parameter setting"""

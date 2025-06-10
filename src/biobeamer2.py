@@ -720,7 +720,9 @@ def main():
         xsd=args.xsd,
         hostname=args.hostname,
         logger=logger.logger,
+        log_dir=args.log_dir,
     )
+    # No need to patch copied_files_log here anymore
     setup_remote_logging(logger, bio_beamer_parser, args.hostname)
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)
