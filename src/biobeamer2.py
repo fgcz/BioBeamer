@@ -260,8 +260,9 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     file_copied = None
     # Compose the scp command with verbose output
     cmd = ["scp", "-v", source, target]
+    cmd = shlex.join(cmd)
     if not simulate_copy:
-        logger.info(f"Running Command: [{shlex.join(cmd)}]")
+        logger.info(f"Running Command: [{cmd}]")
         try:
             # Write a header to the log file to ensure it is touched
             with open(tool_log_file, "a") as logf:
@@ -294,7 +295,7 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
                 f"scp exception raised on files - from {source} to {target}! Exception: {e}"
             )
     else:
-        logger.info(f"Simulating Command: [{shlex.join(cmd)}]")
+        logger.info(f"Simulating Command: [{cmd}]")
     return file_copied
 
 
