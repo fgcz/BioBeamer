@@ -257,6 +257,8 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     :param simulate_copy: If True, only simulates the copy
     :return: The source file if copied successfully, else None
     """
+    source = source.replace("\\", "/")
+    target = target.replace("\\", "/")
     file_copied = None
     # Compose the scp command with verbose output
     cmd = ["scp", "-v", source, target]
