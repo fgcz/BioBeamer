@@ -8,8 +8,8 @@ import shlex
 import socket
 import time
 from datetime import datetime
-from subprocess import Popen
 from pathlib import Path
+from subprocess import Popen
 
 import BioBeamerParser
 import MyLog
@@ -205,33 +205,6 @@ def copy_with_robocopy(
                 file_copied = file_to_copy
             robocopy_process.terminate()
 
-            # make sure file was copied correctly
-            if (
-                False
-            ):  # Windows API problem posted here https://stackoverflow.com/questions/60753914/os-path-exists-returns-false-on-windows-although-file-exists-max-path-260-windo
-                xx = os.path.exists(target_path)
-                if xx and filecmp.cmp(file_to_copy, target_path):
-                    file_copied = file_to_copy
-                else:
-                    logger.error(
-                        "Python check on robocopy failed on files - from: "
-                        + file_to_copy
-                        + " to "
-                        + target_path
-                        + " !!!"
-                    )
-                    logger.error(
-                        "File size to copy ",
-                        os.path.getsize(file_to_copy),
-                        "; file size target " + os.path.getsize(target_path),
-                    )
-                    raise Exception(
-                        "Python check on robocopy failed on files - from: "
-                        + file_to_copy
-                        + " to "
-                        + target_path
-                        + " !!!"
-                    )
         except Exception as e:
             logger.error(
                 "robocopy exception raised on files - from "
