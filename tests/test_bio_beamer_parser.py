@@ -10,8 +10,6 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 
 """
 
-import os
-import pytest
 import importlib.resources
 
 from biobeamer2.BioBeamerParser import BioBeamerParser
