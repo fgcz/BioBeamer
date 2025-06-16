@@ -12,7 +12,7 @@ from pathlib import Path
 from subprocess import Popen
 import importlib.resources
 
-from biobeamer2 import MyLog, mapping_functions
+from . import MyLog, mapping_functions
 from biobeamer2.BioBeamerParser import BioBeamerParser
 from biobeamer2.mapNetworks import Drive
 
