@@ -1,6 +1,7 @@
 # This should go into the robocopy because otherwise it might conflict with the Checker class.
 import argparse
 import filecmp
+import importlib.resources
 import logging.handlers
 import os
 import re
@@ -10,11 +11,10 @@ import time
 from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
-import importlib.resources
 
-from . import MyLog, mapping_functions
 from biobeamer2.BioBeamerParser import BioBeamerParser
 from biobeamer2.mapNetworks import Drive
+from . import MyLog, mapping_functions
 
 
 def get_all_files(source_path, logger):
