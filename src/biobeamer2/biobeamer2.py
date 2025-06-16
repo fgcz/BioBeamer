@@ -311,7 +311,7 @@ def copy_files_with_tool(
             # Only treat as failed if not simulating
             if not simulate:
                 failed_files.append(source)
-    if failed_files:
+    if failed_files and not simulate:
         logger.error(f"Failed to copy files: {failed_files}")
         import sys
 
