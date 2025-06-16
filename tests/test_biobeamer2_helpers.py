@@ -15,7 +15,7 @@ def test_parse_args_default(monkeypatch):
     assert args.xml == expected_xml
     assert args.password is None
     assert args.hostname
-    assert args.xsd.endswith("BioBeamer2.xsd")
+    # XSD is now always resolved internally as a file:// URI
 
 
 def test_parse_args_with_args(monkeypatch):
@@ -30,8 +30,6 @@ def test_parse_args_with_args(monkeypatch):
             "xmlfile",
             "--hostname",
             "host",
-            "--xsd",
-            "xsdfile",
         ],
     )
     args = biobeamer2.parse_args()
@@ -45,7 +43,8 @@ def test_parse_args_with_args(monkeypatch):
 
     assert normalize_path(args.xml) == "xmlfile"
     assert args.hostname == "host"
-    assert normalize_path(args.xsd) == "xsdfile"
+    # XSD is not a CLI arg anymore
+    assert getattr(args, "xsd", None) is None
 
 
 def test_get_config_file_name():

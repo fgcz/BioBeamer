@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
+import importlib.resources
 
 from biobeamer2 import MyLog, mapping_functions
 from biobeamer2.BioBeamerParser import BioBeamerParser
@@ -563,18 +564,12 @@ def path_to_url(path: str) -> str:
     return Path(path).absolute().as_uri()
 
 
-def resolve_xsd_path(xml_path, xsd_arg):
-    """
-    Given the xml path and the xsd argument, return the correct xsd path.
-    If xsd_arg is None, use the same directory as xml_path and 'BioBeamer2.xsd'.
-    """
-    if xsd_arg is None:
-        xml_dir = os.path.dirname(xml_path)
-        if not xml_dir:
-            xml_dir = ".."
-        return os.path.join(xml_dir, "BioBeamer2.xsd")
-    else:
-        return xsd_arg
+def resolve_xsd_path():
+    # Always use the package's XSD file as a file URI
+    import pathlib
+
+    with importlib.resources.path("biobeamer2.configs", "BioBeamer2.xsd") as xsd_path:
+        return pathlib.Path(xsd_path).absolute().as_uri()
 
 
 def parse_args():
@@ -584,12 +579,6 @@ def parse_args():
         "-x",
         default="BioBeamer2.xml",
         help="BioBeamer XML file (default: BioBeamer2.xml)",
-    )
-    parser.add_argument(
-        "--xsd",
-        "-s",
-        default=None,
-        help="BioBeamer XSD file (optional, default: BioBeamer2.xsd in the same directory as the XML file)",
     )
     parser.add_argument(
         "--password",
@@ -609,11 +598,8 @@ def parse_args():
         help="Directory for all logs (overrides default log location)",
     )
     args = parser.parse_args()
-    # Determine xsd path if not provided
-    xsd_path = resolve_xsd_path(args.xml, args.xsd)
-    # Convert xml and xsd to URLs if needed
+    # Convert xml to URL if needed
     args.xml = path_to_url(args.xml)
-    args.xsd = path_to_url(xsd_path)
     return args
 
 
@@ -692,10 +678,10 @@ def main():
     logger.logger.info(
         f"retrieving config from {args.xml} for hostname {args.hostname}"
     )
-
+    xsd_path = resolve_xsd_path()
     bio_beamer_parser = BioBeamerParser(
         xml=args.xml,
-        xsd=args.xsd,
+        xsd=xsd_path,
         hostname=args.hostname,
         logger=logger.logger,
         log_dir=args.log_dir,

@@ -12,54 +12,46 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 
 import os
 import pytest
+import importlib.resources
 
 from biobeamer2.BioBeamerParser import BioBeamerParser
 from biobeamer2.MyLog import MyLog
 
-xml_path = os.path.abspath("../configs/BioBeamerTest.xml")
-xsd_path = os.path.abspath("../configs/BioBeamer2.xsd")
-if not os.path.exists(xml_path):
-    raise FileNotFoundError(f"XML configuration file not found: {xml_path}")
-if not os.path.exists(xsd_path):
-    raise FileNotFoundError(f"XSD configuration file not found: {xsd_path}")
-
-xml_url = f"file://{xml_path}"
-xsd_url = f"file://{xsd_path}"
-
-PARAM_TEST = {
-    "name": "test_configuration",
-    "instrument": "test_instrument",
-    "min_size": 1024,
-    "min_time_diff": 10800,
-    "max_time_diff": 2419200,
-    "max_time_delete": 1209600,
-    "time_out": 3600,
-    "simulate_copy": True,
-    "simulate_delete": True,
-    "func_target_mapping": "",
-    "robocopy_mov": False,
-    "pattern": r"^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\\/\\.]+\\.(raw|RAW|wiff|wiff\\.scan)$",
-    "source_path": "/srv/www/htdocs/Data2San",
-    "target_path": "/srv/www/htdocs",
-    "copied_files_log": "./log/test_copied_files.txt",
-    "syshandler_adress": "ms-fgcz.uzh.ch",
-    "syshandler_port": 514,
-    "tool": "scp",
-}
-
-
-@pytest.fixture(autouse=True)
-def cleanup_log():
-    log_path = "./log/test_copied_files.txt"
-    if os.path.exists(log_path):
-        os.remove(log_path)
-
 
 def test_beam_and_check():
     logger = MyLog()
-
-    bio_beamer_parser = BioBeamerParser(
-        xml=xml_url, xsd=xsd_url, hostname="test_configuration", logger=logger.logger
-    )
-    param = bio_beamer_parser.parameters
-    assert param == PARAM_TEST
+    with importlib.resources.path(
+        "biobeamer2.configs", "BioBeamerTest.xml"
+    ) as xml_path, importlib.resources.path(
+        "biobeamer2.configs", "BioBeamer2.xsd"
+    ) as xsd_path:
+        xml_url = f"file://{xml_path}"
+        xsd_url = f"file://{xsd_path}"
+        bio_beamer_parser = BioBeamerParser(
+            xml=xml_url,
+            xsd=xsd_url,
+            hostname="test_configuration",
+            logger=logger.logger,
+        )
+        param = bio_beamer_parser.parameters
+        assert param["name"] == "test_configuration"
+        assert param["instrument"] == "test_instrument"
+        assert param["min_size"] == 1024
+        assert param["min_time_diff"] == 10800
+        assert param["max_time_diff"] == 2419200
+        assert param["max_time_delete"] == 1209600
+        assert param["time_out"] == 3600
+        assert param["simulate_copy"] is True
+        assert param["simulate_delete"] is True
+        assert param["func_target_mapping"] == ""
+        assert param["robocopy_mov"] is False
+        assert (
+            param["pattern"]
+            == r"^.{0,2}p[0-9]+.[MP][-0-9a-zA-Z_\\/\\.]+\\.(raw|RAW|wiff|wiff\\.scan)$"
+        )
+        assert param["source_path"] == "/srv/www/htdocs/Data2San"
+        assert param["target_path"] == "/srv/www/htdocs"
+        assert param["copied_files_log"] == "./log/test_copied_files.txt"
+        assert param["syshandler_adress"] == "ms-fgcz.uzh.ch"
+        assert param["syshandler_port"] == 514
+        assert param["tool"] == "scp"
