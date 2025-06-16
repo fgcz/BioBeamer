@@ -216,6 +216,7 @@ def copy_with_robocopy(
             return None  # Signal failure
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
+        return file_to_copy
 
     return file_copied
 
@@ -271,6 +272,8 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
             )
     else:
         logger.info(f"Simulating Command: [{cmd}]")
+        return source
+
     return file_copied
 
 
@@ -305,7 +308,9 @@ def copy_files_with_tool(
         if file_copied is not None:
             files_copied.append(file_copied)
         else:
-            failed_files.append(source)
+            # Only treat as failed if not simulating
+            if not simulate:
+                failed_files.append(source)
     if failed_files:
         logger.error(f"Failed to copy files: {failed_files}")
         import sys
