@@ -11,10 +11,9 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
 
-import BioBeamerParser
-import MyLog
-import mapping_functions
-from mapNetworks import Drive
+from biobeamer2 import MyLog, mapping_functions
+from biobeamer2.BioBeamerParser import BioBeamerParser
+from biobeamer2.mapNetworks import Drive
 
 
 def get_all_files(source_path, logger):
@@ -572,7 +571,7 @@ def resolve_xsd_path(xml_path, xsd_arg):
     if xsd_arg is None:
         xml_dir = os.path.dirname(xml_path)
         if not xml_dir:
-            xml_dir = "."
+            xml_dir = ".."
         return os.path.join(xml_dir, "BioBeamer2.xsd")
     else:
         return xsd_arg
@@ -694,7 +693,7 @@ def main():
         f"retrieving config from {args.xml} for hostname {args.hostname}"
     )
 
-    bio_beamer_parser = BioBeamerParser.BioBeamerParser(
+    bio_beamer_parser = BioBeamerParser(
         xml=args.xml,
         xsd=args.xsd,
         hostname=args.hostname,

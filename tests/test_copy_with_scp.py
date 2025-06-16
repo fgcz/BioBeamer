@@ -3,7 +3,7 @@ import tempfile
 import shutil
 import logging
 import pytest
-from src.biobeamer2 import copy_with_scp
+from biobeamer2.biobeamer2 import copy_with_scp
 
 
 @pytest.fixture
@@ -58,8 +58,8 @@ def cleanup_log():
 
 
 def test_copy_with_scp_simulate(monkeypatch, logger, file_paths, dummy_popen_success):
-    monkeypatch.setattr("src.biobeamer2.Popen", dummy_popen_success)
-    monkeypatch.setattr("src.biobeamer2.os.path.exists", lambda x: True)
+    monkeypatch.setattr("biobeamer2.biobeamer2.Popen", dummy_popen_success)
+    monkeypatch.setattr("biobeamer2.biobeamer2.os.path.exists", lambda x: True)
     result = copy_with_scp(
         file_paths["source"],
         file_paths["target"],
@@ -71,9 +71,9 @@ def test_copy_with_scp_simulate(monkeypatch, logger, file_paths, dummy_popen_suc
 
 
 def test_copy_with_scp_success(monkeypatch, logger, file_paths, dummy_popen_success):
-    monkeypatch.setattr("src.biobeamer2.Popen", dummy_popen_success)
-    monkeypatch.setattr("src.biobeamer2.os.path.exists", lambda x: True)
-    monkeypatch.setattr("src.biobeamer2.os.path.getsize", lambda x: 123)
+    monkeypatch.setattr("biobeamer2.biobeamer2.Popen", dummy_popen_success)
+    monkeypatch.setattr("biobeamer2.biobeamer2.os.path.exists", lambda x: True)
+    monkeypatch.setattr("biobeamer2.biobeamer2.os.path.getsize", lambda x: 123)
     result = copy_with_scp(
         file_paths["source"],
         file_paths["target"],
@@ -85,9 +85,9 @@ def test_copy_with_scp_success(monkeypatch, logger, file_paths, dummy_popen_succ
 
 
 def test_copy_with_scp_failure(monkeypatch, logger, file_paths, dummy_popen_failure):
-    monkeypatch.setattr("src.biobeamer2.Popen", dummy_popen_failure)
+    monkeypatch.setattr("biobeamer2.biobeamer2.Popen", dummy_popen_failure)
     monkeypatch.setattr(
-        "src.biobeamer2.os.path.exists", lambda x: x == file_paths["target"]
+        "biobeamer2.biobeamer2.os.path.exists", lambda x: x == file_paths["target"]
     )
 
     def getsize_side_effect(x):
@@ -95,7 +95,7 @@ def test_copy_with_scp_failure(monkeypatch, logger, file_paths, dummy_popen_fail
             raise FileNotFoundError(f"No such file or directory: '{x}'")
         return 123
 
-    monkeypatch.setattr("src.biobeamer2.os.path.getsize", getsize_side_effect)
+    monkeypatch.setattr("biobeamer2.biobeamer2.os.path.getsize", getsize_side_effect)
     with pytest.raises(Exception) as excinfo:
         copy_with_scp(
             file_paths["source"],

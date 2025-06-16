@@ -13,8 +13,8 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 import os
 import pytest
 
-from src.BioBeamerParser import BioBeamerParser
-from src.MyLog import MyLog
+from biobeamer2.BioBeamerParser import BioBeamerParser
+from biobeamer2.MyLog import MyLog
 
 xml_path = os.path.abspath("../configs/BioBeamerTest.xml")
 xsd_path = os.path.abspath("../configs/BioBeamer2.xsd")
@@ -44,7 +44,7 @@ PARAM_TEST = {
     "copied_files_log": "./log/test_copied_files.txt",
     "syshandler_adress": "ms-fgcz.uzh.ch",
     "syshandler_port": 514,
-    "tool": "robocopy",
+    "tool": "scp",
 }
 
 

@@ -1,11 +1,11 @@
 import os
+import shutil
 import sys
 from unittest import mock
 
 import pytest
 
-# Import the functions to test
-from src import biobeamer2
+from biobeamer2 import biobeamer2
 
 
 def test_parse_args_default(monkeypatch):
@@ -64,15 +64,12 @@ def test_setup_logger(tmp_path):
 
 
 def test_setup_logger_missing_log_dir(tmp_path, monkeypatch):
-    import shutil
-    import logging
 
     log_dir = tmp_path / "log"
     if log_dir.exists():
         shutil.rmtree(log_dir)
     now = "20250101_120000"
     log_file_path = str(log_dir / f"biobeamer_{now}.log")
-    from src import biobeamer2
 
     # Should not raise
     logger, biobeamerlog = biobeamer2.setup_logger(now, log_file_path=log_file_path)
@@ -82,7 +79,6 @@ def test_setup_logger_missing_log_dir(tmp_path, monkeypatch):
 
 def test_setup_logger_creates_log_dir(tmp_path, monkeypatch):
     """Test setup_logger creates the log directory if it does not exist."""
-    import shutil
 
     log_dir = tmp_path / "log"
     if log_dir.exists():
@@ -90,8 +86,6 @@ def test_setup_logger_creates_log_dir(tmp_path, monkeypatch):
     now = "20250101_120000"
     log_file_path = str(log_dir / f"biobeamer_{now}.log")
     # Patch log_file_path to use our custom dir
-    from src import biobeamer2
-
     # Should not raise
     logger, biobeamerlog = biobeamer2.setup_logger(now, log_file_path=log_file_path)
     assert os.path.exists(log_dir)
@@ -203,13 +197,6 @@ def test_copy_files(monkeypatch):
     # Call function
     biobeamer2.copy_files(DummyParser, logger, tool, biobeamerlog)
     # If no exception, test passes
-
-
-import os
-import tempfile
-import pytest
-from unittest import mock
-from src import biobeamer2
 
 
 def test_validate_and_collect_files_existing(tmp_path):

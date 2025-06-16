@@ -3,13 +3,11 @@ import shutil
 import sys
 import tempfile
 import time
-import shutil
-import subprocess
 from unittest.mock import patch, MagicMock
 
 import pytest
-
-from src import biobeamer2
+from biobeamer2 import biobeamer2
+from biobeamer2.mapNetworks import Drive
 
 
 @pytest.fixture(autouse=True)
@@ -26,21 +24,23 @@ def cleanup_logs():
 
 
 def test_main():
-    with patch("src.biobeamer2.MyLog.MyLog") as mock_MyLog, patch(
-        "src.biobeamer2.BioBeamerParser"
-    ) as mock_BioBeamerParser, patch("src.biobeamer2.Drive") as mock_Drive, patch(
-        "src.biobeamer2.copy_files"
+    with patch("biobeamer2.MyLog.MyLog") as mock_MyLog, patch(
+        "biobeamer2.biobeamer2.BioBeamerParser"
+    ) as mock_BioBeamerParser, patch(
+        "biobeamer2.mapNetworks.Drive"
+    ) as mock_Drive, patch(
+        "biobeamer2.biobeamer2.copy_files"
     ) as mock_copy_files, patch(
-        "src.biobeamer2.socket.gethostname", return_value="testhost"
+        "biobeamer2.biobeamer2.socket.gethostname", return_value="testhost"
     ), patch(
-        "src.biobeamer2.time.sleep"
+        "biobeamer2.biobeamer2.time.sleep"
     ) as mock_sleep:
         test_args = [
             "biobeamer2.py",
             "--password",
             "test_password",
             "--xml",
-            "TestConfig.xml",
+            "dummy.xml",  # Use a dummy value, parser is mocked
             "--hostname",
             "testhost",
         ]
@@ -64,12 +64,27 @@ def test_main():
                 "tool": "robocopy",
             }
             mock_parser.regex = MagicMock()
-            mock_BioBeamerParser.BioBeamerParser.return_value = mock_parser
+            mock_BioBeamerParser.return_value = mock_parser
 
-            biobeamer2.main()
-            assert mock_MyLog.called
-            assert mock_BioBeamerParser.BioBeamerParser.called
-            assert mock_copy_files.called
+            # Patch time.sleep to skip delay
+            original_sleep = time.time
+            time.time = lambda: 0
+            # Patch setup_logger to use a fixed log file in the ./log dir
+            orig_setup_logger = biobeamer2.setup_logger
+
+            def test_setup_logger(now, log_file_path=None, log_dir=None):
+                log_file = os.path.join("./log", f"biobeamer_test.log")
+                return orig_setup_logger(now, log_file_path=log_file)
+
+            biobeamer2.setup_logger = test_setup_logger
+            try:
+                biobeamer2.main()
+                assert mock_MyLog.called
+                assert mock_BioBeamerParser.called
+                assert mock_copy_files.called
+            finally:
+                biobeamer2.setup_logger = orig_setup_logger
+                time.time = original_sleep
 
 
 def is_tool_available(tool_name):

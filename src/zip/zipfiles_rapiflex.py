@@ -1,7 +1,7 @@
 import logging
 import socket
 import sys
-from src import BioBeamerParser, MyLog
+from biobeamer2 import BioBeamerParser, MyLog
 from datetime import datetime
 import re
 
@@ -14,12 +14,12 @@ def get_dirs_zip(path="D:/Data2San", maxdepth=3):
     path = os.path.normpath(path)
     res = []
     for root, dirs, files in os.walk(path, topdown=True):
-        depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
+        depth = root[len(path) + len(os.path.sep) :].count(os.path.sep)
         if depth == maxdepth:
             # We're currently two directories in, so all subdirs have depth 3
             res += [os.path.join(root, d) for d in dirs]
             dirs[:] = []  # Don't recurse any deeper
-    return (res)
+    return res
 
 
 def handleRemoveReadonly(func, path, exc):
@@ -50,15 +50,18 @@ if __name__ == "__main__":
     file = "log/biobeamer_{date}.log".format(date=now)
     logger.add_file(filename=file, level=logging.DEBUG)
     logger.logger.info("\n\n\nStarting new Biobeamer!")
-    logger.logger.info("retrieving config from {} for hostname {}".format(biobeamer_xml, host))
-    bio_beamer_parser = BioBeamerParser.BioBeamerParser(biobeamer_xsd, biobeamer_xml, hostname=host,
-                                                        logger=logger.logger)
+    logger.logger.info(
+        "retrieving config from {} for hostname {}".format(biobeamer_xml, host)
+    )
+    bio_beamer_parser = BioBeamerParser.BioBeamerParser(
+        biobeamer_xsd, biobeamer_xml, hostname=host, logger=logger.logger
+    )
 
     mypath = "D:/Data2San/"
     dirs = get_dirs_zip(mypath, maxdepth=depth)
     dirs = [k for k in dirs if os.path.isdir(k)]
 
-    pattern = bio_beamer_parser.parameters['pattern']
+    pattern = bio_beamer_parser.parameters["pattern"]
     pattern = pattern.replace("\\.(zip)", "")
     dirs = [k for k in dirs if os.path.isdir(k)]
     print(len(dirs))
@@ -73,8 +76,8 @@ if __name__ == "__main__":
 
     for dir in dirspatt:
         print(dir)
-        if not bio_beamer_parser.parameters['simulate_copy'] or True:
+        if not bio_beamer_parser.parameters["simulate_copy"] or True:
             bname = os.path.basename(dir)
             dirpath = os.path.dirname(dir)
-            shutil.make_archive(dir, 'zip', root_dir=dirpath, base_dir=bname)
+            shutil.make_archive(dir, "zip", root_dir=dirpath, base_dir=bname)
             shutil.rmtree(dir, ignore_errors=False, onerror=handleRemoveReadonly)
