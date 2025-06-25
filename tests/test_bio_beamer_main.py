@@ -169,7 +169,7 @@ def _run_bio_beamer_main_integration_with_tool(tool):
             # Restore original XML and logger
             with open(xml_path, "w") as f:
                 f.write(original_xml)
-            biobeamer2.setup_logger = orig_setup_logger
+            cli.setup_logger = orig_setup_logger
             shutil.rmtree(src_dir)
             shutil.rmtree(tgt_dir)
             time.sleep = original_sleep

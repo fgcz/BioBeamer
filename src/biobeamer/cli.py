@@ -463,12 +463,12 @@ def map_source_to_dest(files, source_path, target_path):
     return make_destination_files(files, source_path, target_path)
 
 
-def apply_mapping_function(mapping, func_name, logger):
+def apply_mapping_function(mapping_dict, func_name, logger):
     if func_name:
         logger.info(f"trying to apply mapping function : {func_name}.")
         method_to_call = getattr(mapping, func_name)
-        return rename_destination(mapping, logger, mapping_function=method_to_call)
-    return mapping
+        return rename_destination(mapping_dict, logger, mapping_function=method_to_call)
+    return mapping_dict
 
 
 def remove_files_already_at_destination(mapping, copied_log):
@@ -574,7 +574,7 @@ def resolve_xsd_path():
     import pathlib
 
     # Use importlib.resources.files for modern resource access
-    xsd_file = importlib.resources.files("biobeamer2.configs") / "BioBeamer2.xsd"
+    xsd_file = importlib.resources.files("biobeamer.configs") / "BioBeamer2.xsd"
     with importlib.resources.as_file(xsd_file) as xsd_path:
         return pathlib.Path(xsd_path).absolute().as_uri()
 
