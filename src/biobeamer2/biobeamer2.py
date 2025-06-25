@@ -573,7 +573,9 @@ def resolve_xsd_path():
     # Always use the package's XSD file as a file URI
     import pathlib
 
-    with importlib.resources.path("biobeamer2.configs", "BioBeamer2.xsd") as xsd_path:
+    # Use importlib.resources.files for modern resource access
+    xsd_file = importlib.resources.files("biobeamer2.configs") / "BioBeamer2.xsd"
+    with importlib.resources.as_file(xsd_file) as xsd_path:
         return pathlib.Path(xsd_path).absolute().as_uri()
 
 
@@ -582,8 +584,8 @@ def parse_args():
     parser.add_argument(
         "--xml",
         "-x",
-        default="BioBeamer2.xml",
-        help="BioBeamer XML file (default: BioBeamer2.xml)",
+        required=True,
+        help="BioBeamer XML file (required)",
     )
     parser.add_argument(
         "--password",
@@ -599,8 +601,8 @@ def parse_args():
     )
     parser.add_argument(
         "--log_dir",
-        default=None,
-        help="Directory for all logs (overrides default log location)",
+        default="./log",
+        help="Directory for all logs (default: ./log)",
     )
     args = parser.parse_args()
     # Convert xml to URL if needed
@@ -624,6 +626,7 @@ def setup_logger(now, log_file_path=None, log_dir=None):
             os.makedirs(log_dir, exist_ok=True)
     logger = MyLog.MyLog()
     logger.add_file(filename=biobeamer_log_file_path, level=logging.DEBUG)
+    logger.set_log_level(logging.DEBUG)  # Ensure logger level allows INFO/DEBUG
     return logger, biobeamer_log_file_path
 
 

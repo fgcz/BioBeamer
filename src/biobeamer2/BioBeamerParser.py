@@ -122,8 +122,18 @@ class BioBeamerParser(object):
                             self.parameters[k] = i.attrib[k]
                 found_host_config = True
 
-        if found_host_config is False:
-            msg = "no host configuration could be found in '{0}'.".format(xml_url)
+        if not found_host_config:
+            # Collect available hostnames for better error reporting
+            available_hosts = [
+                i.attrib["name"]
+                for i in xml_bio_beamer
+                if i.tag == "host" and "name" in i.attrib
+            ]
+            msg = (
+                f"No host configuration for hostname '{hostname}' could be found in '{xml_url}'.\n"
+                f"Available hostnames: {available_hosts if available_hosts else 'None found in XML.'}\n"
+                f"Check that the <host name> attribute matches your --hostname argument (case-insensitive), and that the XML is valid."
+            )
             print(msg)
             self.logger.error(msg)
             sys.exit(1)
