@@ -9,6 +9,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     "lxml",
+    "platformdirs>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -18,7 +19,7 @@ development = [
 ]
 
 [project.scripts]
-biobeamer2 = "biobeamer2.biobeamer2:main"
+biobeamer = "biobeamer.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
