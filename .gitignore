@@ -35,3 +35,4 @@ build/
 *.sh
 /uv.lock
 /tests/20250101_120000
+packages.microsoft.gpg
