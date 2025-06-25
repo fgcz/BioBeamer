@@ -7,8 +7,8 @@ from unittest.mock import patch, MagicMock
 
 import importlib.resources
 import pytest
-from biobeamer2 import biobeamer2
-from biobeamer2.mapNetworks import Drive
+from biobeamer import cli
+from biobeamer.networks import Drive
 
 
 @pytest.fixture(autouse=True)
@@ -25,19 +25,19 @@ def cleanup_logs():
 
 
 def test_main():
-    with patch("biobeamer2.MyLog.MyLog") as mock_MyLog, patch(
-        "biobeamer2.biobeamer2.BioBeamerParser"
+    with patch("biobeamer.logger.MyLog") as mock_MyLog, patch(
+        "biobeamer.cli.BioBeamerParser"
     ) as mock_BioBeamerParser, patch(
-        "biobeamer2.mapNetworks.Drive"
+        "biobeamer.networks.Drive"
     ) as mock_Drive, patch(
-        "biobeamer2.biobeamer2.copy_files"
+        "biobeamer.cli.copy_files"
     ) as mock_copy_files, patch(
-        "biobeamer2.biobeamer2.socket.gethostname", return_value="testhost"
+        "biobeamer.cli.socket.gethostname", return_value="testhost"
     ), patch(
-        "biobeamer2.biobeamer2.time.sleep"
+        "biobeamer.cli.time.sleep"
     ) as mock_sleep:
         test_args = [
-            "biobeamer2.py",
+            "biobeamer.py",
             "--password",
             "test_password",
             "--xml",
@@ -71,20 +71,20 @@ def test_main():
             original_sleep = time.time
             time.time = lambda: 0
             # Patch setup_logger to use a fixed log file in the ./log dir
-            orig_setup_logger = biobeamer2.setup_logger
+            orig_setup_logger = cli.setup_logger
 
             def test_setup_logger(now, log_file_path=None, log_dir=None):
                 log_file = os.path.join("./log", f"biobeamer_test.log")
                 return orig_setup_logger(now, log_file_path=log_file)
 
-            biobeamer2.setup_logger = test_setup_logger
+            cli.setup_logger = test_setup_logger
             try:
-                biobeamer2.main()
+                cli.main()
                 assert mock_MyLog.called
                 assert mock_BioBeamerParser.called
                 assert mock_copy_files.called
             finally:
-                biobeamer2.setup_logger = orig_setup_logger
+                cli.setup_logger = orig_setup_logger
                 time.time = original_sleep
 
 
@@ -118,7 +118,7 @@ def _run_bio_beamer_main_integration_with_tool(tool):
         f.write(b"biobeamer integration test")
     # Patch BioBeamerTest.xml for testhost_integration
     with importlib.resources.path(
-        "biobeamer2.configs", "BioBeamerTest.xml"
+        "biobeamer.configs", "BioBeamerTest.xml"
     ) as xml_path:
         xml_path = str(xml_path)
         with open(xml_path, "r") as f:
@@ -141,7 +141,7 @@ def _run_bio_beamer_main_integration_with_tool(tool):
         tree.write(xml_path)
         # Prepare sys.argv with new style args
         sys.argv = [
-            "biobeamer2.py",
+            "biobeamer.py",
             f"--xml={xml_path}",
             f"--hostname=testhost_integration",
         ]
@@ -149,17 +149,17 @@ def _run_bio_beamer_main_integration_with_tool(tool):
         original_sleep = time.sleep
         time.sleep = lambda x: None
         # Patch setup_logger to use a fixed log file in the ./log dir
-        orig_setup_logger = biobeamer2.setup_logger
+        orig_setup_logger = cli.setup_logger
 
         def test_setup_logger(now, log_file_path=None, log_dir=None):
             log_file = os.path.join("./log", f"biobeamer_test_{tool}.log")
             # Call the original with the new signature
             return orig_setup_logger(now, log_file_path=log_file)
 
-        biobeamer2.setup_logger = test_setup_logger
+        cli.setup_logger = test_setup_logger
         try:
             # Run main
-            biobeamer2.main()
+            cli.main()
             # Assert file copied
             copied_file = os.path.join(tgt_dir, "testfile.txt")
             assert os.path.exists(copied_file)

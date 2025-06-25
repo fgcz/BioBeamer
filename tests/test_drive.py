@@ -1,7 +1,7 @@
 import os
 import pytest
-from biobeamer2.MyLog import MyLog
-from biobeamer2.mapNetworks import Drive
+from biobeamer.logger import MyLog
+from biobeamer.networks import Drive
 
 
 @pytest.fixture

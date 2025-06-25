@@ -12,16 +12,16 @@ Witold E. Wolski <wew@fgcz.ethz.ch>
 
 import importlib.resources
 
-from biobeamer2.BioBeamerParser import BioBeamerParser
-from biobeamer2.MyLog import MyLog
+from biobeamer.parser import BioBeamerParser
+from biobeamer.logger import MyLog
 
 
 def test_beam_and_check():
     logger = MyLog()
     with importlib.resources.path(
-        "biobeamer2.configs", "BioBeamerTest.xml"
+        "biobeamer.configs", "BioBeamerTest.xml"
     ) as xml_path, importlib.resources.path(
-        "biobeamer2.configs", "BioBeamer2.xsd"
+        "biobeamer.configs", "BioBeamer2.xsd"
     ) as xsd_path:
         xml_url = f"file://{xml_path}"
         xsd_url = f"file://{xsd_path}"
