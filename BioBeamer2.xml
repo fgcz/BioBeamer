@@ -9,7 +9,7 @@
     <host name="Flex-PC"
           instrument="RAPIFLEX_1"
           min_size="1"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -29,14 +29,14 @@
     <host name="fgcz-k-092"
           instrument="ULTRAFLEXTREME_1"
           min_size="1"
-          min_time_diff="1"
+          min_time_diff="300"
           max_time_diff="64192000"
           max_time_delete="1209600"
           simulate_copy='false'
           simulate_delete='true'
           func_target_mapping="map_data_ultraflex"
           robocopy_mov="false"
-          pattern=".+Proteomics\\ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
+          pattern=".+(Proteomics|Metabolomics)\\ULTRAFLEXTREME_1.[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
@@ -57,7 +57,7 @@
           simulate_delete='false'
           func_target_mapping=""
           robocopy_mov="false"
-	      pattern=".+Analysis\\CompoundDiscoV1\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip|cdResult)$"
+	      pattern=".+Analysis\\(CompoundDiscoV1|GenericZip)\\[a-zA-Z]{3,100}_[0-9]{8,8}.+[-0-9a-zA-Z_\/\.\\]+\.(zip)$"
           source_path="D:/Data2San/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
@@ -210,7 +210,7 @@
     <host name="FGCZ-K-185"
           instrument="LUMOS_2"
           min_size="3000000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -226,10 +226,30 @@
             <applicationID>248</applicationID>
         </b-fabric>
     </host>
-    <host name="FGCZ-K-218"
+    <host name="fgcz-k-431"
+          instrument="ASCEND_1"
+          min_size="3000000"
+          min_time_diff="300"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping="map_data_for_container"
+          robocopy_mov="false"
+          pattern=".+ASCEND_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+    >
+        <b-fabric>
+            <applicationID>376</applicationID>
+        </b-fabric>
+    </host>
+
+    <host name="replacedbyascent"
           instrument="LUMOS_1"
           min_size="3000000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -249,7 +269,7 @@
         <host name="EXPLORIS2"
           instrument="EXPLORIS_2"
           min_size="500000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -269,7 +289,7 @@
 	 <host name="914J7V3"
           instrument="EXPLORIS_3"
           min_size="500000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -286,10 +306,30 @@
             <applicationID>333</applicationID>
         </b-fabric>
     </host>
-     <host name="fgcz-i-216"
-          instrument="EXPLORIS_1"
+     <host name="F4KXJ24"
+          instrument="EXPLORIS_4"
           min_size="500000"
-          min_time_diff="2"
+          min_time_diff="300"
+          max_time_diff="2419200"
+          simulate_copy='false'
+          simulate_delete='false'
+          func_target_mapping="map_data_for_container"
+          robocopy_mov="false"
+          pattern=".+EXPLORIS_4.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+          source_path="D:/Data2San/"
+          target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
+          syshandler_adress="fgcz-ms.uzh.ch"
+          syshandler_port="514"
+          time_out = "3"
+    >
+        <b-fabric>
+            <applicationID>367</applicationID>
+        </b-fabric>
+    </host>
+     <host name="fgcz-i-216"
+          instrument="EXPLORIS240_1"
+          min_size="500000"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -306,13 +346,13 @@
             <applicationID>301</applicationID>
         </b-fabric>
     </host>
-    <host name="4Y3J7V3"
+    <host name="fgcz-k-408"
           instrument="ASTRAL_1"
           min_size="500000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
-          simulate_delete='true'
+          simulate_delete='false'
           func_target_mapping="map_data_for_container"
           robocopy_mov="false"
           pattern=".+ASTRAL_1.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
@@ -330,7 +370,7 @@
     <host name="fgcz-k-197"
           instrument="FUSION_2"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -350,7 +390,7 @@
     <host name="FGCZ-K-097"
           instrument="QEXACTIVE_1"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -369,7 +409,7 @@
         <host name="fgcz-i-202"
           instrument="QEXACTIVE_2"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
 		  max_time_delete="604800"
           simulate_copy='false'
@@ -390,7 +430,7 @@
     <host name="fgcz-i-209"
           instrument="G2SI_1"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="300"
 		  max_time_delete="604800"
           max_time_diff="222419200"
           simulate_copy='false'
@@ -412,7 +452,7 @@
     <host name="fgcz-088"
           instrument="G2SI_2"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="300"
 		  max_time_delete="5184000"
           max_time_diff="95184000"
           simulate_copy='false'
@@ -475,7 +515,7 @@
     <host name="mbxlab01"
           instrument="QUANTIVA_1"
           min_size="1"
-          min_time_diff="18"
+          min_time_diff="120"
           max_time_diff="24192000"
           simulate_copy='false'
           simulate_delete='false'
@@ -495,7 +535,7 @@
     <host name="fgcz-i-189"
           instrument="IMSTOF_1"
           min_size="102400"
-          min_time_diff="10"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='true'
@@ -530,7 +570,7 @@
     <host name="FGCZ-I-219"
           instrument="TIMSTOF_1"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="241920000"
           max_time_delete = "1209600"
           simulate_copy='false'
@@ -550,7 +590,7 @@
     <host name="TIMS-30816"
           instrument="TIMSTOFFLEX_1"
           min_size="0"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="241920000"
           max_time_delete = "1209600"
           simulate_copy='false'
@@ -570,10 +610,10 @@
 
     <!-- likely do not exist anymore -->
 
-    <host name="fgcz-i-218"
+    <host name="doesnotexist"
           instrument="QEXACTIVEHFX_1"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -592,7 +632,7 @@
     <host name="fgcz-k-186"
           instrument="QEXACTIVEHF_2"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
           max_time_diff="2419200"
           simulate_copy='false'
           simulate_delete='false'
@@ -612,7 +652,7 @@
     <host name="mbxlab02"
           instrument="QEXACTIVE_3"
           min_size="1024000"
-          min_time_diff="2"
+          min_time_diff="300"
 		  max_time_delete="604800"
           max_time_diff="222419200"
           simulate_copy='false'
