@@ -80,9 +80,9 @@ if __name__ == '__main__':
     script_file_path = os.path.join(directory, "rm_files.sh")
     with open(script_file_path, "a" if os.path.exists(script_file_path) else "w") as script_file:
         for file_path in folders2remove:
-            script_file.write(f"rm -Rf \"{file_path}\"\n")
+            script_file.write(f"rm -rf \"{file_path}\"\n")
 
-    tmp = list(map(remove, folders2remove))
+    #tmp = list(map(remove, folders2remove))
 
 
 
