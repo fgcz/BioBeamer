@@ -394,7 +394,7 @@ def remove_old_copied(
     source_result_mapping,
     max_time_diff,
     logger,
-    simulate="../files2delete/files2delete.bat",
+    simulate="../../files2delete/files2delete.bat",
 ):
     """
     removes old files which have been already copied
@@ -531,7 +531,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
     files2copy = remove_already_copied(files2copy, files_copied_log)
     files_filtered = filter_files(files2copy, regex, parameters, logger)
     simulate = (
-        "../files2delete/files2delete.bat" if parameters["simulate_delete"] else ""
+        "../../files2delete/files2delete.bat" if parameters["simulate_delete"] else ""
     )
 
     if len(files_filtered) != 0:
