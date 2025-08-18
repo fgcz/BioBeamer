@@ -1,7 +1,7 @@
 # Dowload zip utility from:
 # https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
 #!/usr/bin/env python3
-import sys, re, subprocess, argparse
+import sys, re, subprocess, argparse, shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -118,7 +118,7 @@ Examples:
     try:
         # Copy the zip file to destination
         dest_file = dest / zip_path.name
-        zip_path.copy(dest_file)
+        shutil.copyfile(zip_path, dest_file)
         zip_path.unlink()  # Delete the original
     except Exception as e:
         fail(f"Copy failed to {dest}: {e}")
