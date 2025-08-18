@@ -10,7 +10,6 @@ DEFAULT_DATA_PATH = r"D:\Data2San"
 
 def fail(msg: str, code: int = 1):
     print(msg, file=sys.stderr)
-    input("Press Enter to exit...")
     sys.exit(code)
 
 def main():
@@ -54,8 +53,6 @@ Examples:
     
     # Accept drag&drop path or prompt if not provided as argument
     folder = args.folder
-    if not folder:
-        folder = input("Drag-drop or paste folder path: ").strip('" ')
     if not folder:
         fail("No folder provided.")
 
