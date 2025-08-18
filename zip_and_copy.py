@@ -63,6 +63,7 @@ Examples:
     parent = folder.parent
     foldername = folder.name
 
+    # Validate folder name BEFORE asking for username
     # Expect: pNNNNN_oNNNNN_<suffix...>
     m = re.match(r'^(?P<p>p\d+?)_(?P<o>o\d+?)_(?P<suffix>.+)$', foldername)
     if not m:
@@ -72,7 +73,7 @@ Examples:
     p_id    = "p" + o_part[1:]      # -> p38561
     suffix  = m.group("suffix")     # full suffix
 
-    # Username prompt (unless --no-prompt is used)
+    # Username prompt (unless --no-prompt is used) - ONLY after validation passes
     username = args.username
     if not args.no_prompt:
         try:
