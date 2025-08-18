@@ -116,9 +116,12 @@ Examples:
         fail(f"zip command failed with exit code {e.returncode}")
 
     try:
-        (zip_path).replace(dest / zip_path.name)  # copy & overwrite
+        # Copy the zip file to destination
+        dest_file = dest / zip_path.name
+        zip_path.copy(dest_file)
+        zip_path.unlink()  # Delete the original
     except Exception as e:
-        fail(f"Move/Copy failed to {dest}: {e}")
+        fail(f"Copy failed to {dest}: {e}")
 
     print("\nDone.")
     print(f"Zipped: {zip_path}")
