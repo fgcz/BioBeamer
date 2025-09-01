@@ -40,7 +40,7 @@ echo Using username: !username!
 echo.
 
 REM Call the Python script with the provided parameters
-python zip_and_copy.py "%folder_path%" --username "!username!" --no-prompt
+C:\\Python\\Python38\\python.exe zip_and_copy.py "%folder_path%" --username "!username!" --no-prompt
 
 REM Check if Python script was successful
 if %errorlevel% neq 0 (
