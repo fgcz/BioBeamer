@@ -3,8 +3,8 @@ name = "biobeamer"
 version = "0.1.0"
 description = "Collecting instrument data using BioBeamer"
 authors = [
-    { name = "Christian Panse", email = "panse@fgcz.ch" }
-    { name = "Witold Wolski", email = "wew@fgcz.uzh.ch" }
+    { name = "Christian Panse", email = "panse@fgcz.ch" },
+    { name = "Witold Wolski", email = "wew@fgcz.uzh.ch" },
     { name  = "Claudio Cannizzaro", email= "claudio.cannizzaro@fgcz.uzh.ch"}    
 ]
 readme = "README.md"
