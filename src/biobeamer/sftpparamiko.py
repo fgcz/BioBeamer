@@ -35,7 +35,7 @@ def copy_with_sftp_paramiko(source: str, target: str):
     client.connect(host_part)  # add password=... if needed
 
     sftp = client.open_sftp()
-    mkdir_p(sftp, remote_dir)
+    mkdir_p(remote_dir, sftp)
 
     # Upload a file
     sftp.put(source, remote_path)
