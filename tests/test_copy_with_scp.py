@@ -1,9 +1,10 @@
 import os
+from subprocess import CalledProcessError
 import tempfile
 import shutil
 import logging
 import pytest
-from biobeamer.cli import copy_with_scp
+from biobeamer.cli import copy_with_scp, copy_with_sftp
 
 
 @pytest.fixture
@@ -15,39 +16,9 @@ def logger():
 def file_paths():
     return {
         "source": "/tmp/source_file.txt",
-        "target": "/tmp/target_file.txt",
+        "target": "/tmp/hello/nice/world/target_file.txt",
         "logfile": "/tmp/scp_test.log",
     }
-
-
-@pytest.fixture
-def dummy_popen_success():
-    class DummyPopen:
-        def __init__(self, *args, **kwargs):
-            self._returncode = 0
-
-        def wait(self):
-            return self._returncode
-
-        def terminate(self):
-            pass
-
-    return DummyPopen
-
-
-@pytest.fixture
-def dummy_popen_failure():
-    class DummyPopen:
-        def __init__(self, *args, **kwargs):
-            self._returncode = 1
-
-        def wait(self):
-            return self._returncode
-
-        def terminate(self):
-            pass
-
-    return DummyPopen
 
 
 @pytest.fixture(autouse=True)
@@ -57,24 +28,32 @@ def cleanup_log():
         os.remove(log_path)
 
 
-def test_copy_with_scp_simulate(monkeypatch, logger, file_paths, dummy_popen_success):
-    monkeypatch.setattr("biobeamer.cli.Popen", dummy_popen_success)
-    monkeypatch.setattr("biobeamer.cli.os.path.exists", lambda x: True)
-    result = copy_with_scp(
+@pytest.mark.parametrize("copy_func,tool_name", [
+    (copy_with_scp, "scp"),
+    (copy_with_sftp, "sftp")
+])
+def test_copy_simulate(mocker, logger, file_paths, copy_func, tool_name):
+    mock_run = mocker.patch("subprocess.run")
+
+    result = copy_func(
         file_paths["source"],
         file_paths["target"],
         logger,
         file_paths["logfile"],
         simulate_copy=True,
     )
-    assert result is file_paths["source"]
+    assert result is None
+    mock_run.assert_not_called()
 
 
-def test_copy_with_scp_success(monkeypatch, logger, file_paths, dummy_popen_success):
-    monkeypatch.setattr("biobeamer.cli.Popen", dummy_popen_success)
-    monkeypatch.setattr("biobeamer.cli.os.path.exists", lambda x: True)
-    monkeypatch.setattr("biobeamer.cli.os.path.getsize", lambda x: 123)
-    result = copy_with_scp(
+@pytest.mark.parametrize("copy_func,tool_name", [
+    (copy_with_scp, "scp"),
+    (copy_with_sftp, "sftp")
+])
+def test_copy_success(mocker, logger, file_paths, copy_func, tool_name):
+    mocker.patch("subprocess.run")
+
+    result = copy_func(
         file_paths["source"],
         file_paths["target"],
         logger,
@@ -84,30 +63,31 @@ def test_copy_with_scp_success(monkeypatch, logger, file_paths, dummy_popen_succ
     assert result == file_paths["source"]
 
 
-def test_copy_with_scp_failure(monkeypatch, logger, file_paths, dummy_popen_failure):
-    monkeypatch.setattr("biobeamer.cli.Popen", dummy_popen_failure)
-    monkeypatch.setattr(
-        "biobeamer.cli.os.path.exists", lambda x: x == file_paths["target"]
-    )
+@pytest.mark.parametrize("copy_func,tool_name", [
+    (copy_with_scp, "scp"),
+    (copy_with_sftp, "sftp")
+])
+def test_copy_failure(mocker, logger, file_paths, copy_func, tool_name):
+    mocker.patch("subprocess.run").side_effect = CalledProcessError(1, tool_name)
+    mocker.patch("biobeamer.cli.subprocess.run").side_effect = CalledProcessError(1, tool_name)
 
-    def getsize_side_effect(x):
-        if x == file_paths["source"]:
-            raise FileNotFoundError(f"No such file or directory: '{x}'")
-        return 123
-
-    monkeypatch.setattr("biobeamer.cli.os.path.getsize", getsize_side_effect)
-    with pytest.raises(Exception) as excinfo:
-        copy_with_scp(
+    copied = copy_func(
             file_paths["source"],
             file_paths["target"],
             logger,
             file_paths["logfile"],
             simulate_copy=False,
         )
-    assert "scp exception raised on files" in str(excinfo.value)
+    assert copied is None
 
 
-def test_copy_with_scp_integration(logger):
+
+
+@pytest.mark.parametrize("copy_func,tool_name", [
+    (copy_with_scp, "scp"),
+    (copy_with_sftp, "sftp")
+])
+def test_copy_with_integration(logger, copy_func, tool_name):
     import subprocess
 
     logfile = "/tmp/scp_test.log"
@@ -115,14 +95,18 @@ def test_copy_with_scp_integration(logger):
         subprocess.run(["scp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
         pytest.skip("scp not available on this system")
-    with tempfile.NamedTemporaryFile(delete=False) as src:
+    tmp_dir = tempfile.TemporaryDirectory()
+    source_path = os.path.join(tmp_dir.name, "example.raw")
+    with open(source_path, "wb") as src:
         src.write(b"integration test content")
         src.flush()
         source_path = src.name
-    target_dir = tempfile.mkdtemp()
+    target_dir = os.path.join(tmp_dir.name, "hello", "world", "witold")
+    
+    
     target_path = os.path.join(target_dir, os.path.basename(source_path))
     try:
-        result = copy_with_scp(
+        result = copy_func(
             source_path, target_path, logger, logfile, simulate_copy=False
         )
         assert os.path.exists(target_path)

@@ -10,10 +10,12 @@ import socket
 import time
 from datetime import datetime
 from pathlib import Path
-from subprocess import Popen
+import subprocess
+from subprocess import CalledProcessError, Popen
 
 from biobeamer.parser import BioBeamerParser
 from biobeamer.networks import Drive
+from biobeamer.sftpparamiko import copy_with_sftp_sub, noop_subprocess
 from . import logger as MyLog, mapping
 
 
@@ -231,14 +233,24 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
     :param simulate_copy: If True, only simulates the copy
     :return: The source file if copied successfully, else None
     """
-    source = source.replace("\\", "/")
-    target = target.replace("\\", "/")
+    source = Path(source).as_posix()
+    target = Path(target).as_posix()
+    
     file_copied = None
     # Compose the scp command with verbose output
+    if ":" in target:
+        host_part, remote_path = target.split(":", 1)
+        remote_dir = os.path.dirname(remote_path)
+        mkdir_cmd = ["ssh", host_part, f"mkdir -p {remote_dir}"]
+    else:
+        # Local target - create directory locally
+        local_dir = os.path.dirname(target)
+        mkdir_cmd = ["mkdir", "-p", local_dir]
     cmd = ["scp", "-v", source, target]
-    cmd = shlex.join(cmd)
+
     if not simulate_copy:
-        logger.info(f"Running Command: [{cmd}]")
+        logger.info(f"Running Command: [{shlex.join(mkdir_cmd)}]")
+        logger.info(f"Running Command: [{shlex.join(cmd)}]")
         try:
             # Write a header to the log file to ensure it is touched
             with open(tool_log_file, "a") as logf:
@@ -246,36 +258,64 @@ def copy_with_scp(source, target, logger, tool_log_file, simulate_copy=False):
                     f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n"
                 )
                 logf.flush()
-                scp_process = Popen(cmd, shell=True, stdout=logf, stderr=logf)
-                return_code = scp_process.wait()
-            logger.info(f"scp return code: '{return_code}'")
-            if return_code != 0:
-                logger.warning("scp quit with non-zero return code")
-            else:
+                subprocess.run(mkdir_cmd, check=True, stdout=logf, stderr=logf)
+                subprocess.run(cmd, check=True, stdout=logf, stderr=logf)
                 file_copied = source
-            scp_process.terminate()
-            # Optionally, check if file exists at target (if local path)
-            # and compare size
-            if os.path.exists(target):
-                if os.path.getsize(source) == os.path.getsize(target):
-                    file_copied = source
-                else:
-                    logger.error(
-                        f"File size mismatch after scp: {source} ({os.path.getsize(source)}) vs {target} ({os.path.getsize(target)})"
-                    )
-        except Exception as e:
+            
+        except CalledProcessError as e:
+            file_copied = None
             logger.error(
-                f"scp exception raised on files - from {source} to {target}! Exception: {e}"
+                f"scp or ssh exception raised on files - from {source} to {target}! Exception: {e}",
+                exc_info=True
             )
-            raise Exception(
-                f"scp exception raised on files - from {source} to {target}! Exception: {e}"
-            )
+            
     else:
-        logger.info(f"Simulating Command: [{cmd}]")
-        return source
+        logger.info(f"Simulating Command: [{shlex.join(mkdir_cmd)}]")
+        logger.info(f"Simulating Command: [{shlex.join(cmd)}]")
+        
 
     return file_copied
 
+
+def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulate_copy: bool = False):
+    """
+    Executes an sftp command to copy a file from source to target.
+    :param tool_log_file: Log file path
+    :param source: Source file path
+    :param target: Target file path
+    :param logger: Logger object
+    :param simulate_copy: If True, only simulates the copy
+    :return: The source file if copied successfully, else None
+    """
+
+    source = Path(source).as_posix()
+    target = Path(target).as_posix()
+    file_copied = None
+    
+    
+    if not simulate_copy:
+        try:
+            # Write a header to the log file to ensure it is touched
+            with open(tool_log_file, "a") as logf:
+                logf.write(
+                    f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n"
+                )
+                cmd_str = copy_with_sftp_sub(source, target, subprocess.run)
+                file_copied = source
+                logf.write(cmd_str)
+                logf.flush()
+                logger.info(f"Running Command: [{cmd_str}]")
+        except CalledProcessError as e:
+            file_copied = None
+            logger.error(
+                f"sftp exception raised on files - from {source} to {target}! Exception: {e}",
+                exc_info=True
+            )
+            
+    else:
+        cmd_str = copy_with_sftp_sub(source, target, noop_subprocess)
+        logger.info(f"Simulating Command: {cmd_str}")
+    return file_copied
 
 def copy_files_with_tool(
     source_results, mov, logger, tool_log_file, tool, simulate=False
@@ -302,6 +342,14 @@ def copy_files_with_tool(
                 tool_log_file=tool_log_file,
                 simulate_copy=simulate,
             )
+        elif tool == "sftp":
+            file_copied = copy_with_sftp(
+                source,
+                source_results[source],
+                logger=logger,
+                tool_log_file=tool_log_file,
+                simulate_copy=simulate)
+            
         else:
             logger.error("Tool {0} not supported!".format(tool))
             raise NotImplementedError("Tool {0} not supported!".format(tool))
