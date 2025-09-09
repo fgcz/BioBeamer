@@ -4,17 +4,21 @@ version = "0.1.0"
 description = "Collecting instrument data using BioBeamer"
 authors = [
     { name = "Christian Panse", email = "panse@fgcz.ch" }
+    { name = "Witold Wolski", email = "wew@fgcz.uzh.ch" }
+    { name  = "Claudio Cannizzaro", email= "claudio.cannizzaro@fgcz.uzh.ch"}    
 ]
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     "lxml",
     "platformdirs>=4.0.0",
+    "paramiko",
 ]
 
 [project.optional-dependencies]
 development = [
     "pytest>=7.4.4",
+    "pytest-mock",
     "coverage>=7.2.7",
 ]
 
