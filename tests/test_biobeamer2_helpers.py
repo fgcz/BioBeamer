@@ -128,6 +128,24 @@ def test_copy_files_with_tool_scp(monkeypatch):
     assert result == ["copied"]
 
 
+def test_copy_files_with_tool_sftp(monkeypatch):
+    source_results = {"/src/file3.txt": "/dst/file3.txt"}
+    logger = mock.Mock()
+    logfile = "dummy.log"
+    mov = False
+    tool = "sftp"
+    simulate = False
+    monkeypatch.setattr(cli, "copy_with_robocopy", lambda *a, **k: False)
+    monkeypatch.setattr(cli, "copy_with_scp", lambda *a, **k: False)
+    monkeypatch.setattr(
+        cli, "copy_with_sftp", lambda src, dst, **kwargs: "sftp_copied"
+    )
+    result = cli.copy_files_with_tool(
+        source_results, mov, logger, logfile, tool, simulate
+    )
+    assert result == ["sftp_copied"]
+
+
 def test_copy_files_with_tool_invalid_tool(monkeypatch):
     source_results = {"/src/file3.txt": "/dst/file3.txt"}
     logger = mock.Mock()
