@@ -218,8 +218,7 @@ def copy_with_robocopy(
             return None  # Signal failure
     else:
         logger.info("Simulating Command: [{0}]".format(" ".join(cmd)))
-        return file_to_copy
-
+        
     return file_copied
 
 
