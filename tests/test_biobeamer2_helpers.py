@@ -202,7 +202,7 @@ def test_copy_files(monkeypatch):
     monkeypatch.setattr(
         cli,
         "compare_files_destination",
-        lambda mapping: {"copied": {}, "not_copied": mapping},
+        lambda mapping, logger: {"copied": {}, "not_copied": mapping},
     )
     # Patch copy_files_with_tool
     monkeypatch.setattr(cli, "copy_files_with_tool", lambda **kwargs: ["a.txt"])
@@ -284,9 +284,10 @@ def test_apply_mapping_function_no_func():
 def test_remove_files_already_at_destination(monkeypatch):
     mapping = {"a": "b"}
     copied = {"copied": {"a": "b"}, "not_copied": {"c": "d", "e": "f"}}
-    monkeypatch.setattr(cli, "compare_files_destination", lambda m: copied)
+    logger = mock.Mock()
+    monkeypatch.setattr(cli, "compare_files_destination", lambda m, logger: copied)
     not_copied, all_copied = cli.remove_files_already_at_destination(
-        mapping, ["a"]
+        mapping, ["a"], logger
     )
     assert set(all_copied) == {"a"}
     assert not_copied == {"c": "d", "e": "f"}

@@ -395,7 +395,7 @@ def rename_destination(filemap, logger, mapping_function):
     return filemap
 
 
-def compare_files_destination(source_result_mapping):
+def compare_files_destination(source_result_mapping, logger):
     """
     :param source_result_mapping:
     :return: map with fields "copied" and "not_copied"
@@ -408,6 +408,9 @@ def compare_files_destination(source_result_mapping):
             print(target_file + "\n")
             if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
                 copied[file_to_copy] = target_file
+                logger.debug(
+                    "not copying {file} for {reasons}".format(file=file_to_copy, reasons=" already copied to : " + target_file)
+                )
             else:
                 not_copied[file_to_copy] = target_file
     return {"copied": copied, "not_copied": not_copied}
@@ -518,8 +521,8 @@ def apply_mapping_function(mapping_dict, func_name, logger):
     return mapping_dict
 
 
-def remove_files_already_at_destination(mapping, copied_log):
-    copied = compare_files_destination(mapping)
+def remove_files_already_at_destination(mapping, copied_log, logger):
+    copied = compare_files_destination(mapping, logger)
     all_copied = list(copied["copied"].keys()) + copied_log
     all_copied = set(all_copied)
     not_copied = copied["not_copied"]
@@ -591,7 +594,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
             source_result_mapping, parameters["func_target_mapping"], logger
         )
         not_copied, all_copied = remove_files_already_at_destination(
-            source_result_mapping, files_copied_log
+            source_result_mapping, files_copied_log, logger
         )
         files_copied = copy_and_log_files(
             not_copied, all_copied, parameters, logger, tool_log_file_path, tool
