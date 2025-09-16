@@ -299,7 +299,7 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
                 logf.write(
                     f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n"
                 )
-                cmd_str = copy_with_sftp_sub(source, target, subprocess.run)
+                cmd_str = copy_with_sftp_sub(source, target, subprocess.run, logger)
                 file_copied = source
                 logf.write(cmd_str)
                 logf.flush()
@@ -312,7 +312,7 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
             )
             
     else:
-        cmd_str = copy_with_sftp_sub(source, target, noop_subprocess)
+        cmd_str = copy_with_sftp_sub(source, target, noop_subprocess, logger)
         logger.info(f"Simulating Command: {cmd_str}")
     return file_copied
 

@@ -51,7 +51,7 @@ def noop_subprocess(*args, **kwargs):
 
 
 def mkdir_p_sub(remote_directory: str, host: str, 
-                subprocess_fn: Callable = subprocess.run) -> str:
+                subprocess_fn: Callable = subprocess.run, logger = None) -> str:
     """Emulate `mkdir -p` using sftp -b - (ignore errors with -mkdir)."""
     path = PurePosixPath(remote_directory)
     cur = PurePosixPath(path.root)
@@ -63,6 +63,9 @@ def mkdir_p_sub(remote_directory: str, host: str,
     batch_lines.append("quit")
 
     batch = "\n".join(batch_lines) + "\n"
+    if logger is not None:
+        logger.info(f"Running Command: [{batch}]")
+    
     cmd_str = f"sftp -b - {host} << 'EOF'\n{batch.rstrip()}\nEOF"
     
     subprocess_fn(
@@ -74,7 +77,7 @@ def mkdir_p_sub(remote_directory: str, host: str,
     return cmd_str
 
 def copy_with_sftp_sub(source: str, target: str, 
-                       subprocess_fn: Callable = subprocess.run) -> str:
+                       subprocess_fn: Callable = subprocess.run, logger = None) -> str:
     if ":" in target:
         host_part, remote_path = target.split(":", 1)
         remote_dir = os.path.dirname(remote_path)
@@ -83,11 +86,15 @@ def copy_with_sftp_sub(source: str, target: str,
         remote_path = target
         remote_dir = os.path.dirname(target)
 
-    mkdir_cmd = mkdir_p_sub(remote_dir, host_part, subprocess_fn)
+    mkdir_cmd = mkdir_p_sub(remote_dir, host_part, subprocess_fn, logger)
     
     batch = f'put "{source}" "{remote_path}"\nquit\n'
     copy_cmd = f"sftp -b - {host_part} << 'EOF'\n{batch.rstrip()}\nEOF"
     
+    if logger is not None:
+        logger.info(f"Running Command: [{batch}]")
+
+
     subprocess_fn(
         ["sftp", "-b", "-", host_part],
         input=batch.encode(),
