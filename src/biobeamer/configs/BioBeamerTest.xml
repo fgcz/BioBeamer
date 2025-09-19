@@ -163,5 +163,27 @@
     </b-fabric>
   </host>
 
+  <host name="testhost_sftp_copy"
+        instrument="TestInstrument"
+        min_size="0"
+        min_time_diff="0"
+        max_time_diff="604800"
+        max_time_delete="172800"
+        simulate_copy="false"
+        simulate_delete="true"
+        robocopy_mov="false"
+        func_target_mapping=""
+        pattern=".+EXPLORIS_5.+[-0-9a-zA-Z_\/\.\\]+\.(raw)$"
+        source_path="/Users/witoldwolski/Data2San/"
+        target_path="wolski@fgcz-r-033.uzh.ch:/scratch/wolski/test_sftp_copy"
+        syshandler_adress="localhost"
+        syshandler_port="1234"
+        version="6-project-toml"
+        tool="sftp">
+    <b-fabric>
+      <applicationID>185</applicationID>
+    </b-fabric>
+  </host>
+
 
 </BioBeamerHosts>

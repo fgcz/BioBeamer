@@ -15,8 +15,9 @@ from subprocess import CalledProcessError, Popen
 
 from biobeamer.parser import BioBeamerParser
 from biobeamer.networks import Drive
-from biobeamer.sftpparamiko import copy_with_sftp_sub, noop_subprocess
-from . import logger as MyLog, mapping
+from biobeamer.sftpparamiko import copy_with_sftp_sub, copy_with_sftp_paramiko, compare_files_destination_sftp
+from biobeamer.logger import MyLog
+from . import mapping
 
 
 def get_all_files(source_path, logger):
@@ -291,7 +292,9 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
     target = Path(target).as_posix()
     file_copied = None
     
-    
+    copy_sftp_func = copy_with_sftp_sub
+    copy_sftp_func = copy_with_sftp_paramiko
+
     if not simulate_copy:
         try:
             # Write a header to the log file to ensure it is touched
@@ -299,7 +302,7 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
                 logf.write(
                     f"--- Running SCP command at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n"
                 )
-                cmd_str = copy_with_sftp_sub(source, target, subprocess.run, logger)
+                cmd_str = copy_sftp_func(source, target, simulate_copy, logger)
                 file_copied = source
                 logf.write(cmd_str)
                 logf.flush()
@@ -312,7 +315,7 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
             )
             
     else:
-        cmd_str = copy_with_sftp_sub(source, target, noop_subprocess, logger)
+        cmd_str = copy_sftp_func(source, target, simulate_copy, logger)
         logger.info(f"Simulating Command: {cmd_str}")
     return file_copied
 
@@ -394,8 +397,14 @@ def rename_destination(filemap, logger, mapping_function):
         filemap[key] = mapping_function(value, logger)
     return filemap
 
+# TODO: this function does not work with scp or sftp
+def files_are_same_local(local_file, target_file):
+    """Check if local source and target files are the same"""
+    return os.path.exists(target_file) and filecmp.cmp(local_file, target_file)
 
-def compare_files_destination(source_result_mapping, logger):
+
+
+def compare_files_destination_local(source_result_mapping, logger):
     """
     :param source_result_mapping:
     :return: map with fields "copied" and "not_copied"
@@ -403,10 +412,9 @@ def compare_files_destination(source_result_mapping, logger):
     copied = {}
     not_copied = {}
     for file_to_copy, target_file in source_result_mapping.items():
-        # tmp = os.path.exists(target_file)
         if not target_file is None:
             print(target_file + "\n")
-            if os.path.exists(target_file) and filecmp.cmp(file_to_copy, target_file):
+            if files_are_same_local(file_to_copy, target_file):
                 copied[file_to_copy] = target_file
                 logger.debug(
                     "not copying {file} for {reasons}".format(file=file_to_copy, reasons=" already copied to : " + target_file)
@@ -521,8 +529,11 @@ def apply_mapping_function(mapping_dict, func_name, logger):
     return mapping_dict
 
 
-def remove_files_already_at_destination(mapping, copied_log, logger):
-    copied = compare_files_destination(mapping, logger)
+def remove_files_already_at_destination(mapping, copied_log, logger, tool):
+    if tool == "sftpparamiko":
+        copied = compare_files_destination_sftp(mapping, logger)
+    else:
+        copied = compare_files_destination_local(mapping, logger)
     all_copied = list(copied["copied"].keys()) + copied_log
     all_copied = set(all_copied)
     not_copied = copied["not_copied"]
@@ -594,7 +605,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
             source_result_mapping, parameters["func_target_mapping"], logger
         )
         not_copied, all_copied = remove_files_already_at_destination(
-            source_result_mapping, files_copied_log, logger
+            source_result_mapping, files_copied_log, logger, tool
         )
         files_copied = copy_and_log_files(
             not_copied, all_copied, parameters, logger, tool_log_file_path, tool
@@ -676,7 +687,7 @@ def setup_logger(now, log_file_path=None, log_dir=None):
         log_dir = os.path.dirname(biobeamer_log_file_path)
         if log_dir and not os.path.exists(log_dir):
             os.makedirs(log_dir, exist_ok=True)
-    logger = MyLog.MyLog()
+    logger = MyLog()
     logger.add_file(filename=biobeamer_log_file_path, level=logging.DEBUG)
     logger.set_log_level(logging.DEBUG)  # Ensure logger level allows INFO/DEBUG
     return logger, biobeamer_log_file_path
