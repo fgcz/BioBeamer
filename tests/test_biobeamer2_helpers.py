@@ -198,10 +198,10 @@ def test_copy_files(monkeypatch):
         "make_destination_files",
         lambda files, src, dst: {f: f"{dst}/{f}" for f in files},
     )
-    # Patch compare_files_destination
+    # Patch compare_files_destination_local (for robocopy tool)
     monkeypatch.setattr(
         cli,
-        "compare_files_destination",
+        "compare_files_destination_local",
         lambda mapping, logger: {"copied": {}, "not_copied": mapping},
     )
     # Patch copy_files_with_tool
@@ -285,9 +285,9 @@ def test_remove_files_already_at_destination(monkeypatch):
     mapping = {"a": "b"}
     copied = {"copied": {"a": "b"}, "not_copied": {"c": "d", "e": "f"}}
     logger = mock.Mock()
-    monkeypatch.setattr(cli, "compare_files_destination", lambda m, logger: copied)
+    monkeypatch.setattr(cli, "compare_files_destination_local", lambda m, logger: copied)
     not_copied, all_copied = cli.remove_files_already_at_destination(
-        mapping, ["a"], logger
+        mapping, ["a"], logger, "robocopy"
     )
     assert set(all_copied) == {"a"}
     assert not_copied == {"c": "d", "e": "f"}

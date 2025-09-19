@@ -51,7 +51,14 @@ def test_copy_simulate(mocker, logger, file_paths, copy_func, tool_name):
     (copy_with_sftp, "sftp")
 ])
 def test_copy_success(mocker, logger, file_paths, copy_func, tool_name):
-    mocker.patch("subprocess.run")
+    if tool_name == "sftp":
+        # Mock SFTP manager methods to succeed
+        mocker.patch("biobeamer.sftpparamiko._sftp_manager.connect")
+        mocker.patch("biobeamer.sftpparamiko._sftp_manager.mkdir_p")
+        mocker.patch("biobeamer.sftpparamiko._sftp_manager.put_file")
+    else:
+        # Mock subprocess for scp
+        mocker.patch("subprocess.run")
 
     result = copy_func(
         file_paths["source"],
@@ -68,8 +75,12 @@ def test_copy_success(mocker, logger, file_paths, copy_func, tool_name):
     (copy_with_sftp, "sftp")
 ])
 def test_copy_failure(mocker, logger, file_paths, copy_func, tool_name):
-    mocker.patch("subprocess.run").side_effect = CalledProcessError(1, tool_name)
-    mocker.patch("biobeamer.cli.subprocess.run").side_effect = CalledProcessError(1, tool_name)
+    if tool_name == "sftp":
+        # Mock SFTP manager to fail
+        mocker.patch("biobeamer.sftpparamiko._sftp_manager.connect").side_effect = CalledProcessError(1, "sftp")
+    else:
+        # Mock subprocess for scp
+        mocker.patch("subprocess.run").side_effect = CalledProcessError(1, tool_name)
 
     copied = copy_func(
             file_paths["source"],

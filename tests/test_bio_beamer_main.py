@@ -25,7 +25,7 @@ def cleanup_logs():
 
 
 def test_main():
-    with patch("biobeamer.logger.MyLog") as mock_MyLog, patch(
+    with patch("biobeamer.cli.MyLog") as mock_MyLog, patch(
         "biobeamer.cli.BioBeamerParser"
     ) as mock_BioBeamerParser, patch(
         "biobeamer.networks.Drive"

@@ -125,12 +125,15 @@ def copy_with_sftp_paramiko(source: str, target: str, simulate: bool = False, lo
     if ":" in target:
         _, remote_path = target.split(":", 1)
         remote_dir = os.path.dirname(remote_path)
+        sftp_target = target
     else:
+        # Local target - use localhost SFTP
         remote_path = target
         remote_dir = os.path.dirname(target)
+        sftp_target = f"localhost:{target}"
         
     if not simulate:
-        _sftp_manager.connect(target)
+        _sftp_manager.connect(sftp_target)
         mkdir_cmd = _sftp_manager.mkdir_p(remote_dir)
         _sftp_manager.put_file(source, remote_path)
     else:
