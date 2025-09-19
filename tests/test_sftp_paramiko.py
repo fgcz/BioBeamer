@@ -19,7 +19,7 @@ def test_copy_with_sftp_works(copy_func):
             
             result = copy_func("/tmp/source.txt", "/tmp/target.txt")
             
-            mock_connect.assert_called_once_with("/tmp/target.txt")
+            mock_connect.assert_called_once_with("localhost:/tmp/target.txt")
             mock_mkdir.assert_called_once_with("/tmp")
             mock_put.assert_called_once_with("/tmp/source.txt", "/tmp/target.txt")
 

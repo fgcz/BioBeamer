@@ -78,7 +78,12 @@ class SFTPManager:
         if not self.sftp:
             raise RuntimeError("Not connected to SFTP server")
             
-        remote_stat = self.sftp.stat(remote_path)
+        try:
+            remote_stat = self.sftp.stat(remote_path)
+        except IOError:
+            # Remote file doesn't exist
+            return False
+            
         local_stat = os.stat(local_file)
         return remote_stat.st_size == local_stat.st_size
     

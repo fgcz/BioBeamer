@@ -319,6 +319,8 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
         logger.info(f"Simulating Command: {cmd_str}")
     return file_copied
 
+
+# TODO: move to strategy pattern
 def copy_files_with_tool(
     source_results, mov, logger, tool_log_file, tool, simulate=False
 ):
@@ -529,11 +531,15 @@ def apply_mapping_function(mapping_dict, func_name, logger):
     return mapping_dict
 
 
+# TODO: move to strategy pattern
 def remove_files_already_at_destination(mapping, copied_log, logger, tool):
-    if tool == "sftpparamiko":
+    if tool == "sftp":
         copied = compare_files_destination_sftp(mapping, logger)
-    else:
+    elif tool in ["robocopy", "scp"]:
         copied = compare_files_destination_local(mapping, logger)
+    else:
+        raise ValueError(f"Invalid tool: {tool}")
+    
     all_copied = list(copied["copied"].keys()) + copied_log
     all_copied = set(all_copied)
     not_copied = copied["not_copied"]
