@@ -58,7 +58,7 @@ class SFTPManager:
         path = PurePosixPath(remote_directory)
         cur = PurePosixPath(path.root)  # usually "/"
 
-        for part in path.parts[1:]:
+        for part in path.parts:
             cur = cur / part
             try:
                 self.sftp.stat(str(cur))  # Check if directory exists
@@ -114,7 +114,7 @@ def mkdir_p(remote_directory: str, sftp: paramiko.SFTPClient) -> None:
     path = PurePosixPath(remote_directory)
     cur = PurePosixPath(path.root)  # usually "/"
 
-    for part in path.parts[1:]:
+    for part in path.parts:
         cur = cur / part
         try:
             sftp.stat(str(cur)) # Check if directory exists
@@ -197,7 +197,7 @@ def mkdir_p_sub(remote_directory: str, host: str,
     cur = PurePosixPath(path.root)
 
     batch_lines = []
-    for part in path.parts[1:]:
+    for part in path.parts:
         cur = cur / part
         batch_lines.append(f'-mkdir "{cur}"')
     batch_lines.append("quit")
