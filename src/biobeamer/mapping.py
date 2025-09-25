@@ -134,13 +134,10 @@ def map_data_QDA(path, logger):
 
 def map_data_for_container(dest_path, logger):
     """
-    input: '\\\\fgcz-biobeamer.fgcz-net.unizh.ch\\Data2San\\20190206HM_11728_C6CYS.raw\\_PROC003.SIG'
-    '\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\Proteomics\\QEXACTIVE_1\\analytic_20200923\\20200923_004_C22687_S267154_HA-IgG__A.raw'
-
-    output: p65/Proteomics/G2HD_2/schesnov_20190000
+    
     """
 
-    pattern_dest = r"^\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\[A-Za-z]{1,20}\\[A-Z]{1,20}_[0-9]{1,2}\\analytic_[0-9]{8}[_0-9A-Za-z]*\\[0-9]{8}_(C[0-9]{3,6})_.+$"
+    pattern_dest = r"^\\\\fgcz-biobeamer.uzh.ch\\Data2San\\orders\\[A-Za-z]{1,20}\\[A-Z]{1,20}_[0-9]{1,2}\\analytic_[0-9]{8}[_0-9A-Za-z]*\\[0-9]{8}_[0-9]{3,4}_(C[0-9]{3,6})_.+$"
     regex_dest = re.compile(pattern_dest)
     match_dest = regex_dest.match(dest_path)
 
