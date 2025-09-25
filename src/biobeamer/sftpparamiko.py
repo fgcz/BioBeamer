@@ -54,7 +54,8 @@ class SFTPManager:
         """Recursively create remote directories like `mkdir -p`."""
         if not self.sftp:
             return f"sftpparamiko.mkdir_p: {remote_directory} (local)"
-            
+        
+        # Convert Windows backslashes to POSIX forward slashes for SFTP
         path = PurePosixPath(remote_directory)
         cur = PurePosixPath(path.root)  # usually "/"
 
@@ -71,13 +72,17 @@ class SFTPManager:
         """Upload file via SFTP"""
         if not self.sftp:
             raise RuntimeError("Not connected to SFTP server")
+        
+        remote_path = PurePosixPath(remote_path)
         self.sftp.put(source, remote_path)
     
     def files_are_same(self, local_file: str, remote_path: str) -> bool:
         """Check if local and remote files have same size"""
         if not self.sftp:
             raise RuntimeError("Not connected to SFTP server")
-            
+        
+        # Convert Windows backslashes to POSIX forward slashes for SFTP
+        remote_path = PurePosixPath(remote_path)
         try:
             remote_stat = self.sftp.stat(remote_path)
         except IOError:
