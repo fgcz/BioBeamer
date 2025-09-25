@@ -438,7 +438,7 @@ def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
         os.makedirs(log_dir_path, exist_ok=True)
     with open(copied_files_log_path, "w") as file_log:
         for file in sorted(copied_files):
-            file_log.write(file + "\n")
+            file_log.write(os.path.normpath(file) + "\n")
 
 
 def read_copied_files(copied_files_log_path):
@@ -512,7 +512,10 @@ def validate_and_collect_files(source_path, logger):
 
 
 def remove_already_copied(files, copied_log):
-    return list(set(files) - set(copied_log))
+    # Normalize paths to ensure consistent comparison
+    normalized_files = {os.path.normpath(f) for f in files}
+    normalized_copied = {os.path.normpath(f) for f in copied_log}
+    return list(normalized_files - normalized_copied)
 
 
 def filter_files(files, regex, parameters, logger):
