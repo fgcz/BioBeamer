@@ -2,7 +2,7 @@ import os
 import subprocess
 from typing import Callable, Optional
 import paramiko
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 
 class SFTPManager:
@@ -73,7 +73,7 @@ class SFTPManager:
         if not self.sftp:
             raise RuntimeError("Not connected to SFTP server")
         
-        remote_path = PurePosixPath(remote_path)
+        remote_path = Path(remote_path).as_posix()
         self.sftp.put(source, remote_path)
     
     def files_are_same(self, local_file: str, remote_path: str) -> bool:
@@ -82,7 +82,7 @@ class SFTPManager:
             raise RuntimeError("Not connected to SFTP server")
         
         # Convert Windows backslashes to POSIX forward slashes for SFTP
-        remote_path = PurePosixPath(remote_path)
+        remote_path = Path(remote_path).as_posix()
         try:
             remote_stat = self.sftp.stat(remote_path)
         except IOError:
