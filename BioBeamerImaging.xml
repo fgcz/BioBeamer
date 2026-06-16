@@ -37,7 +37,7 @@
           simulate_delete='true'
           func_target_mapping=""
           robocopy_mov="false"
-          pattern=".+Proteomics\\TIMSTOFFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+\.(zip|imzML|ibd)$"
+          pattern=".+(Proteomics|Metabolomics)\\TIMSTOFFLEXIMG_1\\[-0-9a-zA-Z_\/\.\\]+\.(zip|imzML|ibd)$"
           source_path="D:/Data2San_IMG_imzML_zip/"
           target_path="\\fgcz-biobeamer.uzh.ch\Data2San"
           syshandler_adress="fgcz-ms.uzh.ch"
