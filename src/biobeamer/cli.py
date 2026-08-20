@@ -322,8 +322,40 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
 
 # TODO: move to strategy pattern
 def copy_files_with_tool(
-    source_results, mov, logger, tool_log_file, tool, simulate=False
+    source_results, mov, logger, tool_log_file, tool, simulate=False, parameters=None
 ):
+    # tus is a batch transport: one upload_files call creates one workunit for a set of files,
+    # so it is handled whole rather than driven through the per-file loop below (which would
+    # otherwise create one workunit per file).
+    if tool == "tus":
+        from biobeamer.tusupload import TusUploadFailed, upload_files_with_tus
+
+        try:
+            return upload_files_with_tus(
+                source_results,
+                parameters or {},
+                logger,
+                tool_log_file,
+                simulate_copy=simulate,
+            )
+        except TusUploadFailed as e:
+            # Partial failure: log the successful uploads to the ledger before failing, so a
+            # retry does not re-send files that already reached B-Fabric.
+            logger.error("TUS upload failed: {0}".format(e))
+            _log_partial_tus_success(e.files_copied, parameters, logger)
+            if not simulate:
+                import sys
+
+                sys.exit(2)
+            return e.files_copied
+        except Exception as e:
+            logger.error("TUS upload failed: {0}".format(e), exc_info=True)
+            if not simulate:
+                import sys
+
+                sys.exit(2)
+            return []
+
     files_copied = []
     failed_files = []
     sources = list(source_results.keys())
@@ -369,6 +401,28 @@ def copy_files_with_tool(
 
         sys.exit(2)
     return files_copied
+
+
+def _log_partial_tus_success(files_copied, parameters, logger):
+    """Persist the files a partially-failed tus run did upload, then let the run fail."""
+    if not files_copied or not parameters:
+        return
+    try:
+        previous = read_copied_files(
+            copied_files_log_path=parameters["copied_files_log"]
+        )
+        log_copied_files(
+            list(set(list(previous) + list(files_copied))),
+            copied_files_log_path=parameters["copied_files_log"],
+            log_dir=parameters.get("log_dir", None),
+        )
+        logger.info(
+            "Recorded {0} successfully uploaded file(s) before failing.".format(
+                len(files_copied)
+            )
+        )
+    except Exception as e:
+        logger.error("Could not record partial tus success: {0}".format(e))
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
@@ -538,6 +592,10 @@ def apply_mapping_function(mapping_dict, func_name, logger):
 def remove_files_already_at_destination(mapping, copied_log, logger, tool):
     if tool == "sftp":
         copied = compare_files_destination_sftp(mapping, logger)
+    elif tool == "tus":
+        from biobeamer.tusupload import compare_files_destination_tus
+
+        copied = compare_files_destination_tus(mapping, logger)
     elif tool in ["robocopy", "scp"]:
         copied = compare_files_destination_local(mapping, logger)
     else:
@@ -560,6 +618,7 @@ def copy_and_log_files(
         tool_log_file=tool_log_file_path,
         tool=tool,
         simulate=parameters["simulate_copy"],
+        parameters=parameters,
     )
     files_copied = set(list(all_copied) + files_copied)
     # Use log_dir if present in parameters
@@ -607,12 +666,19 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
         simulate = os.path.join(log_dir, "files2delete.bat")
 
     if len(files_filtered) != 0:
-        source_result_mapping = map_source_to_dest(
-            files_filtered, parameters["source_path"], parameters["target_path"]
-        )
-        source_result_mapping = apply_mapping_function(
-            source_result_mapping, parameters["func_target_mapping"], logger
-        )
+        if tool == "tus":
+            # tus has no filesystem destination: a resource is named by its path relative to
+            # source_path, and the endpoint lives in tus_endpoint. Skip destination mapping
+            # entirely -- os.path.normpath() would mangle a URL ("http://h" -> "http:/h") and
+            # the mapping functions rewrite UNC/POSIX paths that have no meaning here.
+            source_result_mapping = {f: f for f in files_filtered}
+        else:
+            source_result_mapping = map_source_to_dest(
+                files_filtered, parameters["source_path"], parameters["target_path"]
+            )
+            source_result_mapping = apply_mapping_function(
+                source_result_mapping, parameters["func_target_mapping"], logger
+            )
         not_copied, all_copied = remove_files_already_at_destination(
             source_result_mapping, files_copied_log, logger, tool
         )
@@ -675,6 +741,27 @@ def parse_args():
         "--log_dir",
         default="./log",
         help="Directory for all logs (default: ./log)",
+    )
+    # tool="tus" only. Non-secret overrides for the B-Fabric OAuth client; the corresponding
+    # client secret is read from BFABRIC_CLIENT_SECRET and is deliberately NOT accepted on the
+    # command line, because argv is world-readable via /proc and is logged by the launcher.
+    parser.add_argument(
+        "--bfabric-base-url",
+        default=None,
+        help="B-Fabric base URL for tus uploads (default: $BFABRIC_BASE_URL)",
+    )
+    parser.add_argument(
+        "--bfabric-client-id",
+        default=None,
+        help="B-Fabric OAuth client id for tus uploads (default: $BFABRIC_CLIENT_ID)",
+    )
+    parser.add_argument(
+        "--bfabric-scope",
+        default=None,
+        help=(
+            "B-Fabric OAuth scope for tus uploads; must include 'tus' "
+            "(default: $BFABRIC_SCOPE or 'api:read api:write tus')"
+        ),
     )
     args = parser.parse_args()
     # Convert xml to URL if needed
@@ -767,6 +854,16 @@ def main():
         log_dir=args.log_dir,
     )
     # No need to patch copied_files_log here anymore
+    # CLI overrides for the tus B-Fabric client (non-secret only; the secret comes from the
+    # environment). Applied after parsing so the XML stays the default source.
+    for arg_name, param_name in (
+        ("bfabric_base_url", "bfabric_base_url"),
+        ("bfabric_client_id", "bfabric_client_id"),
+        ("bfabric_scope", "bfabric_scope"),
+    ):
+        value = getattr(args, arg_name, None)
+        if value:
+            bio_beamer_parser.parameters[param_name] = value
     setup_remote_logging(logger, bio_beamer_parser, args.hostname)
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)

@@ -8,7 +8,9 @@ authors = [
     { name  = "Claudio Cannizzaro", email= "claudio.cannizzaro@fgcz.uzh.ch"}    
 ]
 readme = "README.md"
-requires-python = ">=3.7"
+# 3.9 is the honest floor for the core: cli.py already uses importlib.resources.files()
+# (3.9+) and shlex.join() (3.8+). The `tus` extra needs more still - see below.
+requires-python = ">=3.9"
 dependencies = [
     "lxml",
     "platformdirs>=4.0.0",
@@ -16,6 +18,21 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# tool="tus" only. Kept out of the core dependencies on purpose: bfabric pulls a large tree
+# (pydantic, httpx, polars, suds, zeep) and requires a much newer Python than the robocopy
+# instrument PCs run, so requiring it would block installs on hosts that will never upload
+# over tus. Install with: pip install -e ".[tus]"
+# The marker is load-bearing: bfabric itself requires Python >=3.11, while BioBeamer must stay
+# installable on the 3.9/3.10 instrument PCs. Without it, a resolver solving for the whole
+# declared range (uv sync) fails outright, because it must satisfy every extra on every
+# supported Python. With it, `pip install -e ".[tus]"` on 3.9 is a silent no-op -- so tus hosts
+# must run 3.11+, which is enforced at runtime by the ImportError guard in tusupload.py.
+tus = [
+    # 1.21.0 is the floor: it is the first release with UploadFilesParams.files /
+    # UploadFileParam(on_duplicate=...) and on_duplicate="link", which this code uses.
+    # 1.20.0 had an incompatible signature (files as a positional arg plus a `force` bool).
+    "bfabric[transfer]>=1.21.0; python_version >= '3.11'",
+]
 development = [
     "pytest>=7.4.4",
     "pytest-mock",
