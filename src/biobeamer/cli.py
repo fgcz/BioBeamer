@@ -631,10 +631,97 @@ def copy_and_log_files(
     return files_copied
 
 
-def cleanup_copied_files(files_copied, parameters, logger, simulate):
+def cleanup_copied_files(files_copied, parameters, logger, simulate, tool=None):
+    files_to_consider = files_copied
+    if tool == "tus":
+        files_to_consider = verified_stored_files(files_copied, parameters, logger)
     remove_old_copied(
-        files_copied, parameters["max_time_delete"], logger, simulate=simulate
+        files_to_consider, parameters["max_time_delete"], logger, simulate=simulate
     )
+
+
+def verified_stored_files(files_copied, parameters, logger):
+    """The subset of ``files_copied`` that B-Fabric confirms it has stored.
+
+    A completed tus transfer is not confirmed storage: the storage service's virus scan, checksum
+    verification and disk checks run in a post-finish hook afterwards, and report to B-Fabric rather
+    than to us. A file we recorded as copied may therefore have a resource marked ``failed`` with no
+    usable bytes -- so deleting on the strength of the ledger alone risks destroying the only copy.
+
+    Anything not provably ``available`` is withheld from deletion. That includes resources still
+    ``pending`` (the server has not ruled yet) and any file we cannot account for, because "unknown"
+    must never authorise a delete.
+    """
+    from biobeamer.tusregistry import classify, registry_path
+
+    try:
+        from biobeamer.tusupload import get_client
+    except ImportError:
+        logger.warning("Cannot verify stored files without the tus extra; skipping deletion.")
+        return []
+
+    files_copied = list(files_copied)
+    if not files_copied:
+        return []
+    try:
+        client = get_client(parameters, logger)
+    except Exception as error:
+        # Without B-Fabric we cannot confirm anything, so delete nothing this run.
+        logger.warning("Cannot verify stored files ({0}); skipping deletion.".format(error))
+        return []
+
+    stored, rejected, unknown = classify(
+        files_copied, registry_path(parameters), client, logger
+    )
+    if rejected:
+        logger.error(
+            "{0} file(s) were rejected by B-Fabric after upload and will be re-uploaded: {1}".format(
+                len(rejected), ", ".join(sorted(rejected)[:5])
+            )
+        )
+    if unknown:
+        logger.info(
+            "{0} file(s) not yet confirmed stored; keeping the local copy for now.".format(
+                len(unknown)
+            )
+        )
+    return stored
+
+
+def repair_ledger_for_rejected(files_copied_log, parameters, logger):
+    """Drop files whose resource B-Fabric rejected, so the next run uploads them again.
+
+    The ledger records "we transferred this", which the post-finish checks can later contradict.
+    Without this a rejected file stays skipped for ever and is silently never stored.
+    """
+    from biobeamer.tusregistry import classify, forget, registry_path
+
+    try:
+        from biobeamer.tusupload import get_client
+    except ImportError:
+        return files_copied_log
+
+    if not files_copied_log:
+        return files_copied_log
+    try:
+        client = get_client(parameters, logger)
+    except Exception as error:
+        logger.warning(
+            "Cannot check previously uploaded files ({0}); leaving the ledger as is.".format(error)
+        )
+        return files_copied_log
+
+    path = registry_path(parameters)
+    _stored, rejected, _unknown = classify(files_copied_log, path, client, logger)
+    if not rejected:
+        return files_copied_log
+    logger.warning(
+        "{0} previously uploaded file(s) were rejected by B-Fabric; they will be uploaded "
+        "again: {1}".format(len(rejected), ", ".join(sorted(rejected)[:5]))
+    )
+    forget(path, rejected, logger)
+    rejected_set = {os.path.normpath(f) for f in rejected}
+    return [f for f in files_copied_log if os.path.normpath(f) not in rejected_set]
 
 
 def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
@@ -657,6 +744,9 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
     files_copied_log = read_copied_files(
         copied_files_log_path=parameters["copied_files_log"]
     )
+    if tool == "tus":
+        # A rejected upload must stop being treated as done, or it is never retried.
+        files_copied_log = repair_ledger_for_rejected(files_copied_log, parameters, logger)
     files2copy = remove_already_copied(files2copy, files_copied_log)
     files_filtered = filter_files(files2copy, regex, parameters, logger)
     simulate = None
@@ -685,7 +775,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
         files_copied = copy_and_log_files(
             not_copied, all_copied, parameters, logger, tool_log_file_path, tool
         )
-        cleanup_copied_files(files_copied, parameters, logger, simulate)
+        cleanup_copied_files(files_copied, parameters, logger, simulate, tool)
     else:
         # Always create the copied files log, even if no files are copied
         log_dir = parameters.get("log_dir", None)
@@ -694,7 +784,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
             copied_files_log_path=parameters["copied_files_log"],
             log_dir=log_dir,
         )
-        cleanup_copied_files(files_copied_log, parameters, logger, simulate)
+        cleanup_copied_files(files_copied_log, parameters, logger, simulate, tool)
 
 
 def path_to_url(path: str) -> str:

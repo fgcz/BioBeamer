@@ -19,6 +19,8 @@ import re
 import sys
 import time
 
+from biobeamer.tusregistry import record_uploads, registry_path
+
 # Accepted container path formats. This is an operational contract, not an implementation
 # detail: instrument folders MUST carry the container in the path, because there is no fallback
 # (guessing would file data under the wrong project, which is worse than a failed run).
@@ -137,6 +139,15 @@ class _BfabricClientManager:
 
 
 _client_manager = _BfabricClientManager()
+
+
+def get_client(parameters, logger):
+    """The shared B-Fabric client for this run, built on first use.
+
+    Exposed for the storage-verification path in ``cli``, which needs to read resource statuses
+    without going through an upload.
+    """
+    return _client_manager.get_client(parameters, logger)
 
 
 def resolve_container_id(path, parameters, logger):
@@ -357,6 +368,21 @@ def upload_folder_with_tus(
         if _resource_name(f, upload_root) in done_names
         and _resource_name(f, upload_root) not in failed_names
     ]
+
+    # Record which resource each transferred file became. A completed transfer is not confirmed
+    # storage -- the storage service's post-finish checks run afterwards and report to B-Fabric, not
+    # to us -- so deletion later has to re-read these statuses instead of trusting the ledger.
+    resource_by_name = {u.filename: u.resource_id for u in summary.uploads}
+    resource_by_name.update({u.filename: u.resource_id for u in summary.links})
+    record_uploads(
+        registry_path(parameters),
+        {
+            f: resource_by_name[_resource_name(f, upload_root)]
+            for f in files
+            if _resource_name(f, upload_root) in resource_by_name
+        },
+        logger,
+    )
 
     for failure in summary.failures:
         logger.error(

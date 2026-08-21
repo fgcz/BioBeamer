@@ -155,6 +155,26 @@ e.g. '/Data2San/C1234/...')
 If an instrument writes a different layout, set `tus_container_pattern` for that host rather
 than renaming folders by hand.
 
+##### Storage is confirmed before a source file is deleted
+
+A completed tus transfer is **not** confirmed storage. The storage service runs its virus scan,
+checksum verification and disk checks in a *post-finish* hook, after the transfer is already
+complete, and that hook reports to B-Fabric rather than to BioBeamer -- it cannot fail the transfer
+that produced it. So a file BioBeamer recorded as copied can still end up with its resource marked
+`failed`, holding no usable bytes.
+
+Because `max_time_delete` eventually deletes source files, trusting the copied-files ledger alone
+would risk destroying the only copy of data B-Fabric rejected. For `tool="tus"` BioBeamer therefore:
+
+- records which resource each uploaded file became, in `tus_resources.json` beside the ledger
+- re-reads those statuses at **deletion** time and deletes only what B-Fabric reports `available`;
+  anything still `pending`, unreadable, or unaccounted for is kept
+- drops rejected files from the ledger on the next run, so they are uploaded again instead of being
+  skipped for ever
+
+Deletion is gated at the moment the decision is made, not just after upload, because verification
+runs on the server's schedule: a resource can still be `pending` when the upload returns.
+
 ##### One workunit per acquisition
 
 Files are grouped by acquisition folder, and each group becomes one B-Fabric workunit named
