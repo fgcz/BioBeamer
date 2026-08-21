@@ -32,19 +32,30 @@ TERMINAL_FAILURE_STATUSES = frozenset({"failed", "invalid", "deleted", "expired"
 
 
 def registry_path(parameters):
-    """Where the registry lives: alongside the copied-files ledger, in the log directory."""
+    """Where the registry lives: alongside the copied-files ledger, in the log directory.
+
+    Returns ``None`` when neither is configured, rather than falling back to the working directory --
+    a registry written next to whatever the process happened to be started from would follow the
+    caller around and, worse, be picked up by an unrelated run.
+    """
     log_dir = parameters.get("log_dir")
     if log_dir:
         return os.path.join(log_dir, REGISTRY_FILENAME)
-    ledger = parameters.get("copied_files_log") or "."
-    return os.path.join(os.path.dirname(ledger) or ".", REGISTRY_FILENAME)
+    ledger = parameters.get("copied_files_log")
+    ledger_dir = os.path.dirname(ledger) if ledger else ""
+    if ledger_dir:
+        return os.path.join(ledger_dir, REGISTRY_FILENAME)
+    return None
 
 
 def read_registry(path, logger=None):
     """``{source_path: {"resource_id": int, ...}}``, or ``{}`` if there is nothing usable.
 
-    Never raises: an unreadable registry leaves files unverifiable, which is the safe direction.
+    Never raises: an unreadable (or unconfigured) registry leaves files unverifiable, which is the
+    safe direction -- unverifiable means "do not delete", never "assume stored".
     """
+    if path is None:
+        return {}
     try:
         with open(path) as handle:
             raw = json.load(handle)
@@ -64,6 +75,8 @@ def read_registry(path, logger=None):
 
 def write_registry(path, entries, logger=None):
     """Atomically replace the registry, so a crash mid-write cannot truncate it."""
+    if path is None:
+        return
     payload = {"version": _FORMAT_VERSION, "entries": entries}
     tmp = "{0}.{1}.tmp".format(path, os.getpid())
     try:
@@ -86,7 +99,7 @@ def write_registry(path, entries, logger=None):
 
 def record_uploads(path, records, logger=None):
     """Add ``{source_path: resource_id}`` to the registry, keeping existing entries."""
-    if not records:
+    if not records or path is None:
         return
     entries = read_registry(path, logger)
     now = time.time()
@@ -100,7 +113,7 @@ def record_uploads(path, records, logger=None):
 
 def forget(path, sources, logger=None):
     """Drop ``sources`` from the registry, e.g. once their files are gone or being re-uploaded."""
-    if not sources:
+    if not sources or path is None:
         return
     entries = read_registry(path, logger)
     removed = False

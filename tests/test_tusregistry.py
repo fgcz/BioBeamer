@@ -52,6 +52,17 @@ class TestRegistry:
 
         assert read_registry(path, logger)[os.path.normpath("/d/a.raw")]["resource_id"] == 101
 
+    def test_no_configured_location_yields_no_path(self, logger):
+        """Never fall back to the working directory: a stray registry there would be picked up by
+        an unrelated run, and would litter whatever directory the process started in."""
+        assert registry_path({}) is None
+        assert registry_path({"copied_files_log": "copied.txt"}) is None
+
+    def test_operations_are_no_ops_without_a_path(self, logger):
+        assert read_registry(None, logger) == {}
+        record_uploads(None, {"/d/a.raw": 1}, logger)  # must not raise
+        forget(None, ["/d/a.raw"], logger)  # must not raise
+
     def test_missing_file_is_empty_not_an_error(self, params, logger):
         assert read_registry(registry_path(params), logger) == {}
 
