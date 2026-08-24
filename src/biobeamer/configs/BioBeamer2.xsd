@@ -12,7 +12,7 @@
               <xs:element name="b-fabric" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:short" name="applicationID"/>
+                    <xs:element type="xs:int" name="applicationID"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -36,6 +36,16 @@
 		        <xs:attribute type="xs:string" name="syshandler_adress" use="optional"/>
 		        <xs:attribute type="xs:int" name="syshandler_port" use="optional"/>
             <xs:attribute type="xs:string" name="version" use="required"/>
+            <!-- tus (tus.io resumable upload to B-Fabric via bfabricpy); used when tool="tus" -->
+            <xs:attribute type="xs:string" name="tus_endpoint" use="optional"/>
+            <xs:attribute type="xs:string" name="tus_container_pattern" use="optional"/>
+            <xs:attribute type="xs:string" name="tus_track_job" use="optional"/>
+            <xs:attribute type="xs:string" name="tus_on_duplicate" use="optional"/>
+            <!-- Forward compatibility: an unknown attribute must never make a host config
+                 unparseable for BioBeamer versions that predate it. The config XML is shared
+                 by the whole fleet while the XSD ships per-version, so without this any new
+                 attribute breaks every host still pinned to an older version. -->
+            <xs:anyAttribute processContents="lax"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

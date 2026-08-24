@@ -322,8 +322,40 @@ def copy_with_sftp(source: str, target: str, logger, tool_log_file: str, simulat
 
 # TODO: move to strategy pattern
 def copy_files_with_tool(
-    source_results, mov, logger, tool_log_file, tool, simulate=False
+    source_results, mov, logger, tool_log_file, tool, simulate=False, parameters=None
 ):
+    # tus is a batch transport: one upload_files call creates one workunit for a set of files,
+    # so it is handled whole rather than driven through the per-file loop below (which would
+    # otherwise create one workunit per file).
+    if tool == "tus":
+        from biobeamer.tusupload import TusUploadFailed, upload_files_with_tus
+
+        try:
+            return upload_files_with_tus(
+                source_results,
+                parameters or {},
+                logger,
+                tool_log_file,
+                simulate_copy=simulate,
+            )
+        except TusUploadFailed as e:
+            # Partial failure: log the successful uploads to the ledger before failing, so a
+            # retry does not re-send files that already reached B-Fabric.
+            logger.error("TUS upload failed: {0}".format(e))
+            _log_partial_tus_success(e.files_copied, parameters, logger)
+            if not simulate:
+                import sys
+
+                sys.exit(2)
+            return e.files_copied
+        except Exception as e:
+            logger.error("TUS upload failed: {0}".format(e), exc_info=True)
+            if not simulate:
+                import sys
+
+                sys.exit(2)
+            return []
+
     files_copied = []
     failed_files = []
     sources = list(source_results.keys())
@@ -369,6 +401,28 @@ def copy_files_with_tool(
 
         sys.exit(2)
     return files_copied
+
+
+def _log_partial_tus_success(files_copied, parameters, logger):
+    """Persist the files a partially-failed tus run did upload, then let the run fail."""
+    if not files_copied or not parameters:
+        return
+    try:
+        previous = read_copied_files(
+            copied_files_log_path=parameters["copied_files_log"]
+        )
+        log_copied_files(
+            list(set(list(previous) + list(files_copied))),
+            copied_files_log_path=parameters["copied_files_log"],
+            log_dir=parameters.get("log_dir", None),
+        )
+        logger.info(
+            "Recorded {0} successfully uploaded file(s) before failing.".format(
+                len(files_copied)
+            )
+        )
+    except Exception as e:
+        logger.error("Could not record partial tus success: {0}".format(e))
 
 
 def make_destination_files(files_to_copy, source_path, target_path):
@@ -436,9 +490,21 @@ def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
     log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
     if log_dir_path and not os.path.exists(log_dir_path):
         os.makedirs(log_dir_path, exist_ok=True)
-    with open(copied_files_log_path, "w") as file_log:
-        for file in sorted(copied_files):
-            file_log.write(os.path.normpath(file) + "\n")
+    # Write via a temp file and rename: the ledger is rewritten in full on every run, so a crash
+    # (or a full disk) part-way through a plain overwrite would leave it truncated, and every file
+    # missing from it would be uploaded again on the next run.
+    tmp_path = "{0}.{1}.tmp".format(copied_files_log_path, os.getpid())
+    try:
+        with open(tmp_path, "w") as file_log:
+            for file in sorted(copied_files):
+                file_log.write(os.path.normpath(file) + "\n")
+        os.replace(tmp_path, copied_files_log_path)
+    except OSError:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
 
 
 def read_copied_files(copied_files_log_path):
@@ -538,6 +604,10 @@ def apply_mapping_function(mapping_dict, func_name, logger):
 def remove_files_already_at_destination(mapping, copied_log, logger, tool):
     if tool == "sftp":
         copied = compare_files_destination_sftp(mapping, logger)
+    elif tool == "tus":
+        from biobeamer.tusupload import compare_files_destination_tus
+
+        copied = compare_files_destination_tus(mapping, logger)
     elif tool in ["robocopy", "scp"]:
         copied = compare_files_destination_local(mapping, logger)
     else:
@@ -560,6 +630,7 @@ def copy_and_log_files(
         tool_log_file=tool_log_file_path,
         tool=tool,
         simulate=parameters["simulate_copy"],
+        parameters=parameters,
     )
     files_copied = set(list(all_copied) + files_copied)
     # Use log_dir if present in parameters
@@ -572,10 +643,104 @@ def copy_and_log_files(
     return files_copied
 
 
-def cleanup_copied_files(files_copied, parameters, logger, simulate):
+def cleanup_copied_files(files_copied, parameters, logger, simulate, tool=None):
+    files_to_consider = files_copied
+    if tool == "tus":
+        files_to_consider = verified_stored_files(files_copied, parameters, logger)
     remove_old_copied(
-        files_copied, parameters["max_time_delete"], logger, simulate=simulate
+        files_to_consider, parameters["max_time_delete"], logger, simulate=simulate
     )
+    if tool == "tus":
+        # Deletion just removed files; their registry entries have nothing left to authorise. Done
+        # here rather than on a timer so the registry tracks the source tree instead of growing for
+        # the life of the instrument.
+        from biobeamer.tusregistry import prune_absent, registry_path
+
+        prune_absent(registry_path(parameters), logger)
+
+
+def verified_stored_files(files_copied, parameters, logger):
+    """The subset of ``files_copied`` that B-Fabric confirms it has stored.
+
+    A completed tus transfer is not confirmed storage: the storage service's virus scan, checksum
+    verification and disk checks run in a post-finish hook afterwards, and report to B-Fabric rather
+    than to us. A file we recorded as copied may therefore have a resource marked ``failed`` with no
+    usable bytes -- so deleting on the strength of the ledger alone risks destroying the only copy.
+
+    Anything not provably ``available`` is withheld from deletion. That includes resources still
+    ``pending`` (the server has not ruled yet) and any file we cannot account for, because "unknown"
+    must never authorise a delete.
+    """
+    from biobeamer.tusregistry import classify, registry_path
+
+    try:
+        from biobeamer.tusupload import get_client
+    except ImportError:
+        logger.warning("Cannot verify stored files without the tus extra; skipping deletion.")
+        return []
+
+    files_copied = list(files_copied)
+    if not files_copied:
+        return []
+    try:
+        client = get_client(parameters, logger)
+    except Exception as error:
+        # Without B-Fabric we cannot confirm anything, so delete nothing this run.
+        logger.warning("Cannot verify stored files ({0}); skipping deletion.".format(error))
+        return []
+
+    stored, rejected, unknown = classify(
+        files_copied, registry_path(parameters), client, logger
+    )
+    if rejected:
+        logger.error(
+            "{0} file(s) were rejected by B-Fabric after upload and will be re-uploaded: {1}".format(
+                len(rejected), ", ".join(sorted(rejected)[:5])
+            )
+        )
+    if unknown:
+        logger.info(
+            "{0} file(s) not yet confirmed stored; keeping the local copy for now.".format(
+                len(unknown)
+            )
+        )
+    return stored
+
+
+def repair_ledger_for_rejected(files_copied_log, parameters, logger):
+    """Drop files whose resource B-Fabric rejected, so the next run uploads them again.
+
+    The ledger records "we transferred this", which the post-finish checks can later contradict.
+    Without this a rejected file stays skipped for ever and is silently never stored.
+    """
+    from biobeamer.tusregistry import classify, forget, registry_path
+
+    try:
+        from biobeamer.tusupload import get_client
+    except ImportError:
+        return files_copied_log
+
+    if not files_copied_log:
+        return files_copied_log
+    try:
+        client = get_client(parameters, logger)
+    except Exception as error:
+        logger.warning(
+            "Cannot check previously uploaded files ({0}); leaving the ledger as is.".format(error)
+        )
+        return files_copied_log
+
+    path = registry_path(parameters)
+    _stored, rejected, _unknown = classify(files_copied_log, path, client, logger)
+    if not rejected:
+        return files_copied_log
+    logger.warning(
+        "{0} previously uploaded file(s) were rejected by B-Fabric; they will be uploaded "
+        "again: {1}".format(len(rejected), ", ".join(sorted(rejected)[:5]))
+    )
+    forget(path, rejected, logger)
+    rejected_set = {os.path.normpath(f) for f in rejected}
+    return [f for f in files_copied_log if os.path.normpath(f) not in rejected_set]
 
 
 def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
@@ -598,6 +763,9 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
     files_copied_log = read_copied_files(
         copied_files_log_path=parameters["copied_files_log"]
     )
+    if tool == "tus":
+        # A rejected upload must stop being treated as done, or it is never retried.
+        files_copied_log = repair_ledger_for_rejected(files_copied_log, parameters, logger)
     files2copy = remove_already_copied(files2copy, files_copied_log)
     files_filtered = filter_files(files2copy, regex, parameters, logger)
     simulate = None
@@ -607,19 +775,26 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
         simulate = os.path.join(log_dir, "files2delete.bat")
 
     if len(files_filtered) != 0:
-        source_result_mapping = map_source_to_dest(
-            files_filtered, parameters["source_path"], parameters["target_path"]
-        )
-        source_result_mapping = apply_mapping_function(
-            source_result_mapping, parameters["func_target_mapping"], logger
-        )
+        if tool == "tus":
+            # tus has no filesystem destination: a resource is named by its path relative to
+            # source_path, and the endpoint lives in tus_endpoint. Skip destination mapping
+            # entirely -- os.path.normpath() would mangle a URL ("http://h" -> "http:/h") and
+            # the mapping functions rewrite UNC/POSIX paths that have no meaning here.
+            source_result_mapping = {f: f for f in files_filtered}
+        else:
+            source_result_mapping = map_source_to_dest(
+                files_filtered, parameters["source_path"], parameters["target_path"]
+            )
+            source_result_mapping = apply_mapping_function(
+                source_result_mapping, parameters["func_target_mapping"], logger
+            )
         not_copied, all_copied = remove_files_already_at_destination(
             source_result_mapping, files_copied_log, logger, tool
         )
         files_copied = copy_and_log_files(
             not_copied, all_copied, parameters, logger, tool_log_file_path, tool
         )
-        cleanup_copied_files(files_copied, parameters, logger, simulate)
+        cleanup_copied_files(files_copied, parameters, logger, simulate, tool)
     else:
         # Always create the copied files log, even if no files are copied
         log_dir = parameters.get("log_dir", None)
@@ -628,7 +803,7 @@ def copy_files(bio_beamer_parser, logger, tool, tool_log_file_path):
             copied_files_log_path=parameters["copied_files_log"],
             log_dir=log_dir,
         )
-        cleanup_copied_files(files_copied_log, parameters, logger, simulate)
+        cleanup_copied_files(files_copied_log, parameters, logger, simulate, tool)
 
 
 def path_to_url(path: str) -> str:
@@ -675,6 +850,27 @@ def parse_args():
         "--log_dir",
         default="./log",
         help="Directory for all logs (default: ./log)",
+    )
+    # tool="tus" only. Non-secret overrides for the B-Fabric OAuth client; the corresponding
+    # client secret is read from BFABRIC_CLIENT_SECRET and is deliberately NOT accepted on the
+    # command line, because argv is world-readable via /proc and is logged by the launcher.
+    parser.add_argument(
+        "--bfabric-base-url",
+        default=None,
+        help="B-Fabric base URL for tus uploads (default: $BFABRIC_BASE_URL)",
+    )
+    parser.add_argument(
+        "--bfabric-client-id",
+        default=None,
+        help="B-Fabric OAuth client id for tus uploads (default: $BFABRIC_CLIENT_ID)",
+    )
+    parser.add_argument(
+        "--bfabric-scope",
+        default=None,
+        help=(
+            "B-Fabric OAuth scope for tus uploads; must include 'tus' "
+            "(default: $BFABRIC_SCOPE or 'api:read api:write tus')"
+        ),
     )
     args = parser.parse_args()
     # Convert xml to URL if needed
@@ -767,6 +963,16 @@ def main():
         log_dir=args.log_dir,
     )
     # No need to patch copied_files_log here anymore
+    # CLI overrides for the tus B-Fabric client (non-secret only; the secret comes from the
+    # environment). Applied after parsing so the XML stays the default source.
+    for arg_name, param_name in (
+        ("bfabric_base_url", "bfabric_base_url"),
+        ("bfabric_client_id", "bfabric_client_id"),
+        ("bfabric_scope", "bfabric_scope"),
+    ):
+        value = getattr(args, arg_name, None)
+        if value:
+            bio_beamer_parser.parameters[param_name] = value
     setup_remote_logging(logger, bio_beamer_parser, args.hostname)
     time_out = bio_beamer_parser.parameters["time_out"]
     time.sleep(time_out)

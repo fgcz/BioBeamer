@@ -37,6 +37,9 @@ class BioBeamerParser(object):
         import urllib.parse
 
         self.logger = logger
+        # `parameters` is a class attribute holding mutable defaults; copy it so that new keys
+        # (and per-host overrides) never leak between instances.
+        self.parameters = dict(BioBeamerParser.parameters)
         # Validate XML and XSD paths
         if not xml:
             self.logger.error("XML path/URL is empty!")
@@ -110,7 +113,7 @@ class BioBeamerParser(object):
                             self.parameters[k] = False
                         else:
                             self.parameters[k] = True
-                    elif k == "robocopy_mov":
+                    elif k in ("robocopy_mov", "tus_track_job"):
                         if i.attrib[k] == "false":
                             self.parameters[k] = False
                         else:
@@ -120,6 +123,20 @@ class BioBeamerParser(object):
                             self.parameters[k] = int(i.attrib[k])
                         except ValueError:
                             self.parameters[k] = i.attrib[k]
+                # The <b-fabric><applicationID> child element has always been in the schema but
+                # was never read: the loop above only walks i.attrib. tool="tus" needs it, since
+                # the B-Fabric application *is* the uploading instrument.
+                application_id = i.findtext("b-fabric/applicationID")
+                if application_id is not None and application_id.strip():
+                    try:
+                        self.parameters["application_id"] = int(application_id)
+                    except ValueError:
+                        self.logger.error(
+                            "b-fabric/applicationID '{0}' is not an integer.".format(
+                                application_id
+                            )
+                        )
+                        raise
                 found_host_config = True
 
         if not found_host_config:
