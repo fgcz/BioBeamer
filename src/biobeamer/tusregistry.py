@@ -124,6 +124,29 @@ def forget(path, sources, logger=None):
         write_registry(path, entries, logger)
 
 
+def prune_absent(path, logger=None):
+    """Drop entries whose source file no longer exists, and report how many went.
+
+    An entry only earns its keep while its file is still on disk and might be deleted: once the file
+    is gone the resource id has nothing left to authorise. Without this the registry grows for the
+    life of the instrument, since the copied-files ledger is rewritten each run but this file is not.
+    """
+    entries = read_registry(path, logger)
+    if not entries:
+        return 0
+    keep = {source: entry for source, entry in entries.items() if os.path.exists(source)}
+    removed = len(entries) - len(keep)
+    if removed:
+        write_registry(path, keep, logger)
+        if logger:
+            logger.debug(
+                "Pruned {0} resource registry entr{1} whose source file is gone.".format(
+                    removed, "y" if removed == 1 else "ies"
+                )
+            )
+    return removed
+
+
 def resource_statuses(client, resource_ids, logger=None):
     """``{resource_id: status}`` for ``resource_ids``, in one batched read; absent ids are omitted."""
     if not resource_ids:

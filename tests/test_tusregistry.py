@@ -228,3 +228,79 @@ class TestLedgerRepair:
         mocker.patch("biobeamer.tusupload.get_client", side_effect=RuntimeError("no auth"))
 
         assert cli.repair_ledger_for_rejected(["/d/a.raw"], params, logger) == ["/d/a.raw"]
+
+
+class TestPruning:
+    """An entry only earns its keep while its source file could still be deleted."""
+
+    def test_absent_sources_are_dropped(self, tmp_path, params, logger):
+        from biobeamer.tusregistry import prune_absent
+
+        present = tmp_path / "still_here.raw"
+        present.write_bytes(b"x")
+        path = registry_path(params)
+        record_uploads(path, {str(present): 101, "/d/deleted.raw": 102}, logger)
+
+        removed = prune_absent(path, logger)
+
+        entries = read_registry(path, logger)
+        assert removed == 1
+        assert os.path.normpath(str(present)) in entries
+        assert os.path.normpath("/d/deleted.raw") not in entries
+
+    def test_nothing_to_prune_leaves_the_file_alone(self, tmp_path, params, logger):
+        from biobeamer.tusregistry import prune_absent
+
+        present = tmp_path / "here.raw"
+        present.write_bytes(b"x")
+        path = registry_path(params)
+        record_uploads(path, {str(present): 101}, logger)
+
+        assert prune_absent(path, logger) == 0
+        assert len(read_registry(path, logger)) == 1
+
+    def test_pruning_an_empty_registry_is_a_no_op(self, params, logger):
+        from biobeamer.tusregistry import prune_absent
+
+        assert prune_absent(registry_path(params), logger) == 0
+
+    def test_deletion_prunes_the_registry(self, mocker, tmp_path, params, logger):
+        """cleanup_copied_files prunes after deleting, so the registry follows the source tree."""
+        from biobeamer.tusregistry import prune_absent  # noqa: F401 - patched below
+
+        path = registry_path(params)
+        record_uploads(path, {"/d/gone.raw": 101}, logger)
+        mocker.patch(
+            "biobeamer.tusupload.get_client",
+            return_value=_client(mocker, **{"101": "available"}),
+        )
+        mocker.patch("biobeamer.cli.remove_old_copied")
+
+        cli.cleanup_copied_files(["/d/gone.raw"], params, logger, None, "tus")
+
+        # The file never existed, so its entry is pruned once deletion has run.
+        assert read_registry(path, logger) == {}
+
+
+class TestLedgerWriteIsAtomic:
+    """The ledger is rewritten in full each run; a partial write would cause re-uploads."""
+
+    def test_no_temp_file_is_left_behind(self, tmp_path):
+        ledger = tmp_path / "copied_files.txt"
+        cli.log_copied_files(["/d/a.raw", "/d/b.raw"], str(ledger))
+
+        assert ledger.read_text().split() == ["/d/a.raw", "/d/b.raw"]
+        assert list(tmp_path.glob("*.tmp")) == []
+
+    def test_an_existing_ledger_survives_a_failed_write(self, mocker, tmp_path):
+        ledger = tmp_path / "copied_files.txt"
+        cli.log_copied_files(["/d/original.raw"], str(ledger))
+        # Fail after the temp file is opened, before the rename.
+        mocker.patch("os.replace", side_effect=OSError("disk full"))
+
+        with pytest.raises(OSError):
+            cli.log_copied_files(["/d/new.raw"], str(ledger))
+
+        # The old ledger is intact rather than truncated -- nothing is re-uploaded.
+        assert ledger.read_text().split() == ["/d/original.raw"]
+        assert list(tmp_path.glob("*.tmp")) == []

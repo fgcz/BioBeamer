@@ -490,9 +490,21 @@ def log_copied_files(copied_files, copied_files_log_path, log_dir=None):
     log_dir_path = os.path.dirname(os.path.abspath(copied_files_log_path))
     if log_dir_path and not os.path.exists(log_dir_path):
         os.makedirs(log_dir_path, exist_ok=True)
-    with open(copied_files_log_path, "w") as file_log:
-        for file in sorted(copied_files):
-            file_log.write(os.path.normpath(file) + "\n")
+    # Write via a temp file and rename: the ledger is rewritten in full on every run, so a crash
+    # (or a full disk) part-way through a plain overwrite would leave it truncated, and every file
+    # missing from it would be uploaded again on the next run.
+    tmp_path = "{0}.{1}.tmp".format(copied_files_log_path, os.getpid())
+    try:
+        with open(tmp_path, "w") as file_log:
+            for file in sorted(copied_files):
+                file_log.write(os.path.normpath(file) + "\n")
+        os.replace(tmp_path, copied_files_log_path)
+    except OSError:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
 
 
 def read_copied_files(copied_files_log_path):
@@ -638,6 +650,13 @@ def cleanup_copied_files(files_copied, parameters, logger, simulate, tool=None):
     remove_old_copied(
         files_to_consider, parameters["max_time_delete"], logger, simulate=simulate
     )
+    if tool == "tus":
+        # Deletion just removed files; their registry entries have nothing left to authorise. Done
+        # here rather than on a timer so the registry tracks the source tree instead of growing for
+        # the life of the instrument.
+        from biobeamer.tusregistry import prune_absent, registry_path
+
+        prune_absent(registry_path(parameters), logger)
 
 
 def verified_stored_files(files_copied, parameters, logger):
